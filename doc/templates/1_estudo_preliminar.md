@@ -1,19 +1,19 @@
-# Estudo preliminar
+Estudo preliminar
 
 Neste estudo concretaremos a idea o máximo posible. Canto máis concretos sexamos, máis fáciles van ser de desenvolver as seguintes partes. É necesario realizar completamente o estudo preliminar para pasar ás seguintes fases.
 
 O estudo preliminar inclúe:
 
-## Introdución
+## 1. Introdución
 Descrición resumida da aplicación. Trátase dunha presentación na cal se debe explicar en que consiste o noso proxecto e que nos permite facer.
 
-## Obxectivo
+## 2. Obxectivo
 Cal é o propósito principal da aplicación a desenvolver? Que problema resolve? Cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
 
-## Audiencia do produto
+## 3. Audiencia
 A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
 
-## Necesidades
+## 4. Necesidades
 - Describe o problema ou a necesidade.
 - Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? En que medida o conseguen?
 - Por que é necesaria a posta en marcha dun proxecto que aborde dita necesidade?
@@ -30,24 +30,24 @@ A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa 
 	- Canto tempo se necesita?
 
 
-### Modelo de negocio 
+## 5. Modelo de negocio 
 O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible comercializala? Como?
 
-#### Viabilidade
+### 5.1. Viabilidade
 
-##### Viabilidade técnica
+#### 5.1.1. Viabilidade técnica
 - Será posible dispoñer dos recursos humanos e medios de produción necesarios (materias primas, maquinaria, instalacións, etc.)?
 - Existe algún impedimento técnico que dificulte o proceso produtivo?  
 
-##### Viabilidade económica
+#### 5.1.2. Viabilidade económica
 - Os beneficios do proxecto son superiores aos costes?
 - As perdas poden cubrirse vía financiamento (por parte da administración pública, con subvencións, etc)?    
 
-#### Competencia
+### 5.2. Competencia
 - Identificación da competencia, as súas características e a súa posición no mercado.
 - Existencia de productos/servizos substitutivos.
 
-#### Promoción
+### 5.3. Promoción
 - Técnicas elixidas:
 	+ Redes sociais.
 	+ Plataformas multimedia.
@@ -59,7 +59,7 @@ O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible c
 	+ Outros.
 - Xustifica a elección.
     
-#### Modelo de negocio
+### 5.4. Modelo de negocio
 - Modelo elixido: 
 	+ Modelo de pago.
 	+ Freemium: é de balde pero as funcionalidades extras son de pago.
@@ -69,7 +69,7 @@ O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible c
 	+ Outros.
 - Xustifica a elección.
 
-## Calendario de planificación
+## 6. Planificación
 Calendario que indique as datas nas cales se vai desenvolver a aplicación. Trátase dunha estimación, moi probablemente se vai a modificar mentres se avance no proxecto. Este calendario pódelo facer de dúas formas:
 
 - Cunha **táboa** que recolla as diferentes accións a realizar xunto coas datas de inicio e fin de cada acción.
