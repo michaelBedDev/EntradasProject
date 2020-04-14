@@ -16,8 +16,8 @@ A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa 
 ### Estudo de necesidades
 Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? En que medida o conseguen?
 
-## Modelo de negocio 
+### Modelo de negocio 
 O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible comercializala? Como?
 
-## Calendario de planificación
+### Calendario de planificación
 Calendario que indique as datas nas cales se vai desenvolver a aplicación. Trátase dunha estimación, moi probablemente se vai a modificar mentres se avance no proxecto. Este calendario pódelo facer cunha táboa que recolla as diferentes accións a realizar xunto coas datas de inicio e fin de cada acción. Outra forma é utilizar un diagrama de Gantt, o cal permite visualizar de forma gráfica canto vai ocupar cada acción no tempo.
