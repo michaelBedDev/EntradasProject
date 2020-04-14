@@ -2,4 +2,4 @@
 
 ### `doc/templates/`
 
-Documentos de plantilla para elaborar la documentación del proyecto
+Documentos de plantilla para elaborar a documentación do proxecto
