@@ -29,7 +29,7 @@
 > Durante a redacción da memoria, debes ir completando progresivamente o anexo de Referencias.
 
 1. [Estudo preliminar](doc/templates/1_estudo_preliminar.md)
-2. [Requerimentos do sistema (análise)](doc/templates/2_analise.md)
+2. [Análise: Requerimentos do sistema](doc/templates/2_analise.md)
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Execución](doc/templates/4_execucion.md)
 
