@@ -1,6 +1,6 @@
 # Orzamento
 
-Antes de comezar o estudo preliminar, realiza un orzamento para as fases de estudo preliminar, análise e deseño. Unha vez realiza esas tres fases, remata de completar o orzamento co coste da fase de execución.
+**Antes de comezar o estudo preliminar**, realiza un orzamento para as fases de estudo preliminar, análise e deseño. **Unha vez realiza esas tres fases**, remata de completar o orzamento co coste da fase de execución.
 
 
 Realizar o orzamento do proxecto é relativamente fácil se a planificación está ben elaborada. 
