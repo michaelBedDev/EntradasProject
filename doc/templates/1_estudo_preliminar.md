@@ -7,10 +7,10 @@ O estudo preliminar inclúe:
 ### Descrición da idea
 Descrición da aplicación. En que consiste o noso proxecto? Que nos permite facer?
 
-### Obxectivo do produto
+### Obxectivo
 Cal é o propósito principal da aplicación a desenvolver? Que problema resolve? Cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
 
-### Audiencia do produto
+### Audiencia
 A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
 
 ### Estudo de necesidades
