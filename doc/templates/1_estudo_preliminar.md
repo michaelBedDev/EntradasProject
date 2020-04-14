@@ -9,7 +9,7 @@ O estudo preliminar inclúe:
 
 ## 2. Obxectivo
 - Cal é o propósito principal da aplicación a desenvolver?
-- Que problema resolve?
+- Que problema resolve? 
 
 ## 3. Audiencia
 - A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
@@ -30,6 +30,7 @@ O estudo preliminar inclúe:
 	- Con canto tempo cóntase? 
 	- Canto tempo se necesita?
 
+Recurso: [Guía para a elaboración de proyectos. Gobierno Vasco.](https://www.pluralismoyconvivencia.es/upload/19/71/guia_elaboracion_proyectos_c.pdf) (páxina 26 e seguintes)
 
 ## 5. Modelo de negocio 
 O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible comercializala? Como?
@@ -47,6 +48,8 @@ O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible c
 ### 5.2. Competencia
 - Identificación da competencia, as súas características e a súa posición no mercado.
 - Existencia de productos/servizos substitutivos.
+
+Recurso: [Modelo de plan de negocios. Empresa de servicios informáticos. IGAPE](http://www.igape.es/images/crear-unha-empresa/Recursos/PlansdeNegocio/16ServiciosInformaticos12_5_cas.pdf) (páxina 45 e seguintes)
 
 ### 5.3. Promoción
 - Técnicas elixidas:
