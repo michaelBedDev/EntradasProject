@@ -12,11 +12,12 @@ Pódense indicar os recursos materiais e humanos asociados a cada tarefa ou, se 
 
 #### Fase 1: Estudo preliminar
 
-##### Tarefa 1: xxxxxxxx
-- Descrición: 
-- Recursos hardware/software: 
-- Recursos humanos: Persoas que se encargarán de realizar esta tarefa
-- Duración: 
+Tarefa 1|Título da tarefa
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|Persoas que se encargarán de realizar esta tarefa
+Duración| 
 
 ##### Tarefa 2
 ...
