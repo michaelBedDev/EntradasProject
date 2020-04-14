@@ -12,26 +12,77 @@ Pódense indicar os recursos materiais e humanos asociados a cada tarefa ou, se 
 
 #### Fase 1: Estudo preliminar
 
-Tarefa 1|Título da tarefa
+Tarefa 1|Título da tarefa 1
 -|-
 Descrición| 
 Recursos hardware/software| 
-Recursos humanos|Persoas que se encargarán de realizar esta tarefa
+Recursos humanos|
 Duración| 
 
-##### Tarefa 2
+Tarefa 2|Título da tarefa 2
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
 ...
 
 #### Fase 2: Requerimentos do sistema (análise)
 
-##### Tarefa 1: xxxxxxxx
-- Descrición: 
-- Recursos hardware/software: 
-- Recursos humanos:
-- Duración: 
+Tarefa 1|Título da tarefa 1
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
 
-##### Tarefa 2
+Tarefa 2|Título da tarefa 2
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
 ...
+
+#### Fase 3: Deseño
+
+Tarefa 1|Título da tarefa 1
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
+Tarefa 2|Título da tarefa 2
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
+...
+
+
+#### Fase 4: Execución
+
+Tarefa 1|Título da tarefa 1
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
+Tarefa 2|Título da tarefa 2
+-|-
+Descrición| 
+Recursos hardware/software| 
+Recursos humanos|
+Duración| 
+
+...
+
 
 ## Calendario
 Calendario que indique as datas nas cales se vai desenvolver a aplicación. Este calendario pódelo facer de dúas formas:
