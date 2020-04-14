@@ -5,13 +5,15 @@ Neste estudo concretaremos a idea o máximo posible. Canto máis concretos sexam
 O estudo preliminar inclúe:
 
 ## 1. Introdución
-Descrición resumida da aplicación. Trátase dunha presentación na cal se debe explicar en que consiste o noso proxecto e que nos permite facer.
+- Descrición resumida da aplicación. Trátase dunha presentación na cal se debe explicar en que consiste o noso proxecto e que nos permite facer.
 
 ## 2. Obxectivo
-Cal é o propósito principal da aplicación a desenvolver? Que problema resolve? Cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
+- Cal é o propósito principal da aplicación a desenvolver?
+- Que problema resolve? 
+- Brevemente, cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
 
 ## 3. Audiencia
-A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
+- A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
 
 ## 4. Necesidades
 - Describe o problema ou a necesidade.
