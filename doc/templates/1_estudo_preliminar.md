@@ -9,8 +9,7 @@ O estudo preliminar inclúe:
 
 ## 2. Obxectivo
 - Cal é o propósito principal da aplicación a desenvolver?
-- Que problema resolve? 
-- Brevemente, cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
+- Que problema resolve?
 
 ## 3. Audiencia
 - A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
