@@ -1,4 +1,4 @@
-# Requerimentos do sistema (análise)
+# Análise: Requerimentos do sistema
 
 Este documento describe os requirimentos para \[nome do proxecto\] especificando que funcionalidade ofrecerá e de que xeito.
 
