@@ -1,4 +1,4 @@
-Estudo preliminar
+# Estudo preliminar
 
 Neste estudo concretaremos a idea o máximo posible. Canto máis concretos sexamos, máis fáciles van ser de desenvolver as seguintes partes. É necesario realizar completamente o estudo preliminar para pasar ás seguintes fases.
 
