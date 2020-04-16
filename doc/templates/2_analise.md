@@ -1,6 +1,6 @@
 # Análise: Requerimentos do sistema
 
-Este documento describe os requirimentos para \[nome do proxecto\] especificando que funcionalidade ofrecerá e de que xeito.
+Este documento describe os requirimentos para o \[nome do proxecto\] especificando qué funcionalidade ofrecerá e de que xeito.
 
 ## 1. Descrición xeral
 
@@ -8,7 +8,7 @@ Descrición Xeral do proxecto.
 
 ## 2. Funcionalidades
 
-Describir que operacións se van poder realizar a través da nosa aplicación informática, indicando que actores interveñen en cada caso.
+Describir qué operacións se van poder realizar a través da nosa aplicación informática, indicando qué actores interveñen en cada caso.
 Enumeralas, de maneira que na fase de deseño poidamos crear o caso de uso correspondente a cada funcionalidade. Ademais, engade as variables coas que se van a traballar.
 
 Exemplo:
