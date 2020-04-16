@@ -1,4 +1,3 @@
-
 ## Manual técnico do proxecto
 
 ### Instalación
