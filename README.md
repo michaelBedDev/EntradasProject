@@ -32,6 +32,7 @@
 2. [Análise: Requerimentos do sistema](doc/templates/2_analise.md)
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
+5. [Manuais](doc/templates/5_manuais.md)
 
 #### Anexos
 1. [Referencias](doc/templates/a1_referencias.md)
