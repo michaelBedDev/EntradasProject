@@ -8,8 +8,8 @@ O estudo preliminar inclúe:
 - Descrición resumida da aplicación. Trátase dunha presentación na cal se debe explicar en que consiste o noso proxecto e que nos permite facer.
 
 ## 2. Obxectivo
-- Cal é o propósito principal da aplicación a desenvolver?
-- Que problema resolve? 
+- ¿Cal é o propósito principal da aplicación a desenvolver?
+- ¿Qué problema resolve? 
 
 
 ## 3. Definicións 
@@ -18,38 +18,38 @@ O estudo preliminar inclúe:
 	- Termos de ámbito técnico como abreviaturas, siglas, acrónimos, etc.
 
 ## 4. Audiencia
-- A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
+- ¿A quen vai destinada a aplicación? Describe con moito detalle o tipo de persoa ou empresa para a cal vai dirixida a túa aplicación. Inclúe sexo, franxas de idades, intereses, situación social, económica, etc.
 
 ## 5. Necesidades
 - Describe o problema ou a necesidade.
-- Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? En que medida o conseguen?
-- Por que é necesaria a posta en marcha dun proxecto que aborde dita necesidade?
-- Cal é o obxectivo xeral que persegue o proxecto?
+- ¿Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? ¿En qué medida o conseguen?
+- ¿Por que é necesaria a posta en marcha dun proxecto que aborde dita necesidade?
+- ¿Cal é o obxectivo xeral que persegue o proxecto?
 - Responde a estas preguntas concretas:
-	- Como se pode responder a esta necesidade? 
-	- Que pode facerse para cambiar este estado de cousas? 
-	- Como podemos contribuír desde a nosa situación a que o problema se resolva? 
-	- Que medios, actividades e recursos van poñer en xogo? 
-	- Que actividades van realizar? 
-	- Con que metodoloxía vai levar a cabo o traballo?  
-	- Que persoas serían precisas para realizar o proxecto con éxito? 
-	- Con canto tempo cóntase? 
-	- Canto tempo se necesita?
+	- ¿Cómo se pode responder a esta necesidade? 
+	- ¿Qué pode facerse para cambiar este estado de cousas? 
+	- ¿Cómo podemos contribuír desde a nosa situación a que o problema se resolva? 
+	- ¿Qué medios, actividades e recursos van poñer en xogo? 
+	- ¿Quée actividades van realizar? 
+	- ¿Con qué metodoloxía vai levar a cabo o traballo?  
+	- ¿Qué persoas serían precisas para realizar o proxecto con éxito? 
+	- ¿Con canto tempo se conta? 
+	- ¿Canto tempo se necesita?
 
 Recurso: [Guía para a elaboración de proyectos. Gobierno Vasco.](https://www.pluralismoyconvivencia.es/upload/19/71/guia_elaboracion_proyectos_c.pdf) (páxina 26 e seguintes)
 
 ## 6. Modelo de negocio 
-O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible comercializala? Como?
+¿O desenvolvemento da aplicación abre unha oportunidade de negocio? ¿É posible comercializala? ¿Cómo?
 
 ### 6.1. Viabilidade
 
 #### 6.1.1. Viabilidade técnica
-- Será posible dispoñer dos recursos humanos e medios de produción necesarios (materias primas, maquinaria, instalacións, etc.)?
-- Existe algún impedimento técnico que dificulte o proceso produtivo?  
+- ¿Será posible dispoñer dos recursos humanos e medios de produción necesarios (materias primas, maquinaria, instalacións, etc.)?
+- ¿Existe algún impedimento técnico que dificulte o proceso produtivo?  
 
 #### 6.1.2. Viabilidade económica
-- Os beneficios do proxecto son superiores aos costes?
-- As perdas poden cubrirse vía financiamento (por parte da administración pública, con subvencións, etc)?    
+- ¿Os beneficios do proxecto son superiores aos costes?
+- ¿As perdas poden cubrirse vía financiamento (por parte da administración pública, con subvencións, etc)?    
 
 ### 6.2. Competencia
 - Identificación da competencia, as súas características e a súa posición no mercado.
