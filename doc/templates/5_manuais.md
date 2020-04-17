@@ -1,4 +1,4 @@
-Unha vez rematada a codificación e probas pertinentes do proxecto soamente quedará finalizar cós manuais necesarios para a instalación do proxecto, uso e mantemento do mesmo.
+Unha vez rematada a codificación e probas pertinentes do proxecto soamente quedará finalizar cos manuais necesarios para a instalación do proxecto, uso e mantemento do mesmo.
 
 ## Manual técnico do proxecto
 
