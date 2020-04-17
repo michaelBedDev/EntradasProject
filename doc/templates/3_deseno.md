@@ -24,4 +24,4 @@ Nesta fase tamén teremos que realizar:
 - Modelo Entidade/relación 
 - Modelo relacional 
 
-Poderedes entregar a captura do phpMyAdmin se empregades MariaDB como Modelo elacional.
+Poderedes entregar a captura do phpMyAdmin se empregades MariaDB como Modelo relacional.
