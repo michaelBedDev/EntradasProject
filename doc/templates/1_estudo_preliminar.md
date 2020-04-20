@@ -22,7 +22,7 @@ O estudo preliminar inclúe:
 
 ## 5. Necesidades
 - Describe o problema ou a necesidade.
-- Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? ¿En qué medida o conseguen?
+- Existen na actualidade aplicacións que tenten dar resposta a esa(s) necesidade(s)? En que medida o conseguen?
 - Por que é necesaria a posta en marcha dun proxecto que aborde dita necesidade?
 - Cal é o obxectivo xeral que persegue o proxecto?
 - Responde a estas preguntas concretas:
@@ -39,7 +39,7 @@ O estudo preliminar inclúe:
 Recurso: [Guía para a elaboración de proyectos. Gobierno Vasco.](https://www.pluralismoyconvivencia.es/upload/19/71/guia_elaboracion_proyectos_c.pdf) (páxina 26 e seguintes)
 
 ## 6. Modelo de negocio 
-¿O desenvolvemento da aplicación abre unha oportunidade de negocio? ¿É posible comercializala? ¿Cómo?
+O desenvolvemento da aplicación abre unha oportunidade de negocio? É posible comercializala? Como?
 
 ### 6.1. Viabilidade
 
