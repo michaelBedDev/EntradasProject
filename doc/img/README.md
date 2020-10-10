@@ -1,7 +1,7 @@
-# Sobre esta carpeta:
+# Sobre esta carpeta
 
-### `doc/img/`
+## `doc/img/`
 
-Situa en esta carpeta todas las imágenes a las que haga referencia la documentación.
+Coloca nesta carpeta todas as imaxes ás que faga referencia a documentación.
 
-**IMPORTANTE**: Procura utilizar `PNG` como formato de imagen y que éstas no ocupen demasiado espacio (menos de `Mb` a poder ser).
+**IMPORTANTE**: Procura utilizar `PNG` como formato de imaxe e que estas non ocupen moito espazo (menos de `Mb` a poder ser).

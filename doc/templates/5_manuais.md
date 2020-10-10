@@ -1,3 +1,5 @@
+# Manuais
+
 Unha vez rematada a codificación e probas pertinentes do proxecto soamente quedará finalizar cos manuais necesarios para a instalación do proxecto, uso e mantemento do mesmo.
 
 ## Manual técnico do proxecto
@@ -7,13 +9,14 @@ Unha vez rematada a codificación e probas pertinentes do proxecto soamente qued
 Características de instalación. Por exemplo:
 
 - Requirimentos de hardware, servidores na nube, etc.
-- Software necesario (S.O. válidos, software externo co que interaciona a nosa aplicación, etc.).
+- Software necesario (S.O. válidos, software externo co que se comunica a nosa aplicación, etc.).
 - Configuración inicial seguridade: devasa, control usuarios, rede.
 - Carga inicial de datos na base de datos. Migración de datos xa existentes noutros formatos.
 - Usuarios do sistema. Usuarios da aplicación.
 - Diagrama final de despregue (se hai variacións con respecto ao realizado na anterior fase).
 
 ### Administración do sistema
+
 Tarefas que se deberán realizar unha vez que o sistema estea funcionando, como por exemplo:
 
 - Copias de seguridade do sistema.
@@ -23,6 +26,7 @@ Tarefas que se deberán realizar unha vez que o sistema estea funcionando, como 
 - Xestión de incidencias, que poden ser de dous tipos: de sistema (accesos non autorizados á BD, etc) ou de fallos no software.
 
 ### Mantemento do sistema
+
 Tarefas que se deberán realizar para manter o sistema en funcionamento. Por exemplo:
 
 - Corrixir erros.
@@ -31,7 +35,7 @@ Tarefas que se deberán realizar para manter o sistema en funcionamento. Por exe
 
 ## Xestión de incidencias
 
-Poden ser incidencias de dous tipos: 
+Poden ser incidencias de dous tipos:
 
 - De sistema: accesos non autorizados á BD, configuración errónea, etc.
 - Fallos no software.
@@ -45,5 +49,9 @@ Protección de datos de carácter persoal:
 
 ## Manual de usuario
 
-- Indicar se será necesario formar aos usuarios. En caso afirmativo, planificar.
-- Manual de usuario, FAQ ou outro xeito que sexa o máis adecuado para que os usuarios saiban usar a nosa aplicación informática.
+- Indicar se será necesario formar as persoas usuarias. En caso afirmativo, planificar.
+- Manual de uso, FAQ ou outro xeito que sexa o máis adecuado para que as persoas usuarias saiban usar a aplicación informática.
+
+## Melloras futuras
+
+Inclúe neste apartado as posibilidades de mellora da aplicación no futuro.

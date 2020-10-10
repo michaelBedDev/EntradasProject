@@ -1,61 +1,67 @@
-# Análise: Requerimentos do sistema
+# Análise: Requirimentos do sistema
 
-Este documento describe os requirimentos para o \[nome do proxecto\] especificando qué funcionalidade ofrecerá e de que xeito.
+Este documento describe os requirimentos para o \[nome do proxecto\] especificando que funcionalidade ofrecerá e de que xeito.
 
 ## 1. Descrición xeral
 
-Descrición Xeral do proxecto.
+Descrición xeral do proxecto. Describir de forma xeral e clara que vai realizar a aplicación, sen entrar nos detalles internos (que datos se procesan, de que tipo son, etc).
 
 ## 2. Funcionalidades
 
-Describir que operacións se van poder realizar a través da nosa aplicación informática, indicando que actores interveñen en cada caso.
-Enumeralas, de maneira que na fase de deseño poidamos crear o caso de uso correspondente a cada funcionalidade. Ademais, engade as variables coas que se van a traballar.
+Describir con detalle e precisión que operacións se van poder realizar a través da aplicación informática, indicando que actores interveñen en cada caso.
+
+Enumeralas, de maneira que na fase de deseño se poida crear o caso de uso correspondente a cada funcionalidade.
+
+Cada función ten uns datos de entrada e uns datos de saída. Entre os datos de entrada e de saída, realízase un proceso, que debe ser explicado.
 
 Exemplo:
-- Xestión de clientes na BD
-	+ Crear cliente (nome, apelidos, dni, cidade, provincia)
-	+ Modificar cliente (id, nome, apelidos, dni, cidade, provincia)
-	+ Eliminar cliente (id)
-- Xestión de pedidos.
-	+ Crear pedido (id, nome_produto, data)
-	+ Eliminar pedido (id)
-- ...
- 
-## 3. Requerimentos non funcionais
+Acción | Entrada | Saída
+------ | ------- | -----
+Alta cliente | nome, apelidos, dni, cidade, provincia | id
+Modificar cliente | id, nome, apelidos, dni, cidade, provincia | -
+Eliminar cliente | id | -
 
-Requerimentos relativos a rendemento, seguridade, etc. se procede.
+## 3. Requirimentos funcionais
+
+A finalidade desta sección é a especificación detallada dos requirimentos da aplicación web:
+
+* Infraestructura: dominio web, servidor web dedicado, servidor de base de datos, almacenamento, memoria, ...
+* Backend: tecnoloxías usadas.
+* Frontend: tecnoloxías usadas.
 
 ## 4. Tipos de usuarios
 
-Tipos de usuario que poderán acceder ó noso sistema, poderán diferenciarse polos permisos sobre os datos, pantallas que se lles mostran, etc.
+Describir os tipos de usuario que poderán acceder ao noso sistema. Habitualmente os tipos de usuario veñen definidos polas funcionalidades ás cales teñen acceso. En termos xerais existen moitos grupos de usuarios: anónimos, novos, rexistrados, bloqueados, confirmados, verificados, administradores, etc.
 
-Exemplo:
+## 5. Contorna operacional
 
-- Usuario xerente, que terá acceso a ...
-- Usuario técnico, que poderá...
- 
-## 5. Entorno operacional
+Neste apartado deben describirse os recursos necesarios, dende o punto de vista do usuario, para poder operar coa aplicación web. Habitualmente consiste nun navegador web actualizado e unha conexión a internet.
 
-### 5.1. Dominio
+Se é necesario algún hardware ou software adicional, deberá indicarse.
 
-Indica os dominios que se van a empregar.
+## 6. Normativa
 
-### 5.2. Hardware
+Investigarase que normativa vixente afecta ao desenvolvemento do proxecto e de que maneira. O proxecto debe adaptarse ás esixencias legais dos territorios onde vai operar.
 
-Indicar elementos hardware que se usarán. Por exemplo: ordenador para desenvolver a aplicación, smartphone para probar a aplicación na súa versión móbil, servidor web, servidor de bases de datos, CDN, etc.
+Habitualmente a lexislación que se inclúe en proxectos informáticos tratan os seguintes temas:
 
-### 5.3. Software
+* Protección de datos.
+* Propiedade intelectual.
+* Seguridade.
+* Comercio electrónico.
+* Riscos laborais.
+* Impacto ambiental.
 
-Indicar software que haberá que instalar en cada elemento hardware. Por exemplo: aplicacións de desenvolvemento, aplicacións para o servidor, etc.
+### Lei de protección de datos
 
-## 6. Interfaces externos
+Pola natureza dos sistema de información, unha lei que se vai a ter que mencionar de forma obrigatoria é la *Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (LOPDPGDD)*. O ámbito da LOPDPGDD é nacional. Se a túa aplicación está pensada para operar a nivel europeo, tamén se debe facer referencia á *General Data Protection Regulation (GDPR)*. Na documentación debes afirmar que o teu proxecto cumpre coa normativa vixente.
 
-Indicar como se comunicará o noso software co exterior. Os diferentes tipos son:
+Para cumplir a LOPDPGDD e/ou GDPR debes ter un apartado na web onde indiques quen é o responsable do tratamento dos datos e para que fins se van utilizar. Habitualmente esta información estructúrase nos seguintes apartados:
 
-- De usuario. Por exemplo: as diferentes vistas da apliación, comandos de terminal, etc.
-- Hardware. Por exemplo: un lector de código de barras.
-- Software. Por exemplo: unha API.
+* Aviso legal.
+* Política de privacidade.
+* Política de cookies.
 
-## 7. Melloras futuras
+É acosenjable ver [ejemplos de webs](https://www.spotify.com/es/legal/privacy-policy/) que conteñan textos legais referenciando a LOPDPGDD ou GDPR.
 
-É posible que o noso proxecto se centre en resolver un problema concreto que se poderá ampliar no futuro con novas funcionalidades, novas interfaces, etc.
+>Completa tamén os documentos: [planificación](a2_planificacion.md) e [orzamento](a3_orzamento.md).

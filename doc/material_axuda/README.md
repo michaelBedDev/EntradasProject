@@ -1,5 +1,5 @@
-# Sobre esta carpeta:
+# Sobre esta carpeta
 
-### `doc/material_axuda/`
+## `doc/material_axuda/`
 
-Aquí se ubican documentos de ayuda para el proyecto
+Aquí almacénanse documentos de axuda para o proxecto
