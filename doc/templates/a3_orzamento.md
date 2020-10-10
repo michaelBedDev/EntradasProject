@@ -27,11 +27,12 @@ A continuación preséntanse dúas opción de táboa para facilitar a creación 
 | -- | -- |-- | -- |
 | -- | -- |-- | -- |
 
-Outro exemplo de orzamento por partidas de inversión/gasto:
+Outro exemplo de orzamento por partidas de inversión/gastos:
+
+## A) INVERSIÓNS
 
 | Descrición | Prezo unitario |
 | -- | -- |
-|**A) INVERSIÓNS**
 |Gastos de establecemento e gastos de constitución
 |Total inmobilizacións inmateriais
 |Terreos
@@ -46,7 +47,11 @@ Outro exemplo de orzamento por partidas de inversión/gasto:
 |Total inmobilizacións materiais
 |Outros gastos a distribuír en varios exercicios
 |**TOTAL INVERSIÓNS:**
-|**B) GASTOS**
+
+## B) GASTOS
+
+| Descrición | Prezo unitario |
+| -- | -- |
 |Compras de materiais
 |Obrigas fiscais
 |Arrendamentos

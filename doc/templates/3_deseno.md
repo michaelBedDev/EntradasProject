@@ -16,7 +16,7 @@ Deben incluír o(s) tipo(s) de usuario implicados en cada caso de uso.
 
 ## Deseño de interface de usuarios
 
-Unha forma de axudar ó deseño da aplicación é realizar uns mockups: poden facerse á man, cunha aplicación ou a través dunha web do estilo: [diagrams][https://app.diagrams.net/]
+Unha forma de axudar ó deseño da aplicación é realizar uns mockups: poden facerse á man, cunha aplicación ou a través dunha web do estilo: [diagrams](https://app.diagrams.net/)
 
 Os mockups deben incluír todas as vistas da aplicación, é dicir, todas as páxinas diferentes que un usuario (de calquera tipo) vai poder ver. Un mockup permite ver como se verá unha páxina concreta dunha aplicación web. O deseño de mockups axuda a:
 

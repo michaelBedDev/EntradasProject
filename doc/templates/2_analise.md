@@ -15,11 +15,12 @@ Enumeralas, de maneira que na fase de deseño se poida crear o caso de uso corre
 Cada función ten uns datos de entrada e uns datos de saída. Entre os datos de entrada e de saída, realízase un proceso, que debe ser explicado.
 
 Exemplo:
-Acción | Entrada | Saída
------- | ------- | -----
-Alta cliente | nome, apelidos, dni, cidade, provincia | id
-Modificar cliente | id, nome, apelidos, dni, cidade, provincia | -
-Eliminar cliente | id | -
+
+Acción|Entrada|Saída
+-|-|-
+Alta cliente|nome, apelidos, dni, cidade, provincia|id
+Modificar cliente|id, nome, apelidos, dni, cidade, provincia|-
+Eliminar cliente|id|-
 
 ## 3. Requirimentos funcionais
 
@@ -62,6 +63,6 @@ Para cumplir a LOPDPGDD e/ou GDPR debes ter un apartado na web onde indiques que
 * Política de privacidade.
 * Política de cookies.
 
-É acosenjable ver [ejemplos de webs](https://www.spotify.com/es/legal/privacy-policy/) que conteñan textos legais referenciando a LOPDPGDD ou GDPR.
+É acosenllable ver [exemplos de webs](https://www.spotify.com/es/legal/privacy-policy/) que conteñan textos legais referenciando a LOPDPGDD ou GDPR.
 
 >Completa tamén os documentos: [planificación](a2_planificacion.md) e [orzamento](a3_orzamento.md).
