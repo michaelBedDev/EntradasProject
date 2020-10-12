@@ -1,27 +1,27 @@
 # Estudo preliminar - Anteproxecto
 
-## 1. Descrición do proxecto
+## Descrición do proxecto
 
-### 1.1. Introdución
+### Introdución
 
-### 1.2. Destinatarios
+### Destinatarios
 
-### 1.3. Utilidade
+### Utilidade
 
-### 1.4. Alternativas
+### Alternativas
 
-### 1.5. Comercialización
+### Comercialización
 
-## 2. Xustificación do proxecto
+## Xustificación do proxecto
 
-### 2.1. Requirimentos
+### Requirimentos
 
-### 2.2. Tipos de usuarios
+### Tipos de usuarios
 
-### 2.3. Contorna operacional
+### Contorna operacional
 
-### 2.4. Ideas para a súa comercialización
+### Ideas para a súa comercialización
 
-### 2.5. Modelo de negocio
+### Modelo de negocio
 
-## 3. Planificación
+## Planificación

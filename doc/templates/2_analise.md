@@ -2,17 +2,17 @@
 
 Este documento describe os requirimentos para o \[nome do proxecto\] especificando que funcionalidade ofrecerá e de que xeito.
 
-## 1. Descrición xeral
+## Descrición xeral
 
-## 2. Funcionalidades
+## Funcionalidades
 
-## 3. Requirimentos funcionais
+## Requirimentos funcionais
 
-## 4. Tipos de usuarios
+## Tipos de usuarios
 
-## 5. Contorna operacional
+## Contorna operacional
 
-## 6. Normativa
+## Normativa
 
 ### Lei de protección de datos
 
