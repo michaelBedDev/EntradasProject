@@ -7,5 +7,3 @@
 ## Deseño de interface de usuarios
 
 ## Diagrama de Base de Datos
-
-## Aspectos referentes á calidade do proxecto

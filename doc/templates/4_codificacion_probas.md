@@ -3,7 +3,3 @@
 ## Codificación
 
 ## Probas
-
-## Seguridade
-
-## Mellora continua
