@@ -14,4 +14,4 @@
 
 ## Melloras futuras
 
-## Bibliografía e referencias
+> *Tarefa*: completa o documento [referencias](a1_referencias.md)
