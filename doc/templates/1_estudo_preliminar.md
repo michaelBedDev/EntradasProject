@@ -2,26 +2,16 @@
 
 ## Descrición do proxecto
 
-### Introdución
-
 ### Destinatarios
 
-### Utilidade
+### Estudo de necesidades
 
-### Alternativas
-
-### Comercialización
-
-## Xustificación do proxecto
-
-### Requirimentos
-
-### Tipos de usuarios
-
-### Contorna operacional
+### Xustificación do proxecto
 
 ### Ideas para a súa comercialización
 
 ### Modelo de negocio
+
+## Requirimentos
 
 ## Planificación
