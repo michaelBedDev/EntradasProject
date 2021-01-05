@@ -6,10 +6,6 @@ Este documento describe os requirimentos para o \[nome do proxecto\] especifican
 
 ## Funcionalidades
 
-## Requirimentos
-
-## Requirimentos funcionais
-
 ## Requirimentos non funcionais
 
 ## Tipos de usuarios
