@@ -7,10 +7,6 @@
 
 > *Tarefa*: Realiza unha breve descrición do proxecto (entre 100 e 300 palabras). Resalta o fundamental **coas túas palabras**. Utiliza unha linguaxe correcta, pero natural, que o entenda todo o mundo, incluso e en especial, as persoas que non teñan un coñecemento técnico avanzado. Pode ser un estrato ou resumo dos apartados que se contemplan na memoria.
 
-## Instalación
-
-> *Tarefa*: Neste apartado describe con toda precisión e, a poder ser, coa maior simplicidade/facilidade posible, como poñer en marcha a túa aplicación para probala (nun entorno local). Valorarase moi positivamente que este proceso sexa o máis fácil posible, cunha simple instrución (por exemplo, un script de instalación).
-
 ## Uso
 
 > *Tarefa*: Neste apartado, describe brevemente como se usará o software. Se ten unha interface de terminal, describe aquí a súa sintaxe. Se ten unha interface gráfica de usuario, describe aquí **só o uso** (a modo de sumario) **dos aspectos máis relevantes do seu funcionamento** (máxima brevidade, como se fose un anuncio reclamo ou comercial).
