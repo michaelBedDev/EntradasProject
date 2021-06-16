@@ -2,7 +2,7 @@
 
 ## Descrición do proxecto
 
-### Destinatarios
+### Persoas destinatarias
 
 ### Estudo de necesidades
 
