@@ -2,13 +2,15 @@
 
 ## Descrición do proxecto
 
-### Persoas destinatarias
+### Xustificación do proxecto
+
+### Funcionalidades do proxecto
 
 ### Estudo de necesidades
 
-### Xustificación do proxecto
+### Persoas destinatarias
 
-### Ideas para a súa comercialización
+### Promoción
 
 ### Modelo de negocio
 
