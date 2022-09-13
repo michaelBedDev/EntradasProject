@@ -6,8 +6,6 @@ Este documento describe os requirimentos para o \[nome do proxecto\] especifican
 
 ## Funcionalidades
 
-## Requirimentos non funcionais
-
 ## Tipos de usuarios
 
 ## Contorna operacional
@@ -15,5 +13,3 @@ Este documento describe os requirimentos para o \[nome do proxecto\] especifican
 ## Normativa
 
 ### Lei de protección de datos
-
-> *Tarefa*: Completa tamén os documentos: [planificación](a2_planificacion.md) e [orzamento](a3_orzamento.md).
