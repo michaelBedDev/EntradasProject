@@ -6,6 +6,3 @@
 
 ## Melloras futuras
 
-> *Tarefa*: completa o documento [referencias](a1_referencias.md)
-
-## Política de privacidade
