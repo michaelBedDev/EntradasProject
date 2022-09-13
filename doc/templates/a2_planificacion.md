@@ -6,10 +6,12 @@
 
 ### Fase 1: Estudo preliminar
 
-### Fase 2: Requirimentos do sistema (análise)
+### Fase 2: Análise
 
 ### Fase 3: Deseño
 
-### Fase 4: Execución
+### Fase 4: Codificaión e probas
+
+### Fase 5: Manuais do proxecto
 
 ## Calendario
