@@ -33,9 +33,4 @@
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
 5. [Manuais](doc/templates/5_manuais.md)
-
-### Anexos
-
-1. [Referencias](doc/templates/a1_referencias.md)
-1. [Planificación](doc/templates/a2_planificacion.md)
-1. [Orzamento](doc/templates/a3_orzamento.md)
+6. [Orzamento](doc/templates/6_orzamento.md)
