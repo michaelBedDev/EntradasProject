@@ -1,3 +1,8 @@
+# Retos e Innovación
+
+Describe brevemente os retos que te propuxeches e conseguiches incorporar á túa App. Por exemplo se usas software distinto ao utilizado na clase, librerías diferentes, bases de datos, etc..
+Se podes xustifica a elección. Indica tamén unha estimación das horas que che levou no apartado de planificación.
+
 # Codificación e Probas
 
 Non pode coincidir cun proxecto realizado noutro módulo. 
