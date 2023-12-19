@@ -1,3 +1,11 @@
+# Retos e Innovación
+
+Describe brevemente os retos que te propuxeches e conseguiches incorporar á túa App. Por exemplo se usas software distinto ao utilizado na clase, librerías diferentes, bases de datos, etc..
+Se podes xustifica a elección. Indica tamén unha estimación das horas que che levou no apartado de planificación.
+
+# Diagrama de despregue e Diagrama de Compoñentes de software
+Deben indicarse os compoñentes software implicados. p.e. Framework Laravel, Vue.js, MySQL, etc.
+
 # Manual técnico
 
 ## Manual de posta en produción.
@@ -7,15 +15,16 @@ Indica:
 - Software que debe ser instalado.
 - Carga inicial da BD e/ou migracións.
 - Altas en servidores na nube, suscricións.
-- etc
+- Calquera outra información que consideres necesaria para poder poñer a túa aplicación en explotación nun entorno real.
 
 ## Manual entorno de desenvolvemento.
 Manual coa información que necesitará a persoa que teña que realizar modificacións do proxecto no futuro: melloras e/ou corrección de erros.
 Indica:
-- Prerrequisitos hardware. 
+- Prerrequisitos hardware.
 - Software que debe ser instalado.
-- Estrutura da BD.
+- Estrutura final da BD.
+- Descrición do esquema de directorios do proxecto.
 - Claves de acceso.
-- Etc
+- Outra información que consideres que debe coñecer a persoa que se encargará das tarefas de mantemento desde o punto de vista da programación.
 
 
