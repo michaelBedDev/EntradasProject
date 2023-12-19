@@ -1,4 +1,4 @@
-# Obxectivos
+# Planificación e Orzamento
 
 O obxectivo é planificar a execución do proxecto, desde o seu inicio ata, como mínimo, o momento da implantación. Basicamente, isto debe implicar:
 
