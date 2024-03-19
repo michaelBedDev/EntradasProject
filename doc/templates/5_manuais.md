@@ -1,6 +1,6 @@
 # Implantación
 
-Pon o teu proxecto na nube e faino accesible. 
+**Pon o teu proxecto na nube e faino accesible**. 
 Podes usar ferramentas dispoñibles en: https://education.github.com/pack
 
 # Diagrama de despregue e Diagrama de Compoñentes de software
