@@ -9,7 +9,8 @@
 
 ## Uso
 
-> *Tarefa*: Neste apartado, describe brevemente como se usará o software. Se ten unha interface de terminal, describe aquí a súa sintaxe. Se ten unha interface gráfica de usuario, describe aquí **só o uso** (a modo de sumario) **dos aspectos máis relevantes do seu funcionamento** (máxima brevidade, como se fose un anuncio reclamo ou comercial).
+> *Tarefa*: Indica a URL para poder acceder á túa aplicación web. 
+Inclúe un breve manual de uso ou un vídeo explicativo, segundo consideres axeitado.
 
 ## Sobre a persoa autora
 
@@ -31,6 +32,6 @@
 1. [Estudo preliminar](doc/templates/1_estudo_preliminar.md)
 2. [Análise](doc/templates/2_analise.md)
 3. [Deseño](doc/templates/3_deseno.md)
+4. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
 4. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
 5. [App finalizada, documentada e instalada](doc/templates/5_manuais.md)
-6. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
