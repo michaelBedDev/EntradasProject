@@ -1,7 +1,7 @@
-# Retos e Innovación
+# Implantación
 
-Describe brevemente os retos que te propuxeches e conseguiches incorporar á túa App. Por exemplo se usas software distinto ao utilizado na clase, librerías diferentes, bases de datos, etc..
-Se podes xustifica a elección. Indica tamén unha estimación das horas que che levou no apartado de planificación.
+Pon o teu proxecto na nube e faino accesible. 
+Podes usar ferramentas dispoñibles en: https://education.github.com/pack
 
 # Diagrama de despregue e Diagrama de Compoñentes de software
 Deben indicarse os compoñentes software implicados. p.e. Framework Laravel, Vue.js, MySQL, etc.
