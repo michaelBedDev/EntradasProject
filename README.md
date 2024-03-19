@@ -32,5 +32,5 @@
 2. [Análise](doc/templates/2_analise.md)
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
-5. [Descrición do Produto Final](doc/templates/5_manuais.md)
+5. [App finalizada, documentada e instalada](doc/templates/5_manuais.md)
 6. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
