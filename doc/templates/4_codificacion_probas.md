@@ -1,7 +1,5 @@
 # Codificación e Probas
 
-Non pode coincidir cun proxecto realizado noutro módulo. 
-
 A dinámica vai ser a seguinte:
 
     1. Perseguiremos a excelencia técnica e o principio do bo deseño.
