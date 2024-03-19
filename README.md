@@ -9,7 +9,7 @@
 
 ## Uso
 
-> *Tarefa*: Indica a URL para poder acceder á túa aplicación web. 
+> *Tarefa*: **Indica a URL para poder acceder á túa aplicación web**. 
 Inclúe un breve manual de uso ou un vídeo explicativo, segundo consideres axeitado.
 
 ## Sobre a persoa autora
