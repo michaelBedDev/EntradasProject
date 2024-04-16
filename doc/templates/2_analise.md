@@ -1,5 +1,4 @@
 # Análise: Requirimentos do sistema
-Elaboración do Documento de Requirimentos. 
 
     a) Descrición xeral do proxecto.
         Indicar unha descrición do noso proxecto.
