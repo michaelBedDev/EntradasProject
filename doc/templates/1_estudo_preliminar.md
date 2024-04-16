@@ -1,4 +1,4 @@
-Trátase de describir a análise realizada e a toma de decisións adoptada sobre aspectos básicos ou iniciais do proxecto como:
+Decidir que proxecto imos realizar e indicar:
 - En que consiste o noso proxecto? Cal é o propósito principal da aplicación a desenvolver?
 - A quen vai destinada a aplicación? (Contexto social ou sector empresarial, tipo de persoas, ...)
 - Cal é a necesidade ou necesidades que se pretenden cubrir ou satisfacer? 
