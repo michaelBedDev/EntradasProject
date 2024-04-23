@@ -6,5 +6,3 @@
         Esquema inicial xeral que se irá detallando segundo avance o desenvolvemento. Mostrar esquema de cada ventá e indicar como se realizará a navegación entre elas.
     c) Diagrama de Base de Datos. 
         Descrición detallada da Base de Datos.
-    d) Diagrama de compoñentes software que constitúen o produto e de despregue. 
-        Recomendo consultar o material de axuda.
