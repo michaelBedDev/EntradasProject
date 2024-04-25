@@ -33,5 +33,4 @@ Inclúe un breve manual de uso ou un vídeo explicativo, segundo consideres axei
 2. [Análise](doc/templates/2_analise.md)
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
-4. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
-5. [App finalizada, documentada e instalada](doc/templates/5_manuais.md)
+5. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
