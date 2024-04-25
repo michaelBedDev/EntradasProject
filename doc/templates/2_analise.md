@@ -16,3 +16,9 @@
         A maiores podería haber outras interfaces externas como p.e. outro sitio web do que automaticamente obtén os datos de forma periódica, un lector de código de barras, etc.
     g) Melloras futuras.
         As versións futuras do sistema poderían incorporar melloras. Indicade esas melloras.
+
+## Funcionalidades
+## Tipos de usuarios
+## Contorna operacional
+## Normativa
+### Lei de protección de datos
