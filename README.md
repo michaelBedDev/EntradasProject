@@ -1,9 +1,6 @@
-# Proxecto de fin de ciclo DAW
+# Posta en producción
 
-> *Tarefa*: Este documento será a páxina de inicio do teu proxecto. Será o primeiro que vexan os que se interesen por el. Coida a súa redacción e ortografía. Elimina todas as liñas "*Tarefa*" cando teñas a redacción de todo o proxecto completada.
-> Podes acompañar a redacción deste ficheiros con imaxes ou GIFs, pero non abuses deles.
-
-## Descrición
+## Manual de 
 
 > *Tarefa*: Realiza unha breve descrición do proxecto (entre 100 e 300 palabras). Resalta o fundamental **coas túas palabras**. Utiliza unha linguaxe correcta, pero natural, que o entenda todo o mundo, incluso e en especial, as persoas que non teñan un coñecemento técnico avanzado. Pode ser un estrato ou resumo dos apartados que se contemplan na memoria.
 
@@ -34,3 +31,4 @@ Inclúe un breve manual de uso ou un vídeo explicativo, segundo consideres axei
 3. [Deseño](doc/templates/3_deseno.md)
 4. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
 5. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
+6. [Mantemento](doc/templates/5_manuais.md)
