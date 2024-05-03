@@ -2,11 +2,11 @@
 
 # Prototipos realizados
 
-## Review 1
+## Prototipo 1
 ### Data: 
 ### Descrición:
 
-## Review 2
+## Prototipo 2
 ### Data: 
 ### Descrición:
 
