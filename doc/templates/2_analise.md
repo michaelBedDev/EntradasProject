@@ -1,6 +1,6 @@
 # Análise: Requirimentos do sistema
+## Descrición xeral
 ## Funcionalidades
 ## Tipos de usuarios
-## Contorna operacional
 ## Normativa
-### Lei de protección de datos
+
