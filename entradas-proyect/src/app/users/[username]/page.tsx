@@ -22,6 +22,7 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import FancyThemeSwitch from "@/components/app/FancyThemeSwitch";
 
 const SingleUserPage = () => {
   return (
@@ -172,7 +173,8 @@ const SingleUserPage = () => {
             </p>
           </div>
           {/* CHART CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg">Chart</div>
+          <div className="bg-primary-foreground p-4 rounded-lg"></div>
+          <FancyThemeSwitch />
         </div>
       </div>
     </div>
