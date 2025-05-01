@@ -54,7 +54,7 @@ const AppPieChart = () => {
       <h1 className="text-lg font-medium mb-6">Browser usage</h1>
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square max-h-[250]">
+        className="mx-auto aspect-square max-h-[250]z">
         <PieChart>
           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
           <Pie

@@ -14,14 +14,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
   //   const { toggleSidebar } = useSidebar();
 
   return (
-    <nav className="p-4 flex items-center justify-between">
+    <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">
       {/*LEFT SIDE*/}
       <SidebarTrigger />
       {/* <Button variant="outline" onClick={toggleSidebar}>
@@ -29,11 +29,14 @@ const Navbar = () => {
       </Button> */}
       <div className="flex items-center gap-4">
         {/*RIGHT SIDE*/}
-        <Link href="/">Dahsboard</Link>
+        <Link href="/">Dashboard</Link>
+        {/* FancySwitchTheme */}
+        {/* <FancyThemeSwitch /> */}
+
         {/* THEME MENU  */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon">
+            <Button variant="secondary" size="icon" className="focus-visible:ring-0">
               <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
@@ -77,6 +80,8 @@ const Navbar = () => {
             <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* WALLET CONNECTION */}
       </div>
     </nav>
   );

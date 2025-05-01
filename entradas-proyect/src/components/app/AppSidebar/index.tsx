@@ -79,16 +79,16 @@ const AppSidebar = () => {
             <SidebarMenuButton asChild>
               <Link href="/">
                 <Image src="/logo.svg" alt="logo" width={20} height={20} />
-                <span className="font-bold">Your Dashboard</span>
+                <span>Lama Dev</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarSeparator></SidebarSeparator>
+
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -105,7 +105,6 @@ const AppSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarGroup>
           <SidebarGroupLabel>Projects</SidebarGroupLabel>
           <SidebarGroupAction>
@@ -115,7 +114,7 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="">
+                  <Link href="/#">
                     <Projector />
                     See All Projects
                   </Link>
@@ -123,23 +122,22 @@ const AppSidebar = () => {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="">
+                  <Link href="/#">
                     <Plus />
-                    Add Projects
+                    Add Project
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
         {/* COLLAPSABLE */}
         <Collapsible defaultOpen className="group/collapsible">
           <SidebarGroup>
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger>
-                Help
-                <ChevronDown className="ml-auto transition-transform" />
+                Collapsable Group
+                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
               </CollapsibleTrigger>
             </SidebarGroupLabel>
             <CollapsibleContent>
@@ -147,7 +145,7 @@ const AppSidebar = () => {
                 <SidebarMenu>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <Link href="">
+                      <Link href="/#">
                         <Projector />
                         See All Projects
                       </Link>
@@ -155,9 +153,9 @@ const AppSidebar = () => {
                   </SidebarMenuItem>
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <Link href="">
+                      <Link href="/#">
                         <Plus />
-                        Add Projects
+                        Add Project
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -166,7 +164,6 @@ const AppSidebar = () => {
             </CollapsibleContent>
           </SidebarGroup>
         </Collapsible>
-
         {/* NESTED */}
         <SidebarGroup>
           <SidebarGroupLabel>Nested Items</SidebarGroupLabel>
@@ -174,17 +171,15 @@ const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="">
+                  <Link href="/#">
                     <Projector />
                     See All Projects
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
                 <SidebarMenuSub>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton asChild>
-                      <Link href="">
+                      <Link href="/#">
                         <Plus />
                         Add Project
                       </Link>
@@ -192,7 +187,7 @@ const AppSidebar = () => {
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
                     <SidebarMenuSubButton asChild>
-                      <Link href="">
+                      <Link href="/#">
                         <Plus />
                         Add Category
                       </Link>
@@ -215,8 +210,8 @@ const AppSidebar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>Account</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                <DropdownMenuItem>Setting</DropdownMenuItem>
+                <DropdownMenuItem>Sign out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

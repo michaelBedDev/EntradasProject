@@ -1,3 +1,4 @@
+"use client";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,7 +15,7 @@ import {
 
 import { BadgeCheck, Candy, Citrus, Shield } from "lucide-react";
 
-import { CardList, EditUser } from "@/components/app";
+import { AppLineChart, CardList, EditUser } from "@/components/app";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
@@ -22,32 +23,33 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import FancyThemeSwitch from "@/components/app/FancyThemeSwitch";
 
 const SingleUserPage = () => {
   return (
     <div className="">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/users">Users</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>John Doe</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="p-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/users">Users</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>John Doe</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       {/* CONTAINER */}
-      <div className="mt-4 flex flex-col xl:flex-row gap-8">
+      <div className="p-4 flex flex-col xl:flex-row gap-4">
         {/* LEFT */}
         <div className="w-full xl:w-1/3 space-y-6">
           {/* USER BADGES CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg">
+          <div className="bg-card border border-border p-4 rounded-lg">
             <h1 className="text-xl font-semibold">User Badges</h1>
             <div className="flex gap-4 mt-4">
               <HoverCard>
@@ -109,7 +111,7 @@ const SingleUserPage = () => {
             </div>
           </div>
           {/* INFORMATION CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg">
+          <div className="bg-card border border-border p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <h1 className="text-xl font-semibold">User Information</h1>
               <Sheet>
@@ -150,14 +152,14 @@ const SingleUserPage = () => {
             </p>
           </div>
           {/* CARD LIST CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg">
+          <div className="bg-card border border-border p-4 rounded-lg">
             <CardList title="Recent Transactions" />
           </div>
         </div>
         {/* RIGHT */}
         <div className="w-full xl:w-2/3 space-y-6">
           {/* USER CARD CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg space-y-2">
+          <div className="bg-card border border-border p-4 rounded-lg space-y-2">
             <div className="flex items-center gap-2">
               <Avatar className="size-12">
                 <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" />
@@ -173,8 +175,10 @@ const SingleUserPage = () => {
             </p>
           </div>
           {/* CHART CONTAINER */}
-          <div className="bg-primary-foreground p-4 rounded-lg"></div>
-          <FancyThemeSwitch />
+          <div className="bg-card border border-border p-4 rounded-lg">
+            <h1 className="text-xl font-semibold">User Activity</h1>
+            <AppLineChart />
+          </div>
         </div>
       </div>
     </div>
