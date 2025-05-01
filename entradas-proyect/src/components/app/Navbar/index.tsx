@@ -1,9 +1,7 @@
 "use client";
-import { useTheme } from "next-themes";
-import Link from "next/link";
-import { Sun, Moon } from "lucide-react";
-import { Settings, User, LogOut } from "lucide-react";
 
+import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -14,29 +12,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ConnectWalletButton } from "@/components/app";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
-  //   const { toggleSidebar } = useSidebar();
 
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">
-      {/*LEFT SIDE*/}
+      {/* LEFT */}
       <SidebarTrigger />
       {/* <Button variant="outline" onClick={toggleSidebar}>
         Custom Button
       </Button> */}
+      {/* RIGHT */}
       <div className="flex items-center gap-4">
-        {/*RIGHT SIDE*/}
         <Link href="/">Dashboard</Link>
-        {/* FancySwitchTheme */}
-        {/* <FancyThemeSwitch /> */}
-
-        {/* THEME MENU  */}
+        {/* THEME MENU */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="focus-visible:ring-0">
+            <Button variant="outline" size="icon">
               <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
               <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
@@ -58,11 +54,11 @@ const Navbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent sideOffset={10}>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
@@ -73,15 +69,14 @@ const Navbar = () => {
               <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
               Settings
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem variant="destructive">
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
               Logout
             </DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
         {/* WALLET CONNECTION */}
+        <ConnectWalletButton></ConnectWalletButton>
       </div>
     </nav>
   );

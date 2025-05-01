@@ -1,10 +1,12 @@
 "use client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
+import "@rainbow-me/rainbowkit/styles.css";
+
 export default function ConnectWalletButton() {
   return (
-    <div className="p-4">
-      <ConnectButton />
+    <div>
+      <ConnectButton></ConnectButton>
     </div>
   );
 }
