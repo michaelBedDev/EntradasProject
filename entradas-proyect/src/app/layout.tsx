@@ -5,12 +5,11 @@ import { AppSidebar } from "@/components/app";
 import { Navbar } from "@/components/app";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
-import { Providers } from "@/components/providers/RainbowKitProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { Providers } from "@/providers/RainbowKitProvider";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
