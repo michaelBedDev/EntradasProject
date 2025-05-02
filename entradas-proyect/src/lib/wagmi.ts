@@ -1,4 +1,5 @@
 "use client";
+
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import {
   arbitrum,
