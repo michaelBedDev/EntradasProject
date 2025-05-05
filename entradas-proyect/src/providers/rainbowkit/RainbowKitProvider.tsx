@@ -9,11 +9,7 @@ import { config } from "@/lib/wagmi";
 // import type { Session } from "next-auth";
 import { RainbowKitSiweNextAuthProviderWithSession } from "@/providers/rainbowkit/RainbowKitSiweNextAuthProviderWithSession";
 
-// import { SessionProvider } from "next-auth/react";
-
-// const queryClient = new QueryClient();
-
-export function Providers({ children }: { children: React.ReactNode }) {
+export function RainbowkitProviders({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <RainbowKitSiweNextAuthProviderWithSession>

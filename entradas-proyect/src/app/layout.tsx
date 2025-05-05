@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/app";
 import { Navbar } from "@/components/app";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
-import { Providers } from "@/providers/rainbowkit/RainbowKitProvider";
+import { RainbowkitProviders } from "@/providers/rainbowkit/RainbowKitProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 // import { getServerSession } from "next-auth";
@@ -36,7 +36,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>
+        <RainbowkitProviders>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -52,7 +52,7 @@ export default async function RootLayout({
               </div>
             </SidebarProvider>
           </ThemeProvider>
-        </Providers>
+        </RainbowkitProviders>
       </body>
     </html>
   );
