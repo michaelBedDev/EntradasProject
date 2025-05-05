@@ -255,3 +255,76 @@ Tu componente:
 - 🔁 Todo se basa en un tipo `Event` bien definido
 
 ---
+
+MIDDLEWARE
+
+¿Qué es un middleware en Next.js?
+Una middleware es una función que se ejecuta antes de que una petición llegue a una página o ruta API. Se usa, por ejemplo, para:
+
+Redirigir usuarios no autenticados.
+
+Aplicar reglas de acceso a rutas.
+
+Añadir headers o analizar cookies.
+
+📍 Va en middleware.ts (o .js) en la raíz del proyecto y se aplica a rutas que defines con matcher.
+
+---
+
+uso middleware:
+Exacto, lo entendiste perfectamente. Aquí te dejo un resumen claro para tenerlo como referencia cuando lo implementes más adelante:
+
+---
+
+## ✅ Cuándo usar `middleware.ts` en Next.js
+
+### 🔐 **Proteger rutas frontend:**
+
+Evita que usuarios no autenticados puedan acceder directamente escribiendo rutas como `/dashboard`, `/admin`, etc., en el navegador.
+
+#### Ejemplo:
+
+```ts
+// middleware.ts
+import { getToken } from "next-auth/jwt";
+import { NextResponse } from "next/server";
+
+export async function middleware(request: Request) {
+  const token = await getToken({ req: request });
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/dashboard/:path*", "/admin/:path*"], // rutas protegidas
+};
+```
+
+---
+
+### 🧠 **Redirigir según rol:**
+
+Si en tu token guardas algo como `role: "admin"` o `role: "user"`, puedes redirigir automáticamente al área correspondiente.
+
+#### Ejemplo:
+
+```ts
+const token = await getToken({ req: request });
+if (token?.role === "admin" && request.nextUrl.pathname !== "/admin") {
+  return NextResponse.redirect(new URL("/admin", request.url));
+}
+```
+
+---
+
+### ⚠️ Cosas a tener en cuenta:
+
+- Solo funciona en el **edge runtime**, por lo que no puedes usar `getServerSession()` directamente — por eso se usa `getToken()` de `next-auth/jwt`.
+- **No bloquea llamadas del backend (API Routes)**, solo navegación frontend.
+- Ideal para apps con navegación protegida **por roles o estado de sesión visible en la interfaz**.
+
+Cuando llegue el momento y quieras integrarlo, te puedo ayudar a escribir un middleware personalizado con control por wallet o por rol si lo necesitas.
