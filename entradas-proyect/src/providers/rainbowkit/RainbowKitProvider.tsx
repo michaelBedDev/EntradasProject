@@ -8,13 +8,18 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { config } from "@/lib/wagmi";
 // import type { Session } from "next-auth";
 import { RainbowKitSiweNextAuthProviderWithSession } from "@/providers/rainbowkit/RainbowKitSiweNextAuthProviderWithSession";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 export function RainbowkitProviders({ children }: { children: React.ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
   return (
     <WagmiProvider config={config}>
-      <RainbowKitSiweNextAuthProviderWithSession>
-        <RainbowKitProvider>{children}</RainbowKitProvider>
-      </RainbowKitSiweNextAuthProviderWithSession>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitSiweNextAuthProviderWithSession>
+          <RainbowKitProvider>{children}</RainbowKitProvider>
+        </RainbowKitSiweNextAuthProviderWithSession>
+      </QueryClientProvider>
     </WagmiProvider>
   );
 }

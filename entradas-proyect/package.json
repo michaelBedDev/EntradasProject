@@ -12,7 +12,6 @@
     "organize": "node order-comps.mjs && node gen-app-barrel.mjs"
   },
   "dependencies": {
-    "@coinbase/onchainkit": "^0.38.9",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-accordion": "^1.2.8",
     "@radix-ui/react-alert-dialog": "^1.1.11",
