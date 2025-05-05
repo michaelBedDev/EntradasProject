@@ -8,8 +8,7 @@ import { cookies } from "next/headers";
 import { Providers } from "@/providers/RainbowKitProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+// import { getServerSession } from "next-auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,12 +33,10 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
-  const session = await getServerSession(authOptions);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers session={session}>
+        <Providers>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

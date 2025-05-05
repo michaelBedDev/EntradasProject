@@ -1,15 +1,6 @@
-"use client";
-
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import {
-  arbitrum,
-  base,
-  baseSepolia,
-  mainnet,
-  optimism,
-  polygon,
-  sepolia,
-} from "wagmi/chains";
+import { publicActions } from "viem";
+import { arbitrum, base, mainnet, optimism, polygon, sepolia } from "wagmi/chains";
 
 export const config = getDefaultConfig({
   appName: "Entradas Proyect",
@@ -20,8 +11,9 @@ export const config = getDefaultConfig({
     optimism,
     arbitrum,
     base,
-    baseSepolia,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia] : []),
   ],
   ssr: true,
 });
+
+export const publicClient = config.getClient().extend(publicActions);
