@@ -1,6 +1,6 @@
-import NextAuth, { type NextAuthOptions } from 'next-auth';
-import type { Chain } from 'viem';
-import { siweAuthOptions } from './authOptions';
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import type { Chain } from "viem";
+import { siweAuthOptions } from "@/lib/authOptions";
 
 interface NextAuthHandlerProps {
   chain: Chain;

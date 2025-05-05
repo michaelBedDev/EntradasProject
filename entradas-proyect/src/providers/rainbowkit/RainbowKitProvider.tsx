@@ -7,8 +7,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 // import { RainbowKitSiweNextAuthProvider } from "@rainbow-me/rainbowkit-siwe-next-auth";
 import { config } from "@/lib/wagmi";
 // import type { Session } from "next-auth";
-import { RainbowKitSiweNextAuthProviderWithSession } from "@/lib/pr2335/RainbowKitSiweNextAuthProviderWithSession";
-import { base } from "viem/chains";
+import { RainbowKitSiweNextAuthProviderWithSession } from "@/providers/rainbowkit/RainbowKitSiweNextAuthProviderWithSession";
 
 // import { SessionProvider } from "next-auth/react";
 
@@ -18,7 +17,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <RainbowKitSiweNextAuthProviderWithSession>
-        <RainbowKitProvider initialChain={base}>{children}</RainbowKitProvider>
+        <RainbowKitProvider>{children}</RainbowKitProvider>
       </RainbowKitSiweNextAuthProviderWithSession>
     </WagmiProvider>
   );

@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/app";
 import { Navbar } from "@/components/app";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
-import { Providers } from "@/providers/RainbowKitProvider";
+import { Providers } from "@/providers/rainbowkit/RainbowKitProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 // import { getServerSession } from "next-auth";

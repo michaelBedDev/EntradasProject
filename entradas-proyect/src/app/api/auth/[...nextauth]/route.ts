@@ -1,4 +1,4 @@
-import { NextAuthHandler } from "@/lib/pr2335/NextAuthHandler";
+import { NextAuthHandler } from "@/lib/NextAuthHandler";
 import { mainnet } from "viem/chains";
 
 // The handler creates both GET and POST endpoints required by NextAuth.js
