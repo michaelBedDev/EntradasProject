@@ -1,11 +1,11 @@
 import {
   RainbowKitAuthenticationProvider,
   createAuthenticationAdapter,
-} from '@rainbow-me/rainbowkit';
-import { getCsrfToken, signIn, signOut, useSession } from 'next-auth/react';
-import React, { type ReactNode, useMemo } from 'react';
-import type { Address } from 'viem';
-import { type SiweMessage, createSiweMessage } from 'viem/siwe';
+} from "@rainbow-me/rainbowkit";
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
+import React, { type ReactNode, useMemo } from "react";
+import type { Address } from "viem";
+import { type SiweMessage, createSiweMessage } from "viem/siwe";
 
 type UnconfigurableMessageOptions = {
   address: Address;
@@ -40,13 +40,13 @@ export function RainbowKitSiweNextAuthProvider({
           const defaultConfigurableOptions: Required<
             Pick<
               ConfigurableMessageOptions,
-              'domain' | 'uri' | 'version' | 'statement'
+              "domain" | "uri" | "version" | "statement"
             >
           > = {
             domain: window.location.host,
-            statement: 'Sign in with Ethereum to the app.',
+            statement: "Sign in with Ethereum to the app.",
             uri: window.location.origin,
-            version: '1',
+            version: "1",
           };
 
           const unconfigurableOptions: UnconfigurableMessageOptions = {
@@ -77,7 +77,7 @@ export function RainbowKitSiweNextAuthProvider({
         },
 
         verify: async ({ message, signature }) => {
-          const response = await signIn('credentials', {
+          const response = await signIn("credentials", {
             message,
             signature,
             redirect: false,
@@ -93,8 +93,7 @@ export function RainbowKitSiweNextAuthProvider({
     <RainbowKitAuthenticationProvider
       adapter={adapter}
       enabled={enabled}
-      status={status}
-    >
+      status={status}>
       {children}
     </RainbowKitAuthenticationProvider>
   );

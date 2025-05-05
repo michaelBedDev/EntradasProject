@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode } from "react";
 import {
   type GetSiweMessageOptions,
   RainbowKitSiweNextAuthProvider,
-} from './RainbowKitSiweNextAuthProvider';
-import type { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
+} from "./RainbowKitSiweNextAuthProvider";
+import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 
 interface RainbowKitSiweNextAuthProviderWithSessionProps {
   // RainbowKitSiweNextAuthProvider props
@@ -40,12 +40,10 @@ export const RainbowKitSiweNextAuthProviderWithSession = ({
     <SessionProvider
       session={session}
       refetchInterval={refetchInterval}
-      refetchOnWindowFocus={refetchOnWindowFocus}
-    >
+      refetchOnWindowFocus={refetchOnWindowFocus}>
       <RainbowKitSiweNextAuthProvider
         enabled={enabled}
-        getSiweMessageOptions={getSiweMessageOptions}
-      >
+        getSiweMessageOptions={getSiweMessageOptions}>
         {children}
       </RainbowKitSiweNextAuthProvider>
     </SessionProvider>
