@@ -1,15 +1,20 @@
-// // lib/supabase/jwt.ts
-// import jwt from "jsonwebtoken";
+// lib/supabase/token.ts
+import jwt from "jsonwebtoken";
 
-// export function generateSupabaseJWT(walletAddress: string): string {
-//   const payload = {
-//     wallet: walletAddress.toLowerCase(), // o "sub": walletAddress, si prefieres usar auth.uid()
-//     iat: Math.floor(Date.now() / 1000),
-//     exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hora
-//     iss: "tu-dominio.com",
-//   };
+export function createSupabaseJwt(address: string) {
+  if (!process.env.SUPABASE_JWT_SECRET) {
+    throw new Error("SUPABASE_JWT_SECRET not set");
+  }
 
-//   return jwt.sign(payload, process.env.SUPABASE_JWT_SECRET!, {
-//     algorithm: "HS256",
-//   });
-// }
+  return jwt.sign(
+    {
+      sub: address.toLowerCase(),
+      role: "authenticated",
+    },
+    process.env.SUPABASE_JWT_SECRET,
+    {
+      expiresIn: "1h",
+      issuer: "your-app",
+    },
+  );
+}
