@@ -8,7 +8,10 @@ import type {
   Session as SupabaseSession,
 } from "@supabase/supabase-js";
 
-const supabase = createBrowserClient();
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 export default function AuthSync() {
   useEffect(() => {
@@ -21,8 +24,7 @@ export default function AuthSync() {
         if (nextAuthSession?.supabaseToken) {
           await supabase.auth.setSession({
             access_token: nextAuthSession.supabaseToken,
-            token_type: "bearer",
-            expires_in: 3600,
+            refresh_token: "", // Si no usas refresh tokens personalizados, deja esto vacío
           });
         }
       }
@@ -34,7 +36,7 @@ export default function AuthSync() {
     // Verificar cada 5 minutos si la sesión sigue activa
     const intervalId = setInterval(syncSupabase, 5 * 60 * 1000);
 
-    // Detectar eventos de cierre de sesión
+    // Detectar eventos de cierre de sesión en Supabase
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
@@ -44,8 +46,7 @@ export default function AuthSync() {
           if (nextAuthSession?.supabaseToken) {
             await supabase.auth.setSession({
               access_token: nextAuthSession.supabaseToken,
-              token_type: "bearer",
-              expires_in: 3600,
+              refresh_token: "",
             });
           }
         }
