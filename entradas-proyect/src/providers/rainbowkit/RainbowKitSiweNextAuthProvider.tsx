@@ -1,3 +1,4 @@
+import { getBrowserSupabase } from "@/lib/supabase/browserClient";
 import {
   RainbowKitAuthenticationProvider,
   createAuthenticationAdapter,
@@ -75,7 +76,7 @@ export function RainbowKitSiweNextAuthProvider({
         signOut: async () => {
           await signOut({ redirect: false });
           // Cierro la sesión de Supabase
-          const supabase = createBrowserClient();
+          const supabase = getBrowserSupabase();
           await supabase.auth.signOut();
         },
 

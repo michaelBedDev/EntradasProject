@@ -1,21 +1,33 @@
-// lib/supabase/jwt.ts
 import jwt from "jsonwebtoken";
+import { v5 as uuidv5 } from "uuid";
 
-/**
- * Genera un JWT válido para Supabase a partir de una dirección de wallet.
- * Este JWT se usará para aplicar políticas RLS personalizadas.
- */
-export function createSupabaseJwt(address: string): string {
-  if (!process.env.SUPABASE_JWT_SECRET) {
-    throw new Error("SUPABASE_JWT_SECRET no está definido en variables de entorno");
-  }
+/* ---------------------------------------------------------
+ * Namespace para UUID-v5 –  debe existir en tu .env.local
+ * --------------------------------------------------------- */
+const UUID_NAMESPACE = process.env.WALLET_UUID_NAMESPACE;
+if (!UUID_NAMESPACE) throw new Error("WALLET_UUID_NAMESPACE faltante en .env.local");
 
-  const payload = {
-    sub: address.toLowerCase(), // auth.uid() devolverá esto
-    address: address.toLowerCase(), // opcional, por si lo necesitas como auth.jwt() ->> 'address'
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hora de expiración
-  };
+/* TTL en segundos (30 min) */
+export const SUPABASE_JWT_TTL_SECONDS = 60 * 30;
 
-  return jwt.sign(payload, process.env.SUPABASE_JWT_SECRET);
+/* Deriva un UUID-v5 estable a partir de la wallet */
+export const walletToUid = (addr: string) =>
+  uuidv5(addr.toLowerCase(), UUID_NAMESPACE);
+
+/* Firma un JWT válido para Supabase */
+export function createSupabaseJwt(addr: string) {
+  const secret = process.env.SUPABASE_JWT_SECRET!;
+
+  return jwt.sign(
+    {
+      sub: walletToUid(addr),
+      role: "authenticated",
+    },
+    secret,
+    {
+      algorithm: "HS256",
+      audience: "authenticated",
+      expiresIn: SUPABASE_JWT_TTL_SECONDS,
+    },
+  );
 }

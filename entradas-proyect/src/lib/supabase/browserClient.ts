@@ -1,14 +1,12 @@
-// lib/supabase/client.ts
 import { createBrowserClient } from "@supabase/ssr";
 
-export function createClient(supabaseToken?: string) {
+/** Instancia para el navegador – token únicamente en memoria */
+export function getBrowserSupabase() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      global: {
-        headers: supabaseToken ? { Authorization: `Bearer ${supabaseToken}` } : {},
-      },
+      auth: { persistSession: false }, // nada en localStorage
     },
   );
 }

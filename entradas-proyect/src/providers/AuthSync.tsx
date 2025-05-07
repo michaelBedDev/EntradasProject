@@ -1,63 +1,72 @@
 "use client";
 
-import { useEffect } from "react";
-import { getSession } from "next-auth/react";
-import { createBrowserClient } from "@supabase/ssr";
-import type {
-  AuthChangeEvent,
-  Session as SupabaseSession,
-} from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+import { useSession, signOut as nextSignOut } from "next-auth/react";
+import { getBrowserSupabase } from "@/lib/supabase/browserClient";
 
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+const supabase = getBrowserSupabase();
+
+async function setAccessToken(access_token: string) {
+  const { error } = await supabase.auth.setSession({
+    access_token,
+    refresh_token: access_token,
+  });
+  if (error) console.error("[AuthSync] setSession error:", error.message);
+}
 
 export default function AuthSync() {
+  const { data: next, status } = useSession();
+  const [sbExp, setSbExp] = useState<number | null>(null);
+
+  /* ① Inserta token en cuanto aparezca en Next-Auth */
   useEffect(() => {
-    const syncSupabase = async () => {
-      const { data: supabaseSession } = await supabase.auth.getSession();
+    if (!next?.supabaseToken) return;
 
-      if (!supabaseSession.session) {
-        const nextAuthSession = await getSession();
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        /* ▼ el “!” indica al compilador que el valor NO es undefined */
+        setAccessToken(next.supabaseToken!);
+      }
+    });
+  }, [next?.supabaseToken]);
 
-        if (nextAuthSession?.supabaseToken) {
-          await supabase.auth.setSession({
-            access_token: nextAuthSession.supabaseToken,
-            refresh_token: "", // Si no usas refresh tokens personalizados, deja esto vacío
-          });
+  /* ② Vigila expiración de Supabase */
+  useEffect(() => {
+    const sub = supabase.auth.onAuthStateChange((_e, ses) =>
+      setSbExp(ses?.expires_at ?? null),
+    ).data.subscription;
+    return () => sub.unsubscribe();
+  }, []);
+
+  /* ③ Refresh 5 min antes de expirar */
+  useEffect(() => {
+    const id = setInterval(async () => {
+      if (!sbExp || !next?.supabaseToken) return;
+
+      const now = Date.now() / 1000;
+      if (sbExp - now < 300) {
+        try {
+          const res = await fetch("/api/auth/refresh");
+          if (res.ok) {
+            const { access_token } = await res.json();
+            await setAccessToken(access_token);
+          } else {
+            await supabase.auth.signOut();
+            await nextSignOut({ redirect: false });
+          }
+        } catch (err) {
+          console.error("[AuthSync] refresh error:", err);
         }
       }
-    };
+    }, 60_000);
 
-    // Hacer sync inicial al montar
-    syncSupabase();
+    return () => clearInterval(id);
+  }, [sbExp, next?.supabaseToken]);
 
-    // Verificar cada 5 minutos si la sesión sigue activa
-    const intervalId = setInterval(syncSupabase, 5 * 60 * 1000);
-
-    // Detectar eventos de cierre de sesión en Supabase
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: SupabaseSession | null) => {
-        if (!session && event === "SIGNED_OUT") {
-          const nextAuthSession = await getSession();
-          if (nextAuthSession?.supabaseToken) {
-            await supabase.auth.setSession({
-              access_token: nextAuthSession.supabaseToken,
-              refresh_token: "",
-            });
-          }
-        }
-      },
-    );
-
-    return () => {
-      clearInterval(intervalId);
-      subscription.unsubscribe();
-    };
-  }, []);
+  /* ④ Limpia Supabase si Next-Auth se desconecta */
+  useEffect(() => {
+    if (status === "unauthenticated") supabase.auth.signOut();
+  }, [status]);
 
   return null;
 }

@@ -7,19 +7,22 @@ interface NextAuthHandlerProps {
   authOptions?: Partial<NextAuthOptions>;
 }
 
+/** Combina authOptions externos sin perder callbacks de siweAuthOptions */
 export const NextAuthHandler = ({
   chain,
   authOptions = {},
 }: NextAuthHandlerProps) => {
-  const handler = NextAuth(
-    siweAuthOptions({
-      chain,
-      ...authOptions,
-    }),
-  );
+  const base = siweAuthOptions({ chain, ...authOptions });
 
-  return {
-    GET: handler,
-    POST: handler,
+  const merged: NextAuthOptions = {
+    ...base,
+    ...authOptions,
+    callbacks: {
+      ...base.callbacks,
+      ...authOptions.callbacks,
+    },
   };
+
+  const handler = NextAuth(merged);
+  return { GET: handler, POST: handler };
 };
