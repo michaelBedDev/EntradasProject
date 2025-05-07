@@ -1,7 +1,7 @@
-import type { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { type Chain, createPublicClient, http } from 'viem';
-import { parseSiweMessage } from 'viem/siwe';
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { type Chain, createPublicClient, http } from "viem";
+import { parseSiweMessage } from "viem/siwe";
 
 export interface SiweUser {
   id: string;
@@ -26,16 +26,16 @@ export const siweAuthOptions = ({
   return {
     providers: [
       CredentialsProvider({
-        id: 'credentials',
-        name: 'Ethereum',
+        id: "credentials",
+        name: "Ethereum",
         credentials: {
           message: {
-            label: 'Message',
-            type: 'text',
+            label: "Message",
+            type: "text",
           },
           signature: {
-            label: 'Signature',
-            type: 'text',
+            label: "Signature",
+            type: "text",
           },
         },
         async authorize(credentials) {
@@ -68,7 +68,7 @@ export const siweAuthOptions = ({
             }
             return null;
           } catch (error) {
-            console.error('SIWE verification error:', error);
+            console.error("SIWE verification error:", error);
             await config?.onError?.(error as Error);
             return null;
           }
@@ -76,7 +76,7 @@ export const siweAuthOptions = ({
       }),
     ],
     session: {
-      strategy: 'jwt',
+      strategy: "jwt",
     },
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {

@@ -1,3 +1,4 @@
+import AuthDebugPanel from "@/components/AuthDebugPanel";
 import SupabaseTestPanel from "@/hooks/supabaseTestPanel";
 
 export default function TestingComponent() {
@@ -5,6 +6,7 @@ export default function TestingComponent() {
     <>
       <h1>TestingComponent</h1>
       <SupabaseTestPanel />
+      <AuthDebugPanel />
     </>
   );
 }

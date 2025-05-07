@@ -7,6 +7,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 import { RainbowkitProviders } from "@/providers/rainbowkit/RainbowKitProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import AuthSync from "@/providers/AuthSync";
 
 // import { getServerSession } from "next-auth";
 
@@ -30,6 +31,8 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <RainbowkitProviders>
+          {/* 👉 Aquí sincronizamos Supabase con la sesión de NextAuth */}
+          <AuthSync />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

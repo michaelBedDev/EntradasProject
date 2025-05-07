@@ -74,6 +74,9 @@ export function RainbowKitSiweNextAuthProvider({
 
         signOut: async () => {
           await signOut({ redirect: false });
+          // Cierro la sesión de Supabase
+          const supabase = createBrowserClient();
+          await supabase.auth.signOut();
         },
 
         verify: async ({ message, signature }) => {
