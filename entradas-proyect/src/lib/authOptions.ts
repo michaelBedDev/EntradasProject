@@ -3,35 +3,119 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { type Chain, createPublicClient, http } from "viem";
 import { parseSiweMessage } from "viem/siwe";
 
-import { createClient } from "@supabase/supabase-js";
-import { createSupabaseJwt, walletToUid } from "@/lib/supabase/jwt";
+import { createSupabaseJwt } from "@/lib/supabase/utils";
 
 /* ------------------ helpers ------------------ */
+// services/auth.ts
+import { supabaseAdmin } from "@/lib/supabase/adminClient";
+import { getEnsName } from "viem/actions";
+import { mainnet } from "viem/chains";
+import { walletToUid } from "@/lib/supabase/utils";
 
-async function ensureUserWithWallet(address: string) {
-  const admin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+// Tipo base con ENS opcional
+export interface SupabaseUser {
+  id: string;
+  email: string;
+  user_metadata: {
+    wallet: string;
+    display_name?: string;
+  };
+}
 
-  const uid = walletToUid(address);
+// Usuario con ENS resuelto
+export interface UserWithENS extends SupabaseUser {
+  user_metadata: {
+    wallet: string;
+    display_name: string;
+  };
+}
+
+// Usuario sin ENS
+export interface UserWithoutENS extends SupabaseUser {
+  user_metadata: {
+    wallet: string;
+    // display_name ni existe ni siquiera como undefined
+  };
+}
+
+export async function ensureUserWithWallet(
+  address: string,
+  ensName?: string | null,
+): Promise<UserWithENS | UserWithoutENS> {
   const wallet = address.toLowerCase();
+  const uid = walletToUid(address);
+  const email = `${wallet}@wallet.local`;
 
-  /* 1️⃣  crea el usuario: los atributos van en la raíz, no en .user  */
-  await admin.auth.admin
-    .createUser({
-      id: uid,
-      email: `${uid}@wallet.local`, // dummy requerido por GoTrue
-      user_metadata: { wallet }, // ya lo insertamos aquí
-    })
-    .catch(() => {
-      /* duplicate key → el usuario ya existe: lo ignoramos */
-    });
+  // 1️⃣ Resolver ENS si no viene
+  let display_name: string | undefined = ensName ?? undefined;
+  if (!display_name) {
+    try {
+      const client = createPublicClient({ chain: mainnet, transport: http() });
+      display_name =
+        (await getEnsName(client, { address: wallet as `0x${string}` })) ??
+        undefined;
+    } catch {
+      /* ignoramos fallo */
+    }
+  }
 
-  /* 2️⃣  por si existe y queremos mantener la wallet actualizada */
-  await admin.auth.admin.updateUserById(uid, {
-    user_metadata: { wallet },
-  });
+  // Asegurarnos de que display_name nunca quede vacío
+  display_name = display_name ?? wallet;
+
+  // 2️⃣ Comprobar en Supabase
+  const { data: getData, error: getError } =
+    await supabaseAdmin.auth.admin.getUserById(uid);
+  if (getError && getError.status !== 404) throw getError;
+  const existing = getData?.user;
+
+  // 3️⃣ Crear o actualizar y devolver tipado correctamente
+  const metadata = { wallet, display_name };
+
+  if (!existing) {
+    const { data: createData, error: createError } =
+      await supabaseAdmin.auth.admin.createUser({
+        id: uid,
+        email,
+        user_metadata: metadata,
+      });
+    if (createError) throw createError;
+    const u = createData.user!;
+
+    if (ensName || display_name !== wallet) {
+      return {
+        id: u.id,
+        email: u.email!,
+        user_metadata: { wallet, display_name },
+      } as UserWithENS;
+    } else {
+      return {
+        id: u.id,
+        email: u.email!,
+        user_metadata: { wallet, display_name },
+      } as UserWithoutENS;
+    }
+  } else {
+    const { data: updData, error: updError } =
+      await supabaseAdmin.auth.admin.updateUserById(uid, {
+        user_metadata: metadata,
+      });
+    if (updError) throw updError;
+    const u = updData.user!;
+
+    if (ensName || display_name !== wallet) {
+      return {
+        id: u.id,
+        email: u.email!,
+        user_metadata: { wallet, display_name },
+      } as UserWithENS;
+    } else {
+      return {
+        id: u.id,
+        email: u.email!,
+        user_metadata: { wallet, display_name },
+      } as UserWithoutENS;
+    }
+  }
 }
 
 /* -------------- configuración Next-Auth -------------- */

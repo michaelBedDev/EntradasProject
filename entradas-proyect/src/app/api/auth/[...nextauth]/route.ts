@@ -1,6 +1,6 @@
 import { NextAuthHandler } from "@/lib/NextAuthHandler";
 import { mainnet } from "viem/chains";
-import { createSupabaseJwt, SUPABASE_JWT_TTL_SECONDS } from "@/lib/supabase/jwt";
+import { createSupabaseJwt, SUPABASE_JWT_TTL_SECONDS } from "@/lib/supabase/utils";
 
 const { GET, POST } = NextAuthHandler({
   chain: mainnet,

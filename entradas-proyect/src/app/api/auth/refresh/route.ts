@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { createSupabaseJwt } from "@/lib/supabase/jwt";
+import { createSupabaseJwt } from "@/lib/supabase/utils";
 
 // getServerSession sin argumentos detecta la config de [...nextauth]
 export async function GET() {
