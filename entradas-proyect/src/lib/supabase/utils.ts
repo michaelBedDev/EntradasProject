@@ -22,6 +22,7 @@ export function createSupabaseJwt(addr: string) {
     {
       sub: walletToUid(addr),
       role: "authenticated",
+      wallet: addr.toLowerCase(),
     },
     secret,
     {

@@ -7,9 +7,8 @@ import { Navbar } from "@/components/app";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 
-import { Web3AuthProvider } from "@/providers/Web3AuthProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import AuthSync from "@/providers/AuthSync";
+import SupabaseSync from "@/providers/SupabaseJWTSync";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -19,20 +18,30 @@ export const metadata: Metadata = {
   description: "Prototipo 1",
 };
 
+import { cookieToInitialState } from "wagmi";
+import { headers } from "next/headers";
+
+import { wagmiAdapter } from "./config";
+import AppKitProvider from "./context";
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Get the cookie from the request
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
+  const initialState = cookieToInitialState(
+    wagmiAdapter.wagmiConfig,
+    (await headers()).get("cookie"),
+  );
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Web3AuthProvider>
-          {/* 👉 Aquí sincronizamos Supabase con la sesión de NextAuth */}
-          <AuthSync />
+        <AppKitProvider initialState={initialState}>
+          <SupabaseSync />
 
           <ThemeProvider
             attribute="class"
@@ -49,7 +58,7 @@ export default async function RootLayout({
               </div>
             </SidebarProvider>
           </ThemeProvider>
-        </Web3AuthProvider>
+        </AppKitProvider>
       </body>
     </html>
   );
