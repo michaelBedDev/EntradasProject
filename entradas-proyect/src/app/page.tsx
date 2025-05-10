@@ -6,7 +6,6 @@ import { AppPieChart } from "@/components/app";
 import { CardList } from "@/components/app";
 import { TodoList } from "@/components/app";
 import { TestingComponent } from "@/components/app";
-import "@rainbow-me/rainbowkit/styles.css";
 
 export default function Home() {
   return (

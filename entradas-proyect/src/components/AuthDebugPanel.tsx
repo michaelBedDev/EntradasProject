@@ -4,38 +4,47 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { SupabaseJwtToken } from "@/types/global";
+import { getSupabaseClient } from "@/lib/supabase/browserClient";
 
 export default function AuthDebugPanel() {
+  const supabase = getSupabaseClient();
+
   const { data: nextSession, status } = useSession();
   const [dbTest, setDbTest] = useState<string | null>(null);
   const [decodedToken, setDecodedToken] = useState<SupabaseJwtToken | null>(null);
 
-  // 1️⃣ Test PostgREST
+  // 1️⃣ Test Query a la base de datos
+  //    - Si no hay token, error
   useEffect(() => {
     async function testDb() {
-      if (nextSession?.supabaseAccessToken) {
-        try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/entradas?select=*&limit=1`,
-            {
-              headers: {
-                apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-                Authorization: `Bearer ${nextSession.supabaseAccessToken}`,
-              },
-            },
-          );
-          if (res.ok) setDbTest("✅ Query OK");
-          else setDbTest(`❌ Error ${res.status}`);
-        } catch (err: unknown) {
-          if (err instanceof Error) setDbTest(`❌ ${err.message}`);
-          else setDbTest(`❌ ${String(err)}`);
-        }
-      } else {
+      if (!nextSession?.supabaseAccessToken) {
         setDbTest("❌ No token Supabase");
+        return;
+      }
+      try {
+        // Inyecta el token en el cliente
+        await supabase.auth.setSession({
+          access_token: nextSession.supabaseAccessToken,
+          refresh_token: nextSession.supabaseAccessToken, // si no tienes refresh, repite el access
+        });
+
+        // Lanza la query con tipos y cabeceras automáticas
+        const { error, status } = await supabase
+          .from("entradas")
+          .select("*")
+          .limit(1);
+
+        if (error) setDbTest(`❌ Error ${status}: ${error.message}`);
+        else setDbTest("✅ Query OK");
+      } catch (err: unknown) {
+        if (err instanceof Error) setDbTest(`❌ ${err.message}`);
+        else setDbTest(`❌ ${String(err)}`);
       }
     }
+
     testDb();
-  }, [nextSession?.supabaseAccessToken]);
+  }, [supabase, nextSession?.supabaseAccessToken]); // Ejecuta cada vez que cambie el token en la sesión o el cliente de supabase
+  //OJO se crea un nuevo cliente en cada render
 
   // 2️⃣ Decodificar supabaseAccessToken para ver todo el payload
   useEffect(() => {
