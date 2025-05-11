@@ -1,4 +1,6 @@
 // /lib/posts.ts
+"use server";
+
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 
 export async function fetchPosts() {

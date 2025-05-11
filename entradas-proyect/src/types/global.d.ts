@@ -1,13 +1,19 @@
 // src/types/global.d.ts
 import { DefaultSession } from "next-auth";
+import { DefaultJWT } from "next-auth/jwt";
 
 // Extiende la sesión de NextAuth
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    address: string;
-    chainId: number;
     supabaseAccessToken: string;
     supabaseAccessTokenExp: number;
+    address: string;
+  }
+
+  interface JWT extends DefaultJWT {
+    supabaseAccessToken: string;
+    supabaseAccessTokenExp: number;
+    wallet?: string;
   }
 }
 

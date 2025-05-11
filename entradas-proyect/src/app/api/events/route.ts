@@ -1,7 +1,7 @@
 // app/api/events/route.ts
 import { NextResponse } from "next/server";
 import type { Database } from "@/types/supabase.types";
-import { getAllEvents, createEvent } from "@/lib/db/events";
+import { getAllEvents, createEvent } from "@/app/actions/db/events";
 
 /**
  * GET /api/events

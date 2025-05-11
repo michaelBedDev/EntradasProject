@@ -1,16 +1,7 @@
-// lib/db/events.ts
+// app/actions/db/events.ts
+"use server";
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
-import type { Database } from "@/types/supabase.types";
-
-// Tipos basados en el esquema generado de Supabase
-type EventRow = Database["public"]["Tables"]["eventos"]["Row"];
-type EventInsert = Database["public"]["Tables"]["eventos"]["Insert"];
-
-export enum EventStatus {
-  Pendiente = "pendiente",
-  Aprobado = "aprobado",
-  Cancelado = "cancelado",
-}
+import { EventInsert, EventRow, EventStatus } from "@/types/events.types";
 
 export async function getAllEvents(): Promise<EventRow[]> {
   const supabase = await getSupabaseServerClient();
@@ -18,6 +9,8 @@ export async function getAllEvents(): Promise<EventRow[]> {
     .from("eventos")
     .select("*")
     .order("fecha", { ascending: true });
+
+  console.log("SUPABASE getAllEvents →", { data, error }); // ← Añade esto
   if (error) throw new Error(`Error al obtener eventos: ${error.message}`);
   return data!;
 }

@@ -1,12 +1,12 @@
 // app/api/events/[id]/route.ts
 import { NextResponse } from "next/server";
 import type { Database } from "@/types/supabase.types";
+import { EventStatus } from "@/types/events.types";
 import {
   getEventById,
   updateEventStatus,
   deleteEvent,
-  EventStatus,
-} from "@/lib/db/events";
+} from "@/app/actions/db/events";
 
 /**
  * GET /api/events/:id
