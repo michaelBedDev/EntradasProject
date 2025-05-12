@@ -7,6 +7,7 @@ import { getAllEvents } from "@/app/actions/db/events";
 import type { Database } from "@/types/supabase.types";
 
 // Tipo de fila
+
 type EventRow = Database["public"]["Tables"]["eventos"]["Row"];
 
 export default function EventsButton() {
@@ -26,8 +27,8 @@ export default function EventsButton() {
 
   const handleResetEvents = () => {
     setShowEvents(false);
-    // Opcional: invalidar la cache para que se recarguen los datos la próxima vez
-    queryClient.invalidateQueries(["events"]);
+    // Invalidamos la consulta correctamente
+    queryClient.invalidateQueries({ queryKey: ["events"] });
   };
 
   return (
