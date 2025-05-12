@@ -36,7 +36,9 @@ export default function AppKitProvider({
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <SessionProvider refetchInterval={0}>{children}</SessionProvider>
+        <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+          {children}
+        </SessionProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

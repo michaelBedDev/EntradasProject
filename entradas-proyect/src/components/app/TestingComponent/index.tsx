@@ -1,4 +1,4 @@
-import AuthDebugPanel from "@/components/AuthDebugPanel";
+// import AuthDebugPanel from "@/components/AuthDebugPanel";
 import EventsList from "@/components/EventsList";
 
 export default function TestingComponent() {
@@ -6,7 +6,7 @@ export default function TestingComponent() {
     <>
       <h1>TestingComponent</h1>
       <EventsList />
-      <AuthDebugPanel />
+      {/* <AuthDebugPanel /> */}
     </>
   );
 }

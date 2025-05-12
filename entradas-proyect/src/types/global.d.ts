@@ -2,18 +2,31 @@
 import { DefaultSession } from "next-auth";
 import { DefaultJWT } from "next-auth/jwt";
 
-// Extiende la sesión de NextAuth
+// 1) Ampliación del JWT interno que usa NextAuth en jwt()
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    supabase?: {
+      token: string;
+      exp: number;
+    };
+  }
+}
+
+// 2) Ampliación de la sesión / user que usa NextAuth en session()
 declare module "next-auth" {
+  // Aquí le decimos que el objeto session tiene un id con la wallet y la chainId, y un objeto supabase con el token y la expiración.
   interface Session extends DefaultSession {
-    supabaseAccessToken: string;
-    supabaseAccessTokenExp: number;
     address: string;
+    chainId: number;
+    supabase: {
+      token: string;
+      exp: number;
+    };
   }
 
-  interface JWT extends DefaultJWT {
-    supabaseAccessToken: string;
-    supabaseAccessTokenExp: number;
-    wallet?: string;
+  // Aquí le decimos que el objeto user de authorize() tiene un id con la wallet y la chainId.
+  interface User {
+    id: string;
   }
 }
 

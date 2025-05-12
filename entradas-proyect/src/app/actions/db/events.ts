@@ -1,7 +1,13 @@
 // app/actions/db/events.ts
 "use server";
+
 import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
 import { EventInsert, EventRow, EventStatus } from "@/types/events.types";
+
+//Creamos el cliente de Supabase
+// y lo exportamos para usarlo en las funciones
+// de la API de eventos
+// (no es necesario crear uno nuevo en cada función)
 
 export async function getAllEvents(): Promise<EventRow[]> {
   const supabase = await getSupabaseServerClient();

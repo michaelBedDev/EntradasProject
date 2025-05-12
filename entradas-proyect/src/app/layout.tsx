@@ -8,7 +8,6 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import SupabaseSync from "@/providers/SupabaseJWTSync";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -41,8 +40,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AppKitProvider initialState={initialState}>
-          <SupabaseSync />
-
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

@@ -1,200 +1,164 @@
-"use client";
+// "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { SupabaseJwtToken } from "@/types/global";
-import { getSupabaseClient } from "@/lib/supabase/browserClient";
-import jwt from "jsonwebtoken";
+// import { useEffect, useState, useMemo } from "react";
+// import { useSession } from "next-auth/react";
+// import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+// import { SupabaseJwtToken } from "@/types/global";
+// import { getSupabaseClient } from "@/lib/supabase/browserClient";
 
-export default function AuthDebugPanel() {
-  const supabase = getSupabaseClient();
-  const { data: nextSession, status, update } = useSession();
+// // Helper para decodificar el payload de un JWT sin librerías externas
+// function parseJwt<T>(token: string): T | null {
+//   try {
+//     const base64 = token.split(".")[1];
+//     // atob + decodeURIComponent para manejar correctamente UTF-8
+//     const json = decodeURIComponent(
+//       atob(base64)
+//         .split("")
+//         .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+//         .join(""),
+//     );
+//     return JSON.parse(json) as T;
+//   } catch {
+//     return null;
+//   }
+// }
 
-  const [dbTest, setDbTest] = useState<string | null>(null);
-  const [decodedToken, setDecodedToken] = useState<SupabaseJwtToken | null>(null);
-  const [cookieValue, setCookieValue] = useState<string | null>(null);
-  const [allJsCookies, setAllJsCookies] = useState<string>("");
-  const [tokenValid, setTokenValid] = useState<boolean>(false);
+// export default function AuthDebugPanel() {
+//   const { data: session, status, update } = useSession();
 
-  // 1️⃣ Test Query a la base de datos
-  useEffect(() => {
-    async function testDb() {
-      if (!nextSession?.supabaseAccessToken) {
-        setDbTest("❌ No token Supabase");
-        return;
-      }
+//   const supabase = useMemo(
+//     () => getSupabaseClient(session?.supabase.token ?? ""),
+//     [session?.supabase.token],
+//   );
 
-      try {
-        // Verificar validez del token antes de usarlo
-        const isValid = await verifyTokenExpiration(
-          nextSession.supabaseAccessTokenExp,
-        );
-        if (!isValid) {
-          setDbTest("❌ Token expirado - refrescando...");
-          await update();
-          return;
-        }
+//   const [dbTest, setDbTest] = useState<string>("Cargando...");
+//   const [decodedToken, setDecodedToken] = useState<SupabaseJwtToken | null>(null);
+//   const [cookieValue, setCookieValue] = useState<string>("Cargando...");
+//   const [allJsCookies, setAllJsCookies] = useState<string>("");
 
-        const { error } = await supabase.from("entradas").select("*").limit(1);
+//   // 1️⃣ Test a la DB
+//   useEffect(() => {
+//     let mounted = true;
+//     async function testDb() {
+//       if (!session?.supabase.token) {
+//         mounted && setDbTest("❌ Sin token Supabase");
+//         return;
+//       }
+//       const now = Math.floor(Date.now() / 1000);
+//       if (session.supabase.exp <= now) {
+//         mounted && setDbTest("❌ Token expirado, refrescando...");
+//         await update();
+//         return;
+//       }
+//       try {
+//         const { error } = await supabase.from("entradas").select("*").limit(1);
+//         mounted && setDbTest(error ? `❌ ${error.message}` : "✅ Consulta OK");
+//       } catch (err: any) {
+//         mounted && setDbTest(`❌ ${err.message}`);
+//       }
+//     }
+//     testDb();
+//     return () => {
+//       mounted = false;
+//     };
+//   }, [supabase, session?.supabase.token, session?.supabase.exp, update]);
 
-        setDbTest(error ? `❌ Error: ${error.message}` : "✅ Query OK");
-      } catch (err: any) {
-        setDbTest(`❌ ${err.message}`);
-      }
-    }
-    testDb();
-  }, [supabase, nextSession?.supabaseAccessToken]);
+//   // 2️⃣ Decodificar JWT
+//   useEffect(() => {
+//     if (!session?.supabase.token) {
+//       setDecodedToken(null);
+//       return;
+//     }
+//     const payload = parseJwt<SupabaseJwtToken>(session.supabase.token);
+//     setDecodedToken(payload);
+//   }, [session?.supabase.token]);
 
-  // 2️⃣ Decodificar y validar token
-  useEffect(() => {
-    if (!nextSession?.supabaseAccessToken) {
-      setDecodedToken(null);
-      setTokenValid(false);
-      return;
-    }
+//   // 3️⃣ Comprobar cookie via API
+//   useEffect(() => {
+//     (async () => {
+//       try {
+//         const res = await fetch(`/api/auth/debug?t=${Date.now()}`, {
+//           credentials: "include",
+//           cache: "no-store",
+//         });
+//         const { cookiePresent } = await res.json();
+//         setCookieValue(cookiePresent ? "✅ Presente" : "❌ Ausente");
+//       } catch {
+//         setCookieValue("❌ Error al comprobar");
+//       }
+//     })();
+//   }, []);
 
-    try {
-      const decoded = jwt.decode(nextSession.supabaseAccessToken, {
-        complete: true,
-      });
+//   // 4️⃣ Cookies JS
+//   useEffect(() => {
+//     setAllJsCookies(document.cookie || "No hay cookies accesibles");
+//   }, []);
 
-      if (!decoded) {
-        throw new Error("Token inválido");
-      }
+//   return (
+//     <Card className="bg-white dark:bg-zinc-900">
+//       <CardHeader>
+//         <CardTitle>🧪 Debug Auth</CardTitle>
+//       </CardHeader>
+//       <CardContent>
+//         <div className="space-y-4 text-xs break-all">
+//           <section>
+//             <h3 className="font-medium">🔐 NextAuth Session</h3>
+//             <p>
+//               Estado: <strong>{status}</strong>
+//             </p>
+//             <pre className="p-2 bg-black-100 rounded">
+//               {JSON.stringify(
+//                 {
+//                   user: session?.user,
+//                   expires: session?.expires,
+//                   exp: session?.supabase.exp
+//                     ? new Date(session.supabase.exp * 1000).toISOString()
+//                     : null,
+//                 },
+//                 null,
+//                 2,
+//               )}
+//             </pre>
+//           </section>
 
-      const payload = decoded.payload as SupabaseJwtToken;
-      const isValid = Date.now() < payload.exp * 1000;
+//           <section>
+//             <h3 className="font-medium">🛠️ Supabase Connection</h3>
+//             <p>
+//               Estado conexión: <strong>{dbTest}</strong>
+//             </p>
+//             <p>
+//               Última prueba: <code>{new Date().toLocaleTimeString()}</code>
+//             </p>
+//           </section>
 
-      setDecodedToken(payload);
-      setTokenValid(isValid);
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      setDecodedToken(null);
-      setTokenValid(false);
-    }
-  }, [nextSession?.supabaseAccessToken]);
+//           <section>
+//             <h3 className="font-medium">🔑 JWT Payload</h3>
+//             {decodedToken ? (
+//               <pre className="p-2 bg-black-100 rounded">
+//                 {JSON.stringify(
+//                   {
+//                     ...decodedToken,
+//                     iat: new Date(decodedToken.iat * 1000).toISOString(),
+//                     exp: new Date(decodedToken.exp * 1000).toISOString(),
+//                   },
+//                   null,
+//                   2,
+//                 )}
+//               </pre>
+//             ) : (
+//               <p className="text-red-500">Token no disponible</p>
+//             )}
+//           </section>
 
-  // 3️⃣ Verificar cookie del middleware
-  useEffect(() => {
-    async function fetchCookie() {
-      try {
-        const res = await fetch("/api/auth/debug?t=" + Date.now(), {
-          // Cache-buster
-          credentials: "include",
-          cache: "no-store",
-        });
-        const data = await res.json();
-        setCookieValue(data.cookiePresent ? "✅ Presente" : "❌ Ausente");
-      } catch {
-        setCookieValue("❌ Error");
-      }
-    }
-    fetchCookie();
-  }, []);
-
-  // 4️⃣ Verificar cookies accesibles desde JS
-  useEffect(() => {
-    setAllJsCookies(document.cookie.split(";").join("\n"));
-  }, []);
-
-  // Función para verificar expiración
-  const verifyTokenExpiration = async (exp: number) => {
-    const now = Math.floor(Date.now() / 1000);
-    return exp > now;
-  };
-
-  return (
-    <Card className="bg-white dark:bg-zinc-900">
-      <CardHeader>
-        <CardTitle>🧪 Debug Auth</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4 text-xs break-all">
-          <section>
-            <h3 className="font-medium">🔐 NextAuth Session</h3>
-            <div className="space-y-1">
-              <p>
-                Estado: <span className="font-semibold">{status}</span>
-              </p>
-              <p>
-                Token válido:{" "}
-                <span className={tokenValid ? "text-green-500" : "text-red-500"}>
-                  {tokenValid ? "✅ Válido" : "❌ Inválido"}
-                </span>
-              </p>
-              <pre className="text-xs p-2 bg-black-100 rounded">
-                {JSON.stringify(
-                  {
-                    user: nextSession?.user,
-                    expires: nextSession?.expires,
-                    tokenExp:
-                      nextSession?.supabaseAccessTokenExp &&
-                      new Date(
-                        nextSession.supabaseAccessTokenExp * 1000,
-                      ).toISOString(),
-                  },
-                  null,
-                  2,
-                )}
-              </pre>
-            </div>
-          </section>
-
-          <section>
-            <h3 className="font-medium">🛠️ Supabase Connection</h3>
-            <div className="space-y-1">
-              <p>
-                Estado conexión:{" "}
-                <span className="font-semibold">{dbTest || "..."}</span>
-              </p>
-              <p>
-                Última actualización:{" "}
-                <span className="font-mono">{new Date().toLocaleTimeString()}</span>
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <h3 className="font-medium">🔑 JWT Payload</h3>
-            <div className="p-2 bg-black-100 rounded">
-              {decodedToken ? (
-                <pre className="text-xs">
-                  {JSON.stringify(
-                    {
-                      ...decodedToken,
-                      iat: new Date(decodedToken.iat * 1000).toISOString(),
-                      exp: new Date(decodedToken.exp * 1000).toISOString(),
-                    },
-                    null,
-                    2,
-                  )}
-                </pre>
-              ) : (
-                <p className="text-red-500">Token no disponible</p>
-              )}
-            </div>
-          </section>
-
-          <section>
-            <h3 className="font-medium">🍪 Cookies</h3>
-            <div className="space-y-2">
-              <div>
-                <p className="font-mono text-xs">sb-access-token:</p>
-                <p className="text-xs p-2 bg-black-100 rounded">
-                  {cookieValue || "Cargando..."}
-                </p>
-              </div>
-              <div>
-                <p className="font-mono text-xs">document.cookie:</p>
-                <pre className="text-xs p-2 bg-black-100 rounded">
-                  {allJsCookies || "No se encontraron cookies"}
-                </pre>
-              </div>
-            </div>
-          </section>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+//           <section>
+//             <h3 className="font-medium">🍪 Cookies</h3>
+//             <p>
+//               <code>sb-access-token</code>: {cookieValue}
+//             </p>
+//             <pre className="p-2 bg-black-100 rounded">{allJsCookies}</pre>
+//           </section>
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// }
