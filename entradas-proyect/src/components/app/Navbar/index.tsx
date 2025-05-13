@@ -18,6 +18,8 @@ import { ConnectWalletButton } from "@/components/app";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
+  // const pathname = usePathname();
+  // const isActive = (path: string) => pathname === path;
 
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 bg-background z-10">

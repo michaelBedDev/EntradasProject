@@ -2,7 +2,6 @@ import {
   Home,
   Inbox,
   Calendar,
-  Search,
   Settings,
   User2,
   ChevronUp,
@@ -18,18 +17,15 @@ import {
   SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import Image from "next/image";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,31 +37,28 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import AppSidebarHeader from "./AppSidebarHeader";
+// import { usePathname } from "next/navigation";
 
 const items = [
   {
-    title: "Home",
-    url: "/",
+    title: "Dashboard",
+    url: "/app",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
+    title: "Explorar Eventos",
+    url: "/explorar-eventos",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Mis Entradas",
+    url: "/mis-entradas",
+    icon: Inbox,
   },
   {
-    title: "Settings",
-    url: "#",
+    title: "Ajustes",
+    url: "/ajustes",
     icon: Settings,
   },
 ];
@@ -73,18 +66,7 @@ const items = [
 const AppSidebar = () => {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="py-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/">
-                <Image src="/logo.svg" alt="logo" width={20} height={20} />
-                <span>Miguel C</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+      <AppSidebarHeader name="John Doe" />
 
       <SidebarContent>
         <SidebarGroup>
@@ -95,11 +77,10 @@ const AppSidebar = () => {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link href={item.url}>
-                      <item.icon />
+                      <item.icon className="mr-2 h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
-                  {item.title === "Inbox" && <SidebarMenuBadge>24</SidebarMenuBadge>}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
