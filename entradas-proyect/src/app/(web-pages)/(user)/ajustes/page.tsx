@@ -1,188 +1,245 @@
 "use client";
+
+import { useState } from "react";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-
-import { BadgeCheck, Candy, Citrus, Shield } from "lucide-react";
-
-import { AppLineChart, CardList, EditUser } from "@/components/app";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-
-import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+  Settings,
+  User,
+  Wallet,
+  Shield,
+  Bell,
+  Moon,
+  Sun,
+  Copy,
+  Check,
+  ExternalLink,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@radix-ui/react-avatar";
-import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useTheme } from "next-themes";
 
-const SingleUserPage = () => {
+export default function AjustesPage() {
+  // Estados para la página
+  const [copied, setCopied] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [notificaciones, setNotificaciones] = useState(true);
+
+  // Datos simulados del usuario
+  const walletAddress = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F";
+  const shortAddress = `${walletAddress.substring(0, 6)}...${walletAddress.substring(
+    walletAddress.length - 4,
+  )}`;
+
+  // Función para copiar al portapapeles
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(walletAddress).then(() => {
+      setCopied(true);
+      toast.success("Dirección copiada al portapapeles");
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  // Función para desconectar wallet (simulada)
+  const handleLogout = () => {
+    toast.success("Wallet desconectada correctamente");
+    // Aquí iría la lógica real para desconectar la wallet
+  };
+
   return (
-    <div className="">
-      <div className="p-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/users">Users</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>John Doe</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+    <div className="container mx-auto px-4 py-12 max-w-4xl">
+      {/* Encabezado estilo Apple */}
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold tracking-tight mb-3">Ajustes</h1>
+        <p className="text-muted-foreground text-lg">
+          Gestiona tu cuenta y preferencias
+        </p>
       </div>
-      {/* CONTAINER */}
-      <div className="p-4 flex flex-col xl:flex-row gap-4">
-        {/* LEFT */}
-        <div className="w-full xl:w-1/3 space-y-6">
-          {/* USER BADGES CONTAINER */}
-          <div className="bg-card border border-border p-4 rounded-lg">
-            <h1 className="text-xl font-semibold">User Badges</h1>
-            <div className="flex gap-4 mt-4">
-              <HoverCard>
-                <HoverCardTrigger>
-                  <BadgeCheck
-                    size={36}
-                    className="rounded-full bg-blue-500/30 border-1 border-blue-500/50 p-2"
-                  />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <h1 className="font-bold mb-2">Verified User</h1>
-                  <p className="text-sm text-muted-foreground">
-                    This user has been verified by the admin.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Shield
-                    size={36}
-                    className="rounded-full bg-green-800/30 border-1 border-green-800/50 p-2"
-                  />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <h1 className="font-bold mb-2">Admin</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Admin users have access to all features and can manage users.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Candy
-                    size={36}
-                    className="rounded-full bg-yellow-500/30 border-1 border-yellow-500/50 p-2"
-                  />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <h1 className="font-bold mb-2">Awarded</h1>
-                  <p className="text-sm text-muted-foreground">
-                    This user has been awarded for their contributions.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
-              <HoverCard>
-                <HoverCardTrigger>
-                  <Citrus
-                    size={36}
-                    className="rounded-full bg-orange-500/30 border-1 border-orange-500/50 p-2"
-                  />
-                </HoverCardTrigger>
-                <HoverCardContent>
-                  <h1 className="font-bold mb-2">Popular</h1>
-                  <p className="text-sm text-muted-foreground">
-                    This user has been popular in the community.
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
+
+      <div className="space-y-8">
+        {/* Sección de Wallet */}
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-primary/5 border-b border-border/40">
+            <div className="flex items-center">
+              <Wallet className="h-5 w-5 mr-2 text-primary" />
+              <CardTitle>Conectividad Wallet</CardTitle>
             </div>
-          </div>
-          {/* INFORMATION CONTAINER */}
-          <div className="bg-card border border-border p-4 rounded-lg">
-            <div className="flex items-center justify-between">
-              <h1 className="text-xl font-semibold">User Information</h1>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button>Edit User</Button>
-                </SheetTrigger>
-                <EditUser></EditUser>
-              </Sheet>
+            <CardDescription>Información de tu wallet conectada</CardDescription>
+          </CardHeader>
+
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Dirección actual
+                </p>
+                <p className="font-medium">{shortAddress}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex gap-1 items-center"
+                onClick={copyToClipboard}>
+                {copied ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                {copied ? "¡Copiado!" : "Copiar"}
+              </Button>
             </div>
-            <div className="space-y-4 mt-4">
-              <div className="flex flex-col gap-2 mb-8">
-                <p className="text-sm text-muted-foreground">Profile Completion</p>
-                <Progress value={66} />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">Username:</span>
-                <span>john.doe</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">Email:</span>
-                <span>john.doe@gmail.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">Phone:</span>
-                <span>+1 234 5678</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">Location:</span>
-                <span>New York, NY</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold">Role:</span>
-                <Badge>Admin</Badge>
-              </div>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  Desconectar Wallet
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>¿Desconectar wallet?</DialogTitle>
+                  <DialogDescription>
+                    Esta acción cerrará tu sesión actual. Necesitarás conectar tu
+                    wallet nuevamente para acceder.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="mt-4">
+                  <Button variant="outline" className="mr-2">
+                    Cancelar
+                  </Button>
+                  <Button variant="destructive" onClick={handleLogout}>
+                    Desconectar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
+
+        {/* Sección de Preferencias */}
+        <Card>
+          <CardHeader className="bg-primary/5 border-b border-border/40">
+            <div className="flex items-center">
+              <Settings className="h-5 w-5 mr-2 text-primary" />
+              <CardTitle>Preferencias</CardTitle>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              Joined on 2025.01.01
-            </p>
-          </div>
-          {/* CARD LIST CONTAINER */}
-          <div className="bg-card border border-border p-4 rounded-lg">
-            <CardList title="Recent Transactions" />
-          </div>
-        </div>
-        {/* RIGHT */}
-        <div className="w-full xl:w-2/3 space-y-6">
-          {/* USER CARD CONTAINER */}
-          <div className="bg-card border border-border p-4 rounded-lg space-y-2">
-            <div className="flex items-center gap-2">
-              <Avatar className="size-12">
-                <AvatarImage src="https://avatars.githubusercontent.com/u/1486366" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <h1 className="text-xl font-semibold">John Doe</h1>
+            <CardDescription>
+              Personaliza tu experiencia en la plataforma
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="pt-6 space-y-6">
+            {/* Tema */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                {theme === "dark" ? (
+                  <Moon className="h-5 w-5 mr-2 text-primary" />
+                ) : (
+                  <Sun className="h-5 w-5 mr-2 text-primary" />
+                )}
+                <Label htmlFor="theme-toggle" className="cursor-pointer">
+                  Tema oscuro
+                </Label>
+              </div>
+              <Switch
+                id="theme-toggle"
+                checked={theme === "dark"}
+                onCheckedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+              />
             </div>
-            <p className="text-sm text-muted-foreground">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque maxime
-              modi, ullam voluptatum cumque perferendis iure unde ad voluptas tempora
-              assumenda. Dolores, porro! Minima voluptates quidem neque magnam ut
-              alias?
-            </p>
-          </div>
-          {/* CHART CONTAINER */}
-          <div className="bg-card border border-border p-4 rounded-lg">
-            <h1 className="text-xl font-semibold">User Activity</h1>
-            <AppLineChart />
+
+            <Separator />
+
+            {/* Notificaciones */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <Bell className="h-5 w-5 mr-2 text-primary" />
+                <Label htmlFor="notifications-toggle" className="cursor-pointer">
+                  Notificaciones
+                </Label>
+              </div>
+              <Switch
+                id="notifications-toggle"
+                checked={notificaciones}
+                onCheckedChange={setNotificaciones}
+              />
+            </div>
+
+            <Separator />
+
+            {/* Privacidad y seguridad */}
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <Shield className="h-5 w-5 mr-2 text-primary" />
+                <span>Privacidad y seguridad</span>
+              </div>
+              <Button variant="ghost" size="sm" className="text-primary" asChild>
+                <a href="/privacidad" className="flex items-center">
+                  Ver <ExternalLink className="ml-1 h-3 w-3" />
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sección de Cuenta */}
+        <Card>
+          <CardHeader className="bg-primary/5 border-b border-border/40">
+            <div className="flex items-center">
+              <User className="h-5 w-5 mr-2 text-primary" />
+              <CardTitle>Datos personales</CardTitle>
+            </div>
+            <CardDescription>Información asociada a tu cuenta</CardDescription>
+          </CardHeader>
+
+          <CardContent className="pt-6">
+            <div className="space-y-2 mb-6">
+              <p className="text-muted-foreground text-sm">
+                Tu cuenta está asociada a tu wallet y no requiere datos personales
+                adicionales. Si deseas añadir información complementaria como nombre,
+                correo o preferencias, puedes hacerlo a continuación.
+              </p>
+            </div>
+
+            <Button variant="outline">Completar perfil</Button>
+          </CardContent>
+
+          <CardFooter className="border-t border-border/40 bg-muted/20 text-xs text-muted-foreground">
+            <p>Cuenta creada el 10 de noviembre de 2024</p>
+          </CardFooter>
+        </Card>
+
+        {/* Espacio para información legal */}
+        <div className="text-center text-xs text-muted-foreground space-y-2">
+          <p>© 2024 Entradas Proyect. Todos los derechos reservados.</p>
+          <div className="flex justify-center gap-4">
+            <a href="/terminos" className="hover:text-primary transition-colors">
+              Términos de servicio
+            </a>
+            <a href="/privacidad" className="hover:text-primary transition-colors">
+              Política de privacidad
+            </a>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default SingleUserPage;
+}

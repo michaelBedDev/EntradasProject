@@ -48,7 +48,7 @@ const items = [
   },
   {
     title: "Explorar Eventos",
-    url: "/explorar-eventos",
+    url: "/eventos",
     icon: Calendar,
   },
   {
@@ -76,7 +76,7 @@ const AppSidebar = () => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url}>
+                    <Link href={item.url} prefetch={false}>
                       <item.icon className="mr-2 h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>

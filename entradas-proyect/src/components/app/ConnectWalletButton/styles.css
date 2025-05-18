@@ -1,0 +1,82 @@
+/* Estilos personalizados para appkit-button */
+
+.wallet-button-container {
+  --appkit-button-height: auto;
+  --appkit-button-width: auto;
+  --appkit-button-padding: 0.5rem 1rem;
+  --appkit-button-border-radius: 0.5rem;
+  --appkit-button-background: rgba(var(--secondary, 240 240 240), 0.1);
+  --appkit-button-hover-background: rgba(var(--secondary, 240 240 240), 0.2);
+  --appkit-button-connect-text: "Conectar wallet";
+  --appkit-button-border: 1px solid rgba(var(--primary, 33 33 186), 0.2);
+  --appkit-button-font-weight: 500;
+  --appkit-button-font-size: 0.875rem;
+  --appkit-button-text-color: var(--foreground, #111);
+  --appkit-button-hover-scale: 1.01;
+  --appkit-button-transition: all 0.2s ease;
+  --appkit-button-display: flex;
+  --appkit-button-align-items: center;
+  --appkit-button-gap: 0.5rem;
+  display: inline-block;
+}
+
+/* Ajustes para asegurar que el botón tenga el estilo correcto en todos los temas */
+appkit-button {
+  display: var(--appkit-button-display) !important;
+  align-items: var(--appkit-button-align-items) !important;
+  gap: var(--appkit-button-gap) !important;
+  padding: var(--appkit-button-padding) !important;
+  height: var(--appkit-button-height) !important;
+  width: var(--appkit-button-width) !important;
+  border-radius: var(--appkit-button-border-radius) !important;
+  background: var(--appkit-button-background) !important;
+  border: var(--appkit-button-border) !important;
+  font-weight: var(--appkit-button-font-weight) !important;
+  font-size: var(--appkit-button-font-size) !important;
+  color: var(--appkit-button-text-color) !important;
+  transition: var(--appkit-button-transition) !important;
+  cursor: pointer !important;
+}
+
+/* Estilo para hover */
+appkit-button:hover {
+  background: var(--appkit-button-hover-background) !important;
+  transform: scale(var(--appkit-button-hover-scale)) !important;
+}
+
+/* Estilo cuando la wallet está conectada */
+appkit-button[data-status="connected"] {
+  --appkit-button-background: rgba(var(--primary, 33 33 186), 0.1);
+  --appkit-button-border: 1px solid rgba(var(--primary, 33 33 186), 0.3);
+}
+
+/* Alinear el texto e iconos dentro del botón */
+appkit-button::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-wallet'%3E%3Cpath d='M21 12V7H5a2 2 0 0 1 0-4h14v4'/%3E%3Cpath d='M3 5v14a2 2 0 0 0 2 2h16v-5'/%3E%3Cpath d='M18 12a2 2 0 0 0 0 4h4v-4Z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 0.5rem;
+}
+
+/* Ajustes específicos para modo oscuro */
+.dark appkit-button {
+  --appkit-button-text-color: var(--foreground, #f8f8f8);
+  --appkit-button-background: rgba(var(--secondary, 40 40 60), 0.2);
+  --appkit-button-hover-background: rgba(var(--secondary, 40 40 60), 0.3);
+}
+
+/* Estilos para estados específicos (loading, error) */
+appkit-button[data-status="loading"] {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+appkit-button[data-status="error"] {
+  --appkit-button-background: rgba(var(--destructive, 220 38 38), 0.1);
+  --appkit-button-border: 1px solid rgba(var(--destructive, 220 38 38), 0.3);
+}
