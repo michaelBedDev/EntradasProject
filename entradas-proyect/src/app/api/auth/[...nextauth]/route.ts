@@ -1,5 +1,5 @@
 // src/app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import credentialsProvider from "next-auth/providers/credentials";
 import {
   type SIWESession,
@@ -92,8 +92,7 @@ const providers = [
   }),
 ];
 
-const handler = NextAuth({
-  // https://next-auth.js.org/configuration/providers/oauth
+export const authOptions: NextAuthOptions = {
   secret: nextAuthSecret,
   providers,
   session: {
@@ -108,6 +107,13 @@ const handler = NextAuth({
         const [, , address] = (token.sub as string).split(":");
         token.supabase = createSupabaseJwt(address); // Aquí se firma el JWT de supabase y se guarda en la sesión (token next-auth)
       }
+
+      // Regenerar el token si está a menos de 1 minuto de expirar
+      if (token.supabase && Date.now() > token.supabase.exp * 1000 - 60_000) {
+        const [, , address] = (token.sub as string).split(":");
+        token.supabase = createSupabaseJwt(address);
+      }
+
       return token;
     },
     // Esto se ejecuta cada vez que se accede a la sesión
@@ -127,11 +133,11 @@ const handler = NextAuth({
         }
       }
 
-      // refrescar mantener token??
-
       return session;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

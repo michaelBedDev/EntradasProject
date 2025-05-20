@@ -25,6 +25,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import ProtectedLink from "@/components/ProtectedLink";
+import { useAuthModal } from "@/components/AuthRequiredModal";
 
 import {
   DropdownMenu,
@@ -45,25 +47,31 @@ const items = [
     title: "Dashboard",
     url: "/app",
     icon: Home,
+    protected: true,
   },
   {
     title: "Explorar Eventos",
     url: "/eventos",
     icon: Calendar,
+    protected: false,
   },
   {
     title: "Mis Entradas",
     url: "/mis-entradas",
     icon: Inbox,
+    protected: true,
   },
   {
     title: "Ajustes",
     url: "/ajustes",
     icon: Settings,
+    protected: true,
   },
 ];
 
 const AppSidebar = () => {
+  const { open } = useAuthModal();
+
   return (
     <Sidebar collapsible="icon">
       <AppSidebarHeader name="John Doe" />
@@ -76,10 +84,17 @@ const AppSidebar = () => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link href={item.url} prefetch={false}>
-                      <item.icon className="mr-2 h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
+                    {item.protected ? (
+                      <ProtectedLink href={item.url} showAuthModal={open}>
+                        <item.icon className="mr-2 h-4 w-4" />
+                        <span>{item.title}</span>
+                      </ProtectedLink>
+                    ) : (
+                      <Link href={item.url} prefetch={false}>
+                        <item.icon className="mr-2 h-4 w-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

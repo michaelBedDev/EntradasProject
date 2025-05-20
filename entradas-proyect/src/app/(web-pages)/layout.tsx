@@ -3,6 +3,7 @@ import Providers from "../context/providers/Providers"; // tu componente cliente
 import { cookies, headers } from "next/headers";
 import { cookieToInitialState } from "wagmi";
 import { wagmiAdapter } from "../config";
+import AuthRequiredModal from "@/components/AuthRequiredModal";
 
 export default async function WithNavLayout({
   children,
@@ -20,6 +21,7 @@ export default async function WithNavLayout({
   return (
     <Providers defaultOpen={defaultOpen} initialState={initialState}>
       {children}
+      <AuthRequiredModal />
     </Providers>
   );
 }
