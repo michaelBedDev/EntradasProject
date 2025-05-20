@@ -3,22 +3,16 @@
 
 import React from "react";
 import AppKitProvider from "@/app/context/Appkit";
-import { AppSidebar, Navbar } from "@/components/app";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import ModernNavbar from "@/components/app/ModernNavbar";
 import { ThemeProvider } from "next-themes";
 import { cookieToInitialState } from "wagmi";
 
 interface ProvidersProps {
   children: React.ReactNode;
-  defaultOpen: boolean;
   initialState: ReturnType<typeof cookieToInitialState>;
 }
 
-export default function Providers({
-  children,
-  defaultOpen,
-  initialState,
-}: ProvidersProps) {
+export default function Providers({ children, initialState }: ProvidersProps) {
   return (
     <AppKitProvider initialState={initialState}>
       <ThemeProvider
@@ -26,15 +20,14 @@ export default function Providers({
         defaultTheme="system"
         enableSystem
         disableTransitionOnChange>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <div className="flex min-h-screen w-screen overflow-x-hidden">
-            <AppSidebar />
-            <div className="flex-1 flex flex-col">
-              <Navbar />
-              <main className="flex-1 p-0">{children}</main>
-            </div>
+        <div className="flex min-h-screen w-screen bg-background overflow-x-hidden">
+          <div className="flex-1 flex flex-col">
+            <ModernNavbar />
+            <main className="flex-1 pt-36 pb-20 lg:pb-4">
+              <div className="px-4 lg:px-6">{children}</div>
+            </main>
           </div>
-        </SidebarProvider>
+        </div>
       </ThemeProvider>
     </AppKitProvider>
   );

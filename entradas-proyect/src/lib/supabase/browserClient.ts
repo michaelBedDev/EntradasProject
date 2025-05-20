@@ -25,6 +25,9 @@ export function getSupabaseClient(accessToken?: string): SupabaseClient<Database
   });
 }
 
+// Alias para compatibilidad con código existente
+export const createBrowserClient = getSupabaseClient;
+
 // PARA USARLO EN UN COMPONENTE REACT:
 // const { data: session } = useSession();
 
