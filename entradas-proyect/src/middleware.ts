@@ -7,7 +7,7 @@ const publicRoutes = [
   "/eventos", // Explorar eventos (especificada por el usuario)
   "/api/auth", // Rutas de autenticación
   "/login", // Por si hay una página de login
-  "/", // Página principal
+  "/api", // Página principal
   "/_next", // Recursos estáticos
   "/favicon.ico", // Favicon
 ];

@@ -10,7 +10,7 @@ import { createSupabaseJwt } from "@/lib/supabase/utils";
 import NextAuth, { NextAuthOptions, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
-const nextAuthSecret = process.env.NEXTAUTH_SECRET;
+const nextAuthSecret = process.env.NEXT_PUBLIC_NEXTAUTH_SECRET;
 if (!nextAuthSecret) {
   throw new Error("NEXTAUTH_SECRET is not set");
 }
@@ -19,6 +19,8 @@ const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 if (!projectId) {
   throw new Error("NEXT_PUBLIC_PROJECT_ID is not set");
 }
+
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 const providers = [
   credentialsProvider({
@@ -87,20 +89,53 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    // generamos aquí el JWT de Supabase la primera vez
-    // Esto solo se ejecuta la primera vez que el usuario inicia sesión
-
     async jwt({ token, user }: { token: JWT; user?: { id: string } }) {
-      if (user) {
+      if (user && token.sub) {
         // token.sub === user.id === "chainId:address"
         const [, address] = token.sub.split(":");
-        token.supabase = createSupabaseJwt(address); // Aquí se firma el JWT de supabase y se guarda en la sesión (token next-auth)
+
+        // Si no existe el JWT de supabase, lo creamos (primera vez)
+        token.supabase = createSupabaseJwt(address);
       }
 
       // Regenerar el token si está a menos de 1 minuto de expirar
-      if (token.supabase && Date.now() > token.supabase.exp * 1000 - 60_000) {
-        const [, , address] = token.sub.split(":");
+      if (
+        token.supabase &&
+        token.sub &&
+        Date.now() > token.supabase.exp * 1000 - 60_000
+      ) {
+        const [, _chainId, address] = token.sub.split(":");
+
         token.supabase = createSupabaseJwt(address);
+      }
+
+      // Hacemos una llamada para obtener el rol del usuario
+      try {
+        // Extract address from token.sub
+        const address = token.sub ? token.sub.split(":").pop() : "";
+
+        const response = await fetch(`${baseUrl}/api/users/check-role`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ wallet: address }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error fetching user role");
+        }
+
+        const data = await response.json();
+
+        console.log("User role data:", data);
+
+        // Guardamos el rol del usuario en el token
+        if (data.role) {
+          token.userRole = data.role;
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
       }
 
       return token;
@@ -118,6 +153,11 @@ export const authOptions: NextAuthOptions = {
         // añadimos el JWT de Supabase a la sesión expuesta al cliente. tiene tipo JWT.supabase
         if (token.supabase) {
           session.supabase = token.supabase;
+        }
+
+        // añadimos el rol del usuario a la sesión expuesta al cliente
+        if (token.userRole) {
+          session.userRole = token.userRole;
         }
       }
 

@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
-import { useUserRole } from "@/hooks/use-user-role";
-import { UserRole } from "@/types/users.types";
+
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -37,6 +36,8 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuthModal } from "@/components/AuthRequiredModal";
+import { RolUsuario } from "@/types/rol-usuario";
+import { useRolUsuario } from "@/hooks/use-user-role";
 
 // Definir los enlaces para cada tipo de usuario
 const userLinks = [
@@ -90,7 +91,7 @@ const adminSecondaryLinks = [
 const ModernNavbar = () => {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const { role, isLoading } = useUserRole();
+  const { role, isLoading } = useRolUsuario();
   const { data: session } = useSession();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -110,25 +111,22 @@ const ModernNavbar = () => {
   let secondaryLinks = userSecondaryLinks; // Enlaces secundarios por defecto
 
   useEffect(() => {
-    if (role === UserRole.Organizador) {
+    if (role === RolUsuario.ORGANIZADOR) {
       console.log("🎭 Aplicando enlaces de organizador");
-    } else if (role === UserRole.Admin) {
+    } else if (role === RolUsuario.ADMINISTRADOR) {
       console.log("🎭 Aplicando enlaces de administrador");
     } else {
       console.log("🎭 Aplicando enlaces de usuario normal");
     }
   }, [role]);
 
-  if (role === UserRole.Organizador) {
-    console.log("Mostrando enlaces de organizador");
+  if (role === RolUsuario.ORGANIZADOR) {
     links = organizerLinks;
     secondaryLinks = organizerSecondaryLinks;
-  } else if (role === UserRole.Admin) {
-    console.log("Mostrando enlaces de administrador");
+  } else if (role === RolUsuario.ADMINISTRADOR) {
     links = adminLinks;
     secondaryLinks = adminSecondaryLinks;
   } else {
-    console.log("Mostrando enlaces de usuario");
     links = userLinks;
     secondaryLinks = userSecondaryLinks;
   }
@@ -393,9 +391,9 @@ const ModernNavbar = () => {
             Rol:{" "}
             <span
               className={`font-bold ${
-                role === UserRole.Organizador
+                role === RolUsuario.ORGANIZADOR
                   ? "text-green-400"
-                  : role === UserRole.Admin
+                  : role === RolUsuario.ADMINISTRADOR
                   ? "text-red-400"
                   : "text-blue-400"
               }`}>

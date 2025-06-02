@@ -47,6 +47,7 @@ export interface SupabaseJwt {
 import { Database as DB } from "@/types/supabase.types";
 
 declare global {
-  type User = DB["public"]["Tables"]["usuarios"]["Row"];
+  type Usuario = DB["public"]["Tables"]["usuarios"]["Row"];
   type Evento = DB["public"]["Tables"]["eventos"]["Row"];
+  type Entrada = DB["public"]["Tables"]["entradas"]["Row"];
 }
