@@ -1,26 +1,14 @@
 // src/app/api/auth/[...nextauth]/route.ts
-import NextAuth, { NextAuthOptions } from "next-auth";
 import credentialsProvider from "next-auth/providers/credentials";
 import {
-  type SIWESession,
   /* verifySignature, */
   getChainIdFromMessage,
   getAddressFromMessage,
 } from "@reown/appkit-siwe";
 import { createPublicClient, http } from "viem";
 import { createSupabaseJwt } from "@/lib/supabase/utils";
-
-declare module "next-auth" {
-  interface Session extends SIWESession {
-    address: string;
-    chainId: number;
-    // añadimos aquí el JWT de Supabase
-    supabase: {
-      token: string;
-      exp: number;
-    };
-  }
-}
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
 const nextAuthSecret = process.env.NEXTAUTH_SECRET;
 if (!nextAuthSecret) {
@@ -101,23 +89,23 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     // generamos aquí el JWT de Supabase la primera vez
     // Esto solo se ejecuta la primera vez que el usuario inicia sesión
-    async jwt({ token, user }) {
+
+    async jwt({ token, user }: { token: JWT; user?: { id: string } }) {
       if (user) {
         // token.sub === user.id === "chainId:address"
-        const [, , address] = (token.sub as string).split(":");
+        const [, address] = token.sub.split(":");
         token.supabase = createSupabaseJwt(address); // Aquí se firma el JWT de supabase y se guarda en la sesión (token next-auth)
       }
 
       // Regenerar el token si está a menos de 1 minuto de expirar
       if (token.supabase && Date.now() > token.supabase.exp * 1000 - 60_000) {
-        const [, , address] = (token.sub as string).split(":");
+        const [, , address] = token.sub.split(":");
         token.supabase = createSupabaseJwt(address);
       }
 
       return token;
     },
-    // Esto se ejecuta cada vez que se accede a la sesión
-    session({ session, token }) {
+    session({ session, token }: { session: Session; token: JWT }) {
       if (!token.sub) {
         return session;
       }

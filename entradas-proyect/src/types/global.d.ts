@@ -1,41 +1,52 @@
 // src/types/global.d.ts
-import { DefaultSession } from "next-auth";
+
 import { DefaultJWT } from "next-auth/jwt";
 
-// 1) Ampliación del JWT interno que usa NextAuth en jwt()
+// Declaración del tipo del JWT de NextAuth
+
+/**
+ * Token.sub tiene el formato "chainId:address"
+ * token.supabase tiene el JWT firmado por supabase
+ * token.userRole tiene el rol del usuario (admin, user, etc.)
+ */
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
-    supabase?: {
-      token: string;
-      exp: number;
-    };
+    supabase?: SupabaseJwt;
+    userRole?: string;
   }
 }
 
-// 2) Ampliación de la sesión / user que usa NextAuth en session()
+// Declaración del tipo de sesión de NextAuth
+
+/**
+ * Session.address es la dirección del usuario
+ * Session.chainId es el ID de la cadena del usuario
+ * Session.supabase es el JWT firmado por supabase
+ * Session.userRole es el rol del usuario (admin, user, etc.)
+ */
 declare module "next-auth" {
-  // Aquí le decimos que el objeto session tiene un id con la wallet y la chainId, y un objeto supabase con el token y la expiración.
-  interface Session extends DefaultSession {
-    address: string;
-    chainId: number;
-    supabase: {
-      token: string;
-      exp: number;
-    };
-  }
-
-  // Aquí le decimos que el objeto user de authorize() tiene un id con la wallet y la chainId.
-  interface User {
-    id: string;
+  interface Session extends SIWESession {
+    address?: string;
+    chainId?: number;
+    supabase?: SupabaseJwt;
+    userRole?: string;
   }
 }
 
-// Tipado para el payload de tu JWT custom de Supabase
-export interface SupabaseJwtToken {
-  sub: string;
-  role: string;
-  iat: number;
+/**
+ * Interfaz para el JWT firmado por Supabase
+ * - token: JWT firmado por Supabase
+ * - exp: Expiración del token en formato timestamp UNIX (segundos)
+ */
+export interface SupabaseJwt {
+  token: string;
   exp: number;
-  aud?: string;
-  wallet: string;
+}
+
+/* TIPOS DE LA BASE DE DATOS */
+import { Database as DB } from "@/types/supabase.types";
+
+declare global {
+  type User = DB["public"]["Tables"]["usuarios"]["Row"];
+  type Evento = DB["public"]["Tables"]["eventos"]["Row"];
 }
