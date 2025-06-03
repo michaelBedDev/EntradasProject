@@ -97,13 +97,13 @@ const ModernNavbar = ({ links }: { links: LinkType[] }) => {
                     <Link
                       href={link.href}
                       className={`
-            relative flex items-center px-4 py-1.5 rounded-full transition-all duration-200
-            ${
-              isActive
-                ? "text-primary font-medium"
-                : "text-muted-foreground hover:text-foreground hover:bg-background/80"
-            }
-              `}>
+        relative flex items-center px-4 py-1.5 rounded-full transition-all duration-200
+        ${
+          isActive
+            ? "text-primary font-medium"
+            : "text-muted-foreground hover:text-foreground hover:bg-background/80"
+        }
+          `}>
                       <div className="h-4 w-4 mr-2 flex items-center justify-center">
                         {Icon && (
                           <Icon className={`${isActive ? "text-primary" : ""}`} />
