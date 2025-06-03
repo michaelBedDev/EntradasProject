@@ -104,7 +104,7 @@ export const authOptions: NextAuthOptions = {
         token.sub &&
         Date.now() > token.supabase.exp * 1000 - 60_000
       ) {
-        const [, _chainId, address] = token.sub.split(":");
+        const [, , address] = token.sub.split(":");
 
         token.supabase = createSupabaseJwt(address);
       }
@@ -128,11 +128,9 @@ export const authOptions: NextAuthOptions = {
 
         const data = await response.json();
 
-        console.log("User role data:", data);
-
         // Guardamos el rol del usuario en el token
         if (data.role) {
-          token.userRole = data.role;
+          token.userRole = data.role || "usuario";
         }
       } catch (error) {
         console.error("Error fetching user role:", error);

@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       .from("usuarios")
       .select("wallet, rol")
       .eq("wallet", wallet)
-      .single();
+      .maybeSingle();
 
     if (error) {
       return NextResponse.json(

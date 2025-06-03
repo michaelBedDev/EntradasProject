@@ -51,3 +51,10 @@ declare global {
   type Evento = DB["public"]["Tables"]["eventos"]["Row"];
   type Entrada = DB["public"]["Tables"]["entradas"]["Row"];
 }
+
+/* TIPOS ADICIONALES */
+export interface LinkType {
+  href: string;
+  label: string;
+  icon: string; // Use the type of the icon component
+}
