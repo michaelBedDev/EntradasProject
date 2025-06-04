@@ -1,7 +1,6 @@
 // app/(user)/explorar-eventos/EventosClient.tsx
 "use client";
 
-import { EventRow } from "@/types/events.types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,31 +13,16 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
-interface Props {
-  eventos: EventRow[];
-  q: string;
-}
-
-export default function EventosClient({ eventos, q }: Props) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [eventosData, setEventosData] = useState<EventRow[]>([]);
-
-  // Simular carga de datos
-  useEffect(() => {
-    // Simulación de un pequeño delay para mostrar el skeleton
-    const timer = setTimeout(() => {
-      setEventosData(eventos);
-      setIsLoading(false);
-    }, 800);
-
-    return () => clearTimeout(timer);
-  }, [eventos]);
-
-  const handleShare = (evento: EventRow) => {
+export default function EventosList({
+  eventos,
+  query,
+}: {
+  eventos: Evento[];
+  query: string;
+}) {
+  const handleShare = (evento: Evento) => {
     const url = `${window.location.origin}/eventos/${evento.id}`;
 
     if (navigator.share) {
@@ -51,16 +35,6 @@ export default function EventosClient({ eventos, q }: Props) {
         .catch((error) => {
           console.error("Error compartiendo:", error);
         });
-    } else {
-      // Fallback para navegadores que no soportan Web Share API
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          toast.success("¡Enlace copiado al portapapeles!");
-        })
-        .catch(() => {
-          toast.error("No se pudo copiar el enlace");
-        });
     }
   };
 
@@ -69,13 +43,12 @@ export default function EventosClient({ eventos, q }: Props) {
       {/* Encabezado con estilo Apple - Aumentado el espacio vertical */}
       <div className="mb-16 text-center mt-8">
         <h1 className="text-5xl font-bold tracking-tight mb-6">
-          {q ? `Resultados para "${q}"` : "Descubre eventos"}
+          {query ? `Resultados para "${query}"` : "Descubre eventos"}
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           Explora los mejores eventos disponibles y reserva tus entradas ahora.
         </p>
       </div>
-
       {/* Barra de búsqueda con estilo moderno */}
       <div className="mb-12">
         <form
@@ -87,7 +60,7 @@ export default function EventosClient({ eventos, q }: Props) {
             <input
               type="text"
               name="query"
-              defaultValue={q}
+              defaultValue={query}
               placeholder="Buscar eventos..."
               className="flex-1 py-3 outline-none bg-transparent"
             />
@@ -99,74 +72,33 @@ export default function EventosClient({ eventos, q }: Props) {
           </div>
         </form>
       </div>
-
-      {isLoading ? (
-        // Skeleton loading para las tarjetas de eventos - mostrar mismo número que eventos reales
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(eventos.length || 3)].map((_, i) => (
-            <EventoCardSkeleton key={i} />
-          ))}
-        </div>
-      ) : eventosData.length === 0 ? (
+      {eventos.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-muted-foreground mb-4 text-xl">
-            {q ? "No se encontraron eventos." : "No hay eventos publicados todavía."}
+            {query
+              ? "No se encontraron eventos."
+              : "No hay eventos publicados todavía."}
           </div>
-          <Button
-            variant="outline"
-            onClick={() => (window.location.href = "/eventos")}>
-            Ver todos los eventos
+          <Button variant="outline" asChild>
+            <Link href="/eventos">Ver todos los eventos</Link>
           </Button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {eventosData.map((evento) => (
-            <EventoCard
-              key={evento.id}
-              evento={evento}
-              onShare={() => handleShare(evento)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function EventoCardSkeleton() {
-  return (
-    <div className="rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg relative h-[400px] bg-card">
-      {/* Imagen skeleton con altura completa */}
-      <Skeleton className="absolute inset-0 w-full h-full rounded-xl" />
-
-      {/* Fecha skeleton */}
-      <div className="absolute top-4 left-4 z-10">
-        <Skeleton className="h-16 w-16 rounded-xl" />
-      </div>
-
-      {/* Overlay con efecto degradado para el contenido */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent rounded-xl">
-        <div className="absolute inset-x-0 bottom-0 p-6 space-y-4">
-          <Skeleton className="h-7 w-4/5 mb-2" />
-          <Skeleton className="h-4 w-2/3 mb-3" />
-
-          <div className="grid grid-cols-2 gap-2 mb-4">
-            <Skeleton className="h-5 rounded-full" />
-            <Skeleton className="h-5 rounded-full" />
-          </div>
-
-          <div className="flex justify-between">
-            <Skeleton className="h-9 w-24 rounded-lg" />
-            <Skeleton className="h-9 w-28 rounded-lg" />
-          </div>
-        </div>
+      ) : null}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {eventos.map((evento) => (
+          <EventoCard
+            key={evento.id}
+            evento={evento}
+            onShare={() => handleShare(evento)}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
 interface EventoCardProps {
-  evento: EventRow;
+  evento: Evento;
   onShare: () => void;
 }
 
@@ -224,7 +156,7 @@ function EventoCard({ evento, onShare }: EventoCardProps) {
             </h3>
             <div className="flex items-center gap-1 text-white/80 text-sm">
               <UserIcon className="h-3 w-3" />
-              <span>{evento.organizador_nombre || "Organizador"}</span>
+              <span>{evento.organizador_id || "Organizador"}</span>
             </div>
           </div>
 

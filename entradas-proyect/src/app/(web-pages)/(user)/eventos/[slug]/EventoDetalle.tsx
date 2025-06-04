@@ -15,7 +15,7 @@ import {
   InfoIcon,
   AlertCircleIcon,
 } from "lucide-react";
-import { EventRow } from "@/types/events.types";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,7 +45,7 @@ import {
 import { cn } from "@/lib/utils";
 
 interface EventoDetalleProps {
-  evento: EventRow;
+  evento: Evento;
 }
 
 export default function EventoDetalle({ evento }: EventoDetalleProps) {
@@ -54,14 +54,14 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
   // Formateo de fecha y hora
-  const fecha = new Date(evento.fecha);
-  const fechaFormateada = format(fecha, "EEEE d 'de' MMMM 'de' yyyy", {
-    locale: es,
-  });
-  const horaFormateada = format(fecha, "HH:mm", { locale: es }) + "h";
+  // const fecha = new Date(evento.fecha);
+  // const fechaFormateada = format(fecha, "EEEE d 'de' MMMM 'de' yyyy", {
+  //   locale: es,
+  // });
+  // const horaFormateada = format(fecha, "HH:mm", { locale: es }) + "h";
 
-  // Precio formateado con 2 decimales
-  const precio = evento.precio ? evento.precio.toFixed(2) : "0.00";
+  // // Precio formateado con 2 decimales
+  // const precio = evento.precio ? evento.precio.toFixed(2) : "0.00";
 
   // Función para manejo de likes
   const handleLikeClick = () => {
@@ -81,7 +81,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
       try {
         await navigator.share({
           title: evento.titulo,
-          text: evento.descripcion,
+          text: evento.descripcion ?? "",
           url: window.location.href,
         });
         toast("Compartido correctamente", {
@@ -143,16 +143,16 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
             </h1>
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <UserIcon className="w-4 h-4" />
-              <span>Organizado por {evento.organizador_nombre || "Anónimo"}</span>
+              <span>Organizado por {evento.organizador_id || "Anónimo"}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
                 <CalendarIcon className="w-3 h-3 mr-1" />
-                {fechaFormateada}
+                {/* {fechaFormateada} */}
               </Badge>
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
                 <ClockIcon className="w-3 h-3 mr-1" />
-                {horaFormateada}
+                {/* {horaFormateada} */}
               </Badge>
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
                 <MapPinIcon className="w-3 h-3 mr-1" />
@@ -280,7 +280,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <UserIcon className="w-5 h-5 mr-2 text-primary" />
-                      {evento.organizador_nombre || "Organizador"}
+                      {evento.organizador_id || "Organizador"}
                     </CardTitle>
                     <CardDescription>
                       Información sobre el organizador y eventos anteriores.
@@ -288,7 +288,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
                   </CardHeader>
                   <CardContent className="space-y-4 text-muted-foreground">
                     <p>
-                      {evento.organizador_nombre} es un organizador de eventos con
+                      {evento.organizador_id} es un organizador de eventos con
                       experiencia en la creación de experiencias únicas para todo
                       tipo de público.
                     </p>
@@ -324,10 +324,10 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div>
+                  {/* <div>
                     <p className="font-medium">Precio por entrada</p>
                     <p className="text-3xl font-bold">{precio}€</p>
-                  </div>
+                  </div> */}
                   <div className="w-24">
                     <Select value={cantidad} onValueChange={handleCantidadChange}>
                       <SelectTrigger className="w-full">
@@ -343,7 +343,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
                     </Select>
                   </div>
                 </div>
-                <div className="pt-4">
+                {/* <div className="pt-4">
                   <div className="flex justify-between font-medium mb-1">
                     <span>Subtotal</span>
                     <span>
@@ -362,7 +362,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
                       {(Number(precio) * entradasSeleccionadas * 1.05).toFixed(2)}€
                     </span>
                   </div>
-                </div>
+                </div> */}
                 <Button className="w-full" size="lg" onClick={handleCompra}>
                   Comprar entradas
                 </Button>

@@ -1,4 +1,4 @@
-import { useSessionData } from "@/hooks/useSessionData";
+import { useSessionData } from "@/lib/auth/useSessionData";
 import { RolUsuario } from "@/types/rol-usuario";
 
 export default function DebugElement() {

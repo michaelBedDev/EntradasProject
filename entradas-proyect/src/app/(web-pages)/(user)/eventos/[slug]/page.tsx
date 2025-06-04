@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getEventById } from "@/app/actions/db/events";
+
 import EventoDetalle from "./EventoDetalle";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,7 +24,21 @@ export default async function EventoPage({ params }: EventoPageProps) {
     const id = uuidMatch ? uuidMatch[0] : slug;
 
     // Obtener los datos del evento por su ID
-    const evento = await getEventById(id);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/eventos/${id}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
+
+    // Si la respuesta no es correcta, mostrar 404
+    if (!response.ok) {
+      return notFound();
+    }
+
+    // Parsear la respuesta como JSON
+    const evento = await response.json();
 
     // Si no se encuentra el evento, mostrar 404
     if (!evento) {
