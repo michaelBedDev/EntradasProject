@@ -2,10 +2,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { headers } from "next/headers";
 import { ThemeProvider } from "./context/providers/ThemeProvider";
 import Providers from "./context/providers/Providers";
 import { cookieToInitialState } from "wagmi";
-import { headers } from "next/headers";
 import { wagmiAdapter } from "./config";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist" });

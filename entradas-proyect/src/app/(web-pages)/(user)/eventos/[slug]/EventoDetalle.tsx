@@ -44,11 +44,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 
-interface EventoDetalleProps {
-  evento: Evento;
-}
-
-export default function EventoDetalle({ evento }: EventoDetalleProps) {
+export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }) {
   const [cantidad, setCantidad] = useState<string>("1");
   const [entradasSeleccionadas, setEntradasSeleccionadas] = useState<number>(1);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -116,7 +112,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
 
   return (
     <>
-      {/* Imagen principal de fondo con degradado - inspirada en diseño Apple */}
+      {/* Imagen principal de fondo con degradado */}
       <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <div className="absolute inset-0">
           {evento.imagen_uri ? (
@@ -143,7 +139,7 @@ export default function EventoDetalle({ evento }: EventoDetalleProps) {
             </h1>
             <div className="flex items-center gap-2 mb-4 text-muted-foreground">
               <UserIcon className="w-4 h-4" />
-              <span>Organizado por {evento.organizador_id || "Anónimo"}</span>
+              <span>Organizado por {evento.organizador?.nombre || "Anónimo"}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">

@@ -3,7 +3,6 @@ export { default as AppBarChart } from "./AppBarChart";
 export { default as AppLineChart } from "./AppLineChart";
 export { default as AppPieChart } from "./AppPieChart";
 export { default as CardList } from "./CardList";
-export { default as ConnectWalletButton } from "./ConnectWalletButton";
 export { default as DataTablePagination } from "./DataTablePagination";
 export { default as EditUser } from "./EditUser";
 export { default as FancyThemeSwitch } from "./FancyThemeSwitch";

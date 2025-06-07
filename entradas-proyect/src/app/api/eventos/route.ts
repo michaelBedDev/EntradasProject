@@ -25,8 +25,10 @@ export async function GET(request: NextRequest) {
         fecha,
         lugar,
         imagen_uri,
-        organizador_id,
-        status
+        status,
+        organizador:organizador_id (
+        nombre
+      )
       `,
       )
       .eq("status", "aprobado")

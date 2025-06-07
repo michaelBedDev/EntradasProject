@@ -6,14 +6,17 @@ import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@/types/supabase.types";
 import { getSupabaseToken } from "./utils";
 
+/**
+ * Crea un cliente de Supabase para el servidor.
+ * Este cliente se utiliza para realizar consultas a la base de datos de Supabase
+ * y manejar la autenticación del usuario.
+ * @description utiliza getSupabaseToken para obtener el JWT de Supabase de la sesión de NextAuth
+ * @returns {Promise<import('@supabase/supabase-js').SupabaseClient>} Cliente de Supabase configurado.
+ */
 export async function getSupabaseServerClient() {
-  // 1) Obtenemos el token de Supabase (posiblemente regenerado)
   const supabaseObject = await getSupabaseToken();
-
-  // 2) Leemos las cookies para el cliente de Supabase
   const cookieStore = await cookies();
 
-  // 3) Creamos el cliente de Supabase con @supabase/ssr
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

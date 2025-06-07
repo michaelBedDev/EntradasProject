@@ -34,7 +34,10 @@ export async function GET(
         fecha,
         lugar,
         imagen_uri,
-        organizador_id
+        organizador_id,
+        organizador:organizador_id (
+        nombre
+      )
       `,
       )
       .eq("id", id)
@@ -45,7 +48,7 @@ export async function GET(
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json({ evento: data }, { status: 200 });
+    return NextResponse.json(data, { status: 200 });
   } catch (err) {
     console.error("Unexpected error:", err);
     return NextResponse.json(

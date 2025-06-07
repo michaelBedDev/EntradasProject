@@ -49,6 +49,11 @@ import { Database as DB } from "@/types/supabase.types";
 declare global {
   type Usuario = DB["public"]["Tables"]["usuarios"]["Row"];
   type Evento = DB["public"]["Tables"]["eventos"]["Row"];
+  type EventoWOrganizador = Evento & {
+    organizador?: {
+      nombre: string;
+    };
+  };
   type Entrada = DB["public"]["Tables"]["entradas"]["Row"];
 }
 

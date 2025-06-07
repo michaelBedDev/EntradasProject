@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SearchBar } from "../features/layout/components/SearchBar";
 
 export default function LandingPage() {
   // Para animaciones y aparición progresiva
@@ -239,25 +240,7 @@ export default function LandingPage() {
             </p>
 
             {/* Barra de búsqueda moderna reutilizada */}
-            <form
-              action="/eventos"
-              method="get"
-              className="flex w-full max-w-lg mx-auto rounded-xl overflow-hidden border shadow-sm focus-within:ring-2 focus-within:ring-primary/50 bg-background/70 backdrop-blur-md">
-              <div className="flex-1 flex items-center px-4">
-                <SearchIcon className="text-muted-foreground mr-2 h-5 w-5" />
-                <input
-                  type="text"
-                  name="query"
-                  placeholder="Buscar eventos..."
-                  className="flex-1 py-3 outline-none bg-transparent"
-                />
-              </div>
-              <div className="flex items-stretch">
-                <Button type="submit" className="rounded-l-none py-6 px-6">
-                  Buscar
-                </Button>
-              </div>
-            </form>
+            <SearchBar />
           </div>
 
           {/* Tarjetas de ventajas con animación */}

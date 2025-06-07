@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ConnectWalletButton } from "@/components/app";
+// import { ConnectWalletButton } from "@/components/app";
 
 const Navbar = () => {
   const { setTheme } = useTheme();
@@ -78,7 +78,7 @@ const Navbar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         {/* WALLET CONNECTION */}
-        <ConnectWalletButton></ConnectWalletButton>
+        {/* <ConnectWalletButton></ConnectWalletButton> */}
       </div>
     </nav>
   );
