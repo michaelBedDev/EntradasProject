@@ -12,15 +12,19 @@ export const eventoSchema = z.object({
     .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
     .max(1000, { message: "La descripción no puede exceder los 1000 caracteres" }),
 
-  fecha: z.string().refine(
-    (fecha) => {
-      const date = new Date(fecha);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Reinicia la hora a medianoche
-      return date >= today;
-    },
-    { message: "La fecha debe ser hoy o posterior" },
-  ),
+  fecha: z
+    .object({
+      from: z.date(),
+      to: z.date().optional(),
+    })
+    .refine(
+      (fecha) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reinicia la hora a medianoche
+        return fecha.from >= today;
+      },
+      { message: "La fecha de inicio debe ser hoy o posterior" },
+    ),
 
   lugar: z
     .string()

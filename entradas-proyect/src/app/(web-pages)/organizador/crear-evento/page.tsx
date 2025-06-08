@@ -36,12 +36,20 @@ import {
   InfoIcon,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DateRange } from "react-day-picker";
+import { Switch } from "@/components/ui/switch";
 
 export default function CrearEventoPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [date, setDate] = useState<DateRange | undefined>();
+  const [isRange, setIsRange] = useState(false);
 
   // Inicializar formulario con react-hook-form y zod
   const form = useForm<EventoFormValues>({
@@ -49,7 +57,7 @@ export default function CrearEventoPage() {
     defaultValues: {
       titulo: "",
       descripcion: "",
-      fecha: "",
+      fecha: undefined,
       lugar: "",
     },
   });
@@ -171,26 +179,104 @@ export default function CrearEventoPage() {
 
               {/* Fecha */}
               <FormField
-                // control={form.control}
+                control={form.control}
                 name="fecha"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Fecha del evento</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Calendar
-                          mode="single"
-                          defaultMonth={date}
-                          numberOfMonths={2}
-                          selected={date}
-                          onSelect={setDate}
-                          className="rounded-lg border shadow-sm"
+                  <FormItem className="flex flex-col">
+                    <div className="flex items-center justify-between">
+                      <FormLabel>
+                        {isRange ? "Rango de fechas del evento" : "Fecha del evento"}
+                      </FormLabel>
+                      <div className="flex items-center space-x-2">
+                        <FormLabel
+                          htmlFor="range-mode"
+                          className="text-sm text-muted-foreground">
+                          Fecha única
+                        </FormLabel>
+                        <Switch
+                          id="range-mode"
+                          checked={isRange}
+                          onCheckedChange={setIsRange}
                         />
+                        <FormLabel
+                          htmlFor="range-mode"
+                          className="text-sm text-muted-foreground">
+                          Rango de fechas
+                        </FormLabel>
                       </div>
-                    </FormControl>
+                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground",
+                            )}>
+                            {field.value ? (
+                              isRange ? (
+                                date?.from ? (
+                                  date.to ? (
+                                    <>
+                                      {format(date.from, "LLL dd, y", {
+                                        locale: es,
+                                      })}{" "}
+                                      -{" "}
+                                      {format(date.to, "LLL dd, y", { locale: es })}
+                                    </>
+                                  ) : (
+                                    format(date.from, "LLL dd, y", { locale: es })
+                                  )
+                                ) : (
+                                  <span>Selecciona un rango de fechas</span>
+                                )
+                              ) : (
+                                format(new Date(field.value), "LLL dd, y", {
+                                  locale: es,
+                                })
+                              )
+                            ) : (
+                              <span>Selecciona una fecha</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode={isRange ? "range" : "single"}
+                          defaultMonth={
+                            isRange
+                              ? date?.from
+                              : field.value
+                              ? new Date(field.value)
+                              : new Date()
+                          }
+                          selected={
+                            isRange
+                              ? date
+                              : field.value
+                              ? new Date(field.value)
+                              : undefined
+                          }
+                          onSelect={(newDate) => {
+                            if (isRange) {
+                              setDate(newDate as DateRange);
+                              field.onChange(newDate?.from?.toISOString());
+                            } else {
+                              field.onChange((newDate as Date)?.toISOString());
+                            }
+                          }}
+                          numberOfMonths={2}
+                          locale={es}
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormDescription>
-                      Selecciona la fecha en que se realizará el evento
+                      {isRange
+                        ? "Selecciona el rango de fechas en que se realizará el evento"
+                        : "Selecciona la fecha en que se realizará el evento"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

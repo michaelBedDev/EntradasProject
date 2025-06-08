@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       asientos: {
@@ -92,7 +117,8 @@ export type Database = {
         Row: {
           created_at: string | null
           descripcion: string | null
-          fecha: string
+          fecha_fin: string
+          fecha_inicio: string
           id: string
           imagen_uri: string | null
           lugar: string
@@ -103,7 +129,8 @@ export type Database = {
         Insert: {
           created_at?: string | null
           descripcion?: string | null
-          fecha: string
+          fecha_fin: string
+          fecha_inicio: string
           id?: string
           imagen_uri?: string | null
           lugar: string
@@ -114,7 +141,8 @@ export type Database = {
         Update: {
           created_at?: string | null
           descripcion?: string | null
-          fecha?: string
+          fecha_fin?: string
+          fecha_inicio?: string
           id?: string
           imagen_uri?: string | null
           lugar?: string
@@ -316,6 +344,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
