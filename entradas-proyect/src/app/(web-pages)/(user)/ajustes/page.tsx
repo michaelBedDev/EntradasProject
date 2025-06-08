@@ -147,25 +147,6 @@ export default function AjustesPage() {
           </CardHeader>
 
           <CardContent className="pt-6 space-y-6">
-            {/* Tema */}
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                {theme === "dark" ? (
-                  <Moon className="h-5 w-5 mr-2 text-primary" />
-                ) : (
-                  <Sun className="h-5 w-5 mr-2 text-primary" />
-                )}
-                <Label htmlFor="theme-toggle" className="cursor-pointer">
-                  Tema oscuro
-                </Label>
-              </div>
-              <Switch
-                id="theme-toggle"
-                checked={theme === "dark"}
-                onCheckedChange={() => setTheme(theme === "dark" ? "light" : "dark")}
-              />
-            </div>
-
             <Separator />
 
             {/* Notificaciones */}

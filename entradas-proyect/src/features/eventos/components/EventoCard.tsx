@@ -11,6 +11,7 @@ import {
   ShareIcon,
   UserIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
   {
@@ -30,6 +31,10 @@ export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
           console.error("Error compartiendo:", error);
         });
     }
+    toast("Compartido correctamente", {
+      description: "El enlace al evento se ha compartido correctamente.",
+      position: "top-center",
+    });
   };
 
   {

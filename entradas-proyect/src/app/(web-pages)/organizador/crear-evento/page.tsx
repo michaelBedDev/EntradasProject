@@ -35,6 +35,7 @@ import {
   MapPinIcon,
   InfoIcon,
 } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 
 export default function CrearEventoPage() {
   const router = useRouter();
@@ -178,7 +179,14 @@ export default function CrearEventoPage() {
                     <FormControl>
                       <div className="relative">
                         <CalendarIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input type="date" className="pl-10" {...field} />
+                        <Calendar
+                          mode="single"
+                          defaultMonth={date}
+                          numberOfMonths={2}
+                          selected={date}
+                          onSelect={setDate}
+                          className="rounded-lg border shadow-sm"
+                        />
                       </div>
                     </FormControl>
                     <FormDescription>
