@@ -1,6 +1,6 @@
 // app/(with-nav)/layout.tsx  — SERVER COMPONENT
 import AuthRequiredModal from "@/components/AuthRequiredModal";
-import ModernNavbarWrapper from "@/features/layout/components/navbar/NavbarWrapper";
+import NavbarWrapper from "@/features/layout/components/navbar/NavbarWrapper";
 
 export default async function WithNavLayout({
   children,
@@ -9,7 +9,7 @@ export default async function WithNavLayout({
 }) {
   return (
     <>
-      <ModernNavbarWrapper />
+      <NavbarWrapper />
       {children}
       <AuthRequiredModal />
     </>

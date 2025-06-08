@@ -70,32 +70,32 @@ export default function CrearEventoPage() {
   // const onSubmit = async (data: EventoFormValues) => {
   // setIsSubmitting(true);
 
-  try {
-    // // Crear evento en la base de datos
-    // const evento = await createEvent({
-    //   titulo: data.titulo,
-    //   descripcion: data.descripcion,
-    //   fecha: data.fecha,
-    //   lugar: data.lugar,
-    //   imagen_uri: null, // Lo actualizaremos después si hay imagen
-    // });
+  // try {
+  //   // // Crear evento en la base de datos
+  //   // const evento = await createEvent({
+  //   //   titulo: data.titulo,
+  //   //   descripcion: data.descripcion,
+  //   //   fecha: data.fecha,
+  //   //   lugar: data.lugar,
+  //   //   imagen_uri: null, // Lo actualizaremos después si hay imagen
+  //   // });
 
-    // // Si hay imagen, subirla a Supabase Storage
-    // if (imageFile) {
-    //   const imagenUrl = await uploadEventImage(imageFile, evento.id);
+  //   // // Si hay imagen, subirla a Supabase Storage
+  //   // if (imageFile) {
+  //   //   const imagenUrl = await uploadEventImage(imageFile, evento.id);
 
-    //   // Actualizar el evento con la URL de la imagen
-    //   await updateEventImage(evento.id, imagenUrl);
-    // }
+  //   //   // Actualizar el evento con la URL de la imagen
+  //   //   await updateEventImage(evento.id, imagenUrl);
+  //   // }
 
-    toast.success("¡Evento creado con éxito!");
-    redirect("/organizador/mis-eventos");
-  } catch (error) {
-    console.error("Error al crear evento:", error);
-    toast.error("Error al crear el evento");
-  } finally {
-    // setIsSubmitting(false);
-  }
+  //   toast.success("¡Evento creado con éxito!");
+  //   redirect("/organizador/mis-eventos");
+  // } catch (error) {
+  //   console.error("Error al crear evento:", error);
+  //   toast.error("Error al crear el evento");
+  // } finally {
+  //   // setIsSubmitting(false);
+  // }
 
   return (
     <div className="container mx-auto py-10 px-4 max-w-3xl">

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./context/providers/ThemeProvider";
 import Providers from "./context/providers/Providers";
 import { cookieToInitialState } from "wagmi";
 import { wagmiAdapter } from "./config";
+import Navbar from "@/features/layout/components/navbar/Navbar";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -33,7 +34,10 @@ export default async function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange>
-          <Providers initialState={initialState}>{children}</Providers>
+          <Providers initialState={initialState}>
+            <Navbar links={[]} showFullNavbar={false} />
+            {children}
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

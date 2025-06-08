@@ -1,8 +1,11 @@
 // API para verificar el rol del usuario
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 
-export async function POST(req: Request) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ wallet: string }> },
+) {
   /* Esta ruta está protegida por autenticación, pero no la usamos aquí
    * por lo general, los usuarios necesitan estar autenticados para el resto de las rutas
   * pero esta ruta es para verificar el rol de un usuario por su wallet
@@ -15,8 +18,7 @@ export async function POST(req: Request) {
   *
   */
   try {
-    // Obtener la wallet del cuerpo de la solicitud
-    const { wallet } = await req.json();
+    const { wallet } = await params;
 
     if (!wallet) {
       return NextResponse.json({ error: "Se requiere una wallet" }, { status: 400 });

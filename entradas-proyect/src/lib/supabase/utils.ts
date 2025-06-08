@@ -70,26 +70,68 @@ export function isTokenExpiredOrExpiring(exp?: number): boolean {
 /**
  * Obtiene el token de Supabase desde la sesión de NextAuth
  * @description Esta función obtiene el token de Supabase y su expiración desde la sesión de NextAuth.
+ * Si se proporciona `req` y `res`, utiliza `getServerSession` para obtener la sesión del servidor; de lo contrario, utiliza la sesión global.
+ * Req y res son necesarios si esta función se llama desde una API de Next.js.
  * Si no hay sesión o no se encuentra el token, retorna un objeto vacío.
  * @returns Un objeto con el token de Supabase y su expiración
  */
 export async function getSupabaseToken(): Promise<{ token?: string; exp?: number }> {
   try {
-    // Obtener la sesión directamente con getServerSession
+    // Obtener la sesión directamente con getServerSession, no el JWT de NextAuth
     const session = await getServerSession(authOptions);
 
-    // Si no hay sesión, retornar objeto vacío
-    if (!session?.address) {
+    // Verificamos si la sesión existe
+    if (!session) {
       return {};
     }
 
-    // Extraemos el token de Supabase de la sesión
+    if (!session.address) {
+      return {};
+    }
+
     const supabaseObject = {
       token: session.supabase?.token,
       exp: session.supabase?.exp,
     };
 
     return supabaseObject;
+  } catch (error) {
+    console.error("Error al obtener token de Supabase:", error);
+    return {};
+  }
+}
+
+/**
+ * Obtiene el token de Supabase desde la solicitud
+ * @description Esta función obtiene el token de Supabase y su expiración desde la solicitud de Next.js, creada para ser utilizada en rutas API.
+ * Utiliza `getToken` de NextAuth para extraer el token JWT de la solicitud.
+ */
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
+
+export async function getSupabaseTokenFromRequest(
+  request: NextRequest,
+): Promise<{ token?: string; exp?: number }> {
+  try {
+    // Obtiene el token JWT de NextAuth desde la solicitud, no la sesión
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+
+    // Verificamos si el token existe y contiene la propiedad supabase (debería gracias al callback jwt de NextAuth)
+    if (!token) {
+      return {};
+    }
+
+    if (!token.supabase) {
+      return {};
+    }
+
+    return {
+      token: token.supabase.token,
+      exp: token.supabase.exp,
+    };
   } catch (error) {
     console.error("Error al obtener token de Supabase:", error);
     return {};

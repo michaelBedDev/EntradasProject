@@ -27,7 +27,7 @@ if (!projectId) throw new Error("Project ID is not defined");
 export const metadata = {
   name: "Appkit SIWE Example",
   description: "Appkit Siwe Example - Next.js",
-  url: "https://localhost:3000", // origin must match your domain & subdomain
+  url: "http://localhost:3000", // origin must match your domain & subdomain
   icons: ["https://avatars.githubusercontent.com/u/179229932"],
 };
 

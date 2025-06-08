@@ -1,4 +1,4 @@
-import { getSupabaseServerClient } from "@/lib/supabase/serverClient";
+import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
 import { NextResponse, NextRequest } from "next/server";
 
 /**
@@ -11,7 +11,7 @@ import { NextResponse, NextRequest } from "next/server";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { wallet: string } },
+  { params }: { params: Promise<{ wallet: string }> },
 ) {
   const { wallet } = await params;
 
@@ -22,7 +22,7 @@ export async function GET(
     );
   }
 
-  const supabase = await getSupabaseServerClient();
+  const supabase = await getSupabaseClientForAPIs(request);
 
   // Gracias a las RLS de supabase, si el usuario no es el organizador del evento este no se mostrará
   try {
@@ -36,12 +36,10 @@ export async function GET(
       fecha,
       lugar,
       imagen_uri,
-      organizador:organizador_id!inner (
-        wallet
-      )
+      organizador:usuarios!inner(wallet)
     `,
       )
-      .eq("organizador.wallet", wallet);
+      .eq("usuarios.wallet", wallet);
 
     if (error) {
       console.error("Supabase error:", error);
@@ -63,7 +61,7 @@ export async function GET(
 
     return NextResponse.json(data, { status: 200 });
   } catch (err) {
-    console.error("Unexpected error:", err);
+    console.error("Unexpected error:", err instanceof Error ? err.stack : err);
     return NextResponse.json(
       { error: "Error al obtener el evento: " + (err as Error).message },
       { status: 500 },

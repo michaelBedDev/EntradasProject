@@ -4,18 +4,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  SearchIcon,
   CalendarIcon,
   UserIcon,
   MapPinIcon,
   ArrowRightIcon,
-  MoonIcon,
-  SunIcon,
   UsersIcon,
   StarIcon,
   TrendingUpIcon,
   HeartIcon,
-  WalletIcon,
 } from "lucide-react";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { useTheme } from "next-themes";
@@ -41,13 +37,11 @@ export default function LandingPage() {
   const ctaRef = useRef<HTMLElement>(null);
 
   // Para el cambio de tema
-  const { theme, setTheme } = useTheme();
-  const [currentTheme, setCurrentTheme] = useState<string | undefined>(undefined);
+  const { theme } = useTheme();
 
   // Para animaciones al cargar
   useEffect(() => {
     setMounted(true);
-    setCurrentTheme(theme);
 
     // Solo ejecutar animaciones en el cliente
     if (typeof window === "undefined") return;
@@ -174,49 +168,8 @@ export default function LandingPage() {
     if (faqRef.current) observer.observe(faqRef.current);
   }, [theme]);
 
-  // Componente de botón de wallet estilizado
-  const WalletButton = () => (
-    <Button
-      variant="outline"
-      className="flex items-center gap-2 rounded-lg border-primary/20 bg-secondary/10 hover:bg-secondary/20 transition-all font-medium px-4 py-2 text-sm">
-      <WalletIcon className="h-4 w-4 text-primary" />
-      <span>Conectar wallet</span>
-    </Button>
-  );
-
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header con selector de tema */}
-      <header className="fixed w-full bg-background/80 backdrop-blur-md z-50 border-b">
-        <div className="container mx-auto px-8 py-3">
-          <div className="flex justify-between items-center">
-            <div className="font-bold text-xl">Entradas Proyect</div>
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/eventos">Explorar</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/app">Dashboard</Link>
-              </Button>
-              <WalletButton />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="ml-2 rounded-md">
-                {mounted && currentTheme === "dark" ? (
-                  <SunIcon className="h-4 w-4" />
-                ) : mounted && currentTheme === "light" ? (
-                  <MoonIcon className="h-4 w-4" />
-                ) : (
-                  <div className="h-4 w-4" /> // Placeholder para evitar saltos
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section con degradado moderno */}
       <section className="bg-gradient-to-br from-background via-primary/5 to-background pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
         {/* Formas decorativas animadas */}

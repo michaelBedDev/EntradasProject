@@ -8,9 +8,9 @@ export const userLinks: LinkType[] = [
 ];
 
 export const organizerLinks: LinkType[] = [
-  { href: "/app", label: "Dashboard", icon: "Home" },
-  { href: "/organizador/crear-evento", label: "Crear Evento", icon: "PlusCircle" },
   { href: "/organizador/dashboard", label: "Dashboard", icon: "BarChart3" },
+  { href: "/eventos", label: "Explorar", icon: "Search" },
+  { href: "/organizador/crear-evento", label: "Crear Evento", icon: "PlusCircle" },
   { href: "/organizador/mis-eventos", label: "Mis Eventos", icon: "LayoutGrid" },
 ];
 
@@ -35,6 +35,7 @@ import {
   LayoutGrid,
   Menu,
   AppWindow,
+  Search,
   LucideIcon,
 } from "lucide-react";
 
@@ -50,5 +51,6 @@ export const icons: Record<string, LucideIcon> = {
   AppWindow,
   Moon,
   Sun,
+  Search,
   Menu,
 };

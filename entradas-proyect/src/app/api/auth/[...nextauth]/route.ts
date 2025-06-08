@@ -106,6 +106,7 @@ export const authOptions: NextAuthOptions = {
 
       // Hacemos una llamada para obtener el rol del usuario
       const userRole = await getUserRoleFromAPI(token.sub);
+
       token.userRole = userRole;
 
       return token;

@@ -11,19 +11,15 @@ export async function getUserRoleFromAPI(
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   try {
     // Extraer la dirección del token.sub ()
-    const address = tokenSub ? tokenSub.split(":").pop() : "";
+    const wallet = tokenSub ? tokenSub.split(":").pop() : "";
 
-    if (!address) {
+    if (!wallet) {
       console.warn("No se pudo extraer la dirección del token");
       return "usuario";
     }
 
-    const response = await fetch(`${baseUrl}/api/users/check-role`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ wallet: address }),
+    const response = await fetch(`${baseUrl}/api/users/check-role/${wallet}`, {
+      method: "GET",
     });
 
     if (!response.ok) {

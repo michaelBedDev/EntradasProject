@@ -15,7 +15,6 @@ export async function getSessionData() {
   return {
     userRole: session.userRole,
     address: session.address,
-    expires: session.expires,
     supabase: session.supabase,
   };
 }

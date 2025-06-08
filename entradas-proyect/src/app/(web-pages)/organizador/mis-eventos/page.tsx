@@ -35,10 +35,35 @@ export default async function MisEventosPage() {
   //   redirect("/eventos");
   // }
 
-  const url = process.env.NEXT_PUBLIC_API_URL;
-  const eventos: Evento[] = await fetch(
-    `${url}/eventos/organizador/${session.address}`,
-  ).then((res) => res.json());
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const wallet = session.address;
+
+  let eventos: Evento[] = [];
+
+  try {
+    const response = await fetch(`${baseUrl}/eventos/organizador/${wallet}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return (
+          <div className="container mx-auto py-10">
+            <p className="text-center text-muted-foreground">
+              Aún no has creado ningún evento
+            </p>
+            <Button asChild>
+              <Link href="/organizador/crear-evento">
+                <PlusCircleIcon className="mr-2 h-4 w-4" /> Crear mi primer evento
+              </Link>
+            </Button>
+          </div>
+        );
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    eventos = await response.json();
+  } catch (error) {
+    console.error("Error fetching eventos:", error);
+  }
 
   // Función para obtener el color del badge según el estado
   const getBadgeVariant = (
