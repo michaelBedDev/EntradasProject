@@ -15,13 +15,11 @@ export default async function EventosWrapper({ searchParams }: Props) {
   let eventos = [];
   try {
     // Construir URL con el parámetro de búsqueda si existe
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
-    let apiUrl = `${baseUrl}/api/eventos`;
 
-    // Añadir parámetro de búsqueda solo si hay texto
-    if (q) {
-      apiUrl += `?query=${encodeURIComponent(q)}`;
-    }
+    const apiUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/eventos${
+      q ? `?busqueda=${encodeURIComponent(q)}` : ""
+    }`;
+    console.log("[DEBUG] apiUrl", apiUrl);
 
     const response = await fetch(apiUrl, {
       method: "GET",
@@ -32,8 +30,9 @@ export default async function EventosWrapper({ searchParams }: Props) {
       throw new Error(`Error fetching eventos: ${response.status}`);
     }
 
-    const data = await response.json();
-    eventos = data.eventos || [];
+    eventos = await response.json();
+
+    console.log("[DEBUG] eventos", eventos);
   } catch (error) {
     console.error("Error fetching eventos:", error);
     eventos = [];

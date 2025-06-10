@@ -33,7 +33,8 @@ export async function GET(
       id,
       titulo,
       descripcion,
-      fecha,
+      fecha_inicio,
+      fecha_fin,
       lugar,
       imagen_uri,
       organizador:usuarios!inner(wallet)

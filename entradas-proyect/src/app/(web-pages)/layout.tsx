@@ -1,17 +1,13 @@
 // app/(with-nav)/layout.tsx  — SERVER COMPONENT
-import AuthRequiredModal from "@/components/AuthRequiredModal";
 import NavbarWrapper from "@/features/layout/components/navbar/NavbarWrapper";
+import AuthRequiredModal from "@/features/auth/components/AuthRequiredModal";
 
-export default async function WithNavLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function WithNavLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <NavbarWrapper />
-      {children}
+      <main className="flex-1">{children}</main>
       <AuthRequiredModal />
-    </>
+    </div>
   );
 }

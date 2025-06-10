@@ -49,17 +49,25 @@ import { Database as DB } from "@/types/supabase.types";
 declare global {
   type Usuario = DB["public"]["Tables"]["usuarios"]["Row"];
   type Evento = DB["public"]["Tables"]["eventos"]["Row"];
-  type EventoWOrganizador = Evento & {
-    organizador?: {
-      nombre: string;
-    };
-  };
   type Entrada = DB["public"]["Tables"]["entradas"]["Row"];
 }
 
 /* TIPOS ADICIONALES */
-export interface LinkType {
+export type EventoWOrganizador = Evento & {
+  organizador?: {
+    nombre: string;
+  };
+};
+
+export type LinkType = {
   href: string;
   label: string;
-  icon: string; // Use the type of the icon component
-}
+  icon: string;
+};
+
+export type EventoEstadisticas = {
+  totalEventos: number;
+  eventosAprobados: number;
+  eventosPendientes: number;
+  proximosEventos: Evento[];
+};

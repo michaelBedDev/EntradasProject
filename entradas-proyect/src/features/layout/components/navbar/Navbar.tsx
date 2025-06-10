@@ -18,7 +18,7 @@ export default function Navbar({ links, showFullNavbar = false }: NavbarProps) {
   return (
     <>
       {/* Barra de navegación superior con logo y botones */}
-      <MainNavbar showFullNavbar={showFullNavbar} />
+      <MainNavbar showFullNavbar={showFullNavbar} links={links} icons={icons} />
 
       {showFullNavbar && (
         <>

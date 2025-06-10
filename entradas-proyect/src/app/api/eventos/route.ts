@@ -1,119 +1,134 @@
 // Devuelve todos los eventos aprobados ordenados por fecha
-import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 import { NextRequest, NextResponse } from "next/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
+
+import { EventoStatus } from "@/features/eventos/services/types";
+import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
+import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
 
 /**
- * Endpoint para obtener eventos aprobados con búsqueda opcional.
- *
- * @param request - La solicitud entrante que puede contener parámetros de búsqueda.
- * @returns Una respuesta JSON con la lista de eventos o un error.
+ * GET /api/eventos
+ * Endpoint público para obtener eventos
+ * Parámetros opcionales:
+ * - status: filtrar por estado (aprobado por defecto)
+ * - organizador: filtrar por ID del organizador
+ * - categoria: filtrar por categoría
+ * - fecha_inicio: filtrar por fecha de inicio
+ * - fecha_fin: filtrar por fecha de fin
+ * - busqueda: buscar por título o descripción
  */
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const query = searchParams.get("query")?.trim() || "";
-
-  const supabase = getSupabaseAdminClient();
-
   try {
-    let queryBuilder = supabase
-      .from("eventos")
-      .select(
-        `
-        id,
-        titulo,
-        descripcion,
-        fecha,
-        lugar,
-        imagen_uri,
-        status,
-        organizador:organizador_id (
-        nombre
-      )
-      `,
-      )
-      .eq("status", "aprobado")
-      .order("fecha", { ascending: true });
+    const supabase = getSupabaseAdminClient();
+    const searchParams = request.nextUrl.searchParams;
 
-    // Aplicar filtro de búsqueda solo si hay query
-    if (query) {
-      const safeQuery = `%${query.replace(/%/g, "\\%")}%`;
+    // Construir la consulta base
+    let query = supabase.from("eventos").select(`
+      *,
+      organizador:usuarios!inner(id, nombre, wallet)
+    `);
 
-      queryBuilder = queryBuilder.or(
-        `titulo.ilike.${safeQuery}, descripcion.ilike.${safeQuery}`,
+    // Aplicar filtros según los parámetros
+    const status = searchParams.get("status");
+    if (status) {
+      query = query.eq("status", status);
+    } else {
+      // Por defecto, mostrar solo eventos aprobados
+      query = query.eq("status", EventoStatus.APROBADO);
+    }
+
+    const organizador = searchParams.get("organizador");
+    if (organizador) {
+      query = query.eq("organizador_id", organizador);
+    }
+
+    const categoria = searchParams.get("categoria");
+    if (categoria) {
+      query = query.eq("categoria", categoria);
+    }
+
+    const fechaInicio = searchParams.get("fecha_inicio");
+    if (fechaInicio) {
+      query = query.gte("fecha_inicio", fechaInicio);
+    }
+
+    const fechaFin = searchParams.get("fecha_fin");
+    if (fechaFin) {
+      query = query.lte("fecha_fin", fechaFin);
+    }
+
+    const busqueda = searchParams.get("busqueda");
+    if (busqueda) {
+      query = query.or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%`);
+    }
+
+    // Ejecutar la consulta
+    const { data: eventos, error } = await query;
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Error al obtener los eventos" },
+        { status: 500 },
       );
     }
 
-    const { data, error } = await queryBuilder;
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ eventos: data }, { status: 200 });
-  } catch (err) {
+    return NextResponse.json(eventos);
+  } catch (error) {
+    console.error("Error en GET /api/eventos:", error);
     return NextResponse.json(
-      { error: "Error al obtener eventos: " + (err as Error).message },
+      { error: "Error interno del servidor" },
       { status: 500 },
     );
   }
 }
 
 /**
- * Endpoint para crear un nuevo evento.
- * @route POST /api/eventos
- * @description Este endpoint permite a los usuarios crear un nuevo evento.
- * Los datos del evento deben enviarse en formato JSON y deben incluir los campos requeridos.
- * Los eventos se crean con estado "pendiente" por defecto.
- * @param request - La solicitud entrante que contiene los datos del evento a crear.
- * @returns Una respuesta JSON con el ID del evento creado o un error.
+ * POST /api/eventos
+ * Endpoint privado para crear un nuevo evento
+ * Requiere autenticación y rol de organizador
+ * Cuerpo de la petición:
+ * - titulo: string
+ * - descripcion: string
+ * - fecha_inicio: Date
+ * - fecha_fin?: Date
+ * - lugar: string
+ * - categoria: string
+ * - imagen_uri?: string
  */
 export async function POST(request: NextRequest) {
-  const supabase = getSupabaseAdminClient();
-
   try {
-    const eventData = await request.json();
+    const supabase = await getSupabaseClientForAPIs(request);
+    const json = await request.json();
 
-    // Validar campos
-    const requiredFields = [
-      "titulo",
-      "descripcion",
-      "fecha",
-      "lugar",
-      "organizador_id",
-    ];
-    for (const field of requiredFields) {
-      if (!eventData[field]) {
-        return NextResponse.json(
-          { error: `El campo '${field}' es obligatorio` },
-          { status: 400 },
-        );
-      }
+    // Verificar que el usuario esté autenticado y sea organizador
+    const userRole = await getUserRoleFromRequest(request);
+    if (userRole === "usuario") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const { data, error } = await supabase
+    // Crear el evento
+    const { data: evento, error } = await supabase
       .from("eventos")
       .insert({
-        ...eventData,
-        status: "pendiente", // Por defecto los eventos se crean como pendientes
-        created_at: new Date().toISOString(),
+        ...json,
+        organizador_id: request.headers.get("x-user-id"),
+        status: EventoStatus.PENDIENTE,
       })
-      .select("id")
+      .select()
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json(
+        { error: "Error al crear el evento" },
+        { status: 500 },
+      );
     }
 
+    return NextResponse.json(evento);
+  } catch (error) {
+    console.error("Error en POST /api/eventos:", error);
     return NextResponse.json(
-      {
-        message: "Evento creado correctamente",
-        evento_id: data.id,
-      },
-      { status: 201 },
-    );
-  } catch (err) {
-    return NextResponse.json(
-      { error: "Error al crear evento: " + (err as Error).message },
+      { error: "Error interno del servidor" },
       { status: 500 },
     );
   }
@@ -125,7 +140,8 @@ export async function POST(request: NextRequest) {
 //       "id": "uuid-del-evento",
 //       "titulo": "Nombre del Evento",
 //       "descripcion": "Descripción del evento...",
-//       "fecha": "2023-06-15T19:00:00",
+//       "fecha_inicio": "2023-06-15T19:00:00",
+//       "fecha_fin": "2023-06-15T21:00:00",
 //       "lugar": "Estadio Municipal",
 //       "imagen_uri": "https://ejemplo.com/imagen.jpg",
 //       "organizador_id": "id-del-organizador"

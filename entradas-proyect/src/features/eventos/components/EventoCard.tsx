@@ -1,6 +1,7 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EventoWOrganizador } from "@/types/global";
 import { slugify } from "@/utils/slugify";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -40,7 +41,7 @@ export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
   {
     /* Formateo la fecha */
   }
-  const fecha = new Date(evento.fecha);
+  const fecha = new Date(evento.fecha_inicio);
   const diaMes = format(fecha, "dd", { locale: es });
   const mes = format(fecha, "MMM", { locale: es }).toUpperCase();
 

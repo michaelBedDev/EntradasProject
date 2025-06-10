@@ -1,58 +1,227 @@
+import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
-import { NextResponse, NextRequest } from "next/server";
+import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
+import { EventoStatus } from "@/features/eventos/services/types";
+import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
 
 /**
- * Endpoint para obtener un evento específico por ID.
- *
- * @param request - La solicitud entrante que contiene el ID del evento.
- * @param params - Parámetros de la ruta que incluyen el ID del evento.
- * @returns Una respuesta JSON con los detalles del evento o un error.
+ * GET /api/eventos/[id]
+ * Endpoint público para obtener detalles de un evento específico
+ * Si el evento no está aprobado, solo es accesible por:
+ * - El organizador del evento
+ * - Administradores
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: { id: string } },
 ) {
-  const { id } = await params;
-
-  if (!id) {
-    return NextResponse.json(
-      { error: "Se requiere el ID del evento" },
-      { status: 400 },
-    );
-  }
-
-  const supabase = getSupabaseAdminClient();
-
   try {
-    const { data, error } = await supabase
+    const supabase = getSupabaseAdminClient();
+    const id = await params.id;
+
+    // Obtener el evento con sus relaciones
+    const { data: evento, error } = await supabase
       .from("eventos")
       .select(
         `
-        id,
-        titulo,
-        descripcion,
-        fecha,
-        lugar,
-        imagen_uri,
-        organizador_id,
-        organizador:organizador_id (
-        nombre
-      )
+        *,
+        usuarios!inner(wallet),
+        tipos_entrada (
+          nombre,
+          precio,
+          cantidad_disponible,
+          cantidad_maxima
+        )
       `,
       )
       .eq("id", id)
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
+      return NextResponse.json(
+        { error: "Error al obtener el evento" },
+        { status: 500 },
+      );
+    }
+
+    if (!evento) {
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json(data, { status: 200 });
-  } catch (err) {
-    console.error("Unexpected error:", err);
+    // Si el evento no está aprobado, verificar permisos
+    if (evento.status !== EventoStatus.APROBADO) {
+      const userRole = await getUserRoleFromRequest(request);
+      if (userRole === "usuario") {
+        return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      }
+
+      // Solo permitir acceso al organizador o administradores
+      if (
+        evento.organizador_id !== request.headers.get("x-user-id") &&
+        userRole !== "admin"
+      ) {
+        return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+      }
+    }
+
+    return NextResponse.json(evento);
+  } catch (error) {
+    console.error("Error en GET /api/eventos/[id]:", error);
     return NextResponse.json(
-      { error: "Error al obtener el evento: " + (err as Error).message },
+      { error: "Error interno del servidor" },
+      { status: 500 },
+    );
+  }
+}
+
+/**
+ * PATCH /api/eventos/[id]
+ * Endpoint privado para actualizar un evento existente
+ * Requiere autenticación y uno de los siguientes roles:
+ * - Organizador del evento
+ * - Administrador
+ *
+ * Si el evento está aprobado, solo los administradores pueden editarlo
+ */
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const supabase = await getSupabaseClientForAPIs(request);
+    const id = await params.id;
+    const json = await request.json();
+
+    // Verificar que el usuario esté autenticado
+    const userRole = await getUserRoleFromRequest(request);
+    if (userRole === "usuario") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    // Obtener el evento actual
+    const { data: eventoActual, error: errorEvento } = await supabase
+      .from("eventos")
+      .select("organizador_id, status")
+      .eq("id", id)
+      .single();
+
+    if (errorEvento) {
+      return NextResponse.json(
+        { error: "Error al obtener el evento" },
+        { status: 500 },
+      );
+    }
+
+    if (!eventoActual) {
+      return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
+    }
+
+    // Verificar permisos
+    if (
+      eventoActual.organizador_id !== request.headers.get("x-user-id") &&
+      userRole !== "admin"
+    ) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
+    // Si el evento está aprobado, solo los administradores pueden editarlo
+    if (eventoActual.status === EventoStatus.APROBADO && userRole !== "admin") {
+      return NextResponse.json(
+        { error: "No se puede editar un evento aprobado" },
+        { status: 403 },
+      );
+    }
+
+    // Actualizar el evento
+    const { data: evento, error } = await supabase
+      .from("eventos")
+      .update({
+        ...json,
+        status: EventoStatus.PENDIENTE, // Al editar, vuelve a pendiente
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Error al actualizar el evento" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(evento);
+  } catch (error) {
+    console.error("Error en PATCH /api/eventos/[id]:", error);
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 },
+    );
+  }
+}
+
+/**
+ * DELETE /api/eventos/[id]
+ * Endpoint privado para eliminar un evento
+ * Requiere autenticación y uno de los siguientes roles:
+ * - Organizador del evento
+ * - Administrador
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const supabase = await getSupabaseClientForAPIs(request);
+    const id = params.id;
+
+    // Verificar que el usuario esté autenticado
+    const userRole = await getUserRoleFromRequest(request);
+    if (userRole === "usuario") {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    // Obtener el evento actual
+    const { data: eventoActual, error: errorEvento } = await supabase
+      .from("eventos")
+      .select("organizador_id, status")
+      .eq("id", id)
+      .single();
+
+    if (errorEvento) {
+      return NextResponse.json(
+        { error: "Error al obtener el evento" },
+        { status: 500 },
+      );
+    }
+
+    if (!eventoActual) {
+      return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
+    }
+
+    // Verificar permisos
+    if (
+      eventoActual.organizador_id !== request.headers.get("x-user-id") &&
+      userRole !== "admin"
+    ) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
+    // Eliminar el evento
+    const { error } = await supabase.from("eventos").delete().eq("id", id);
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Error al eliminar el evento" },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ message: "Evento eliminado correctamente" });
+  } catch (error) {
+    console.error("Error en DELETE /api/eventos/[id]:", error);
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
       { status: 500 },
     );
   }

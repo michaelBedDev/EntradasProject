@@ -1,12 +1,32 @@
 export enum EventoStatus {
-  PENDIENTE = "pendiente",
-  APROBADO = "aprobado",
-  CANCELADO = "cancelado",
+  PENDIENTE = "PENDIENTE",
+  APROBADO = "APROBADO",
+  RECHAZADO = "RECHAZADO",
+  CANCELADO = "CANCELADO",
 }
 
-export type EventoEstadisticas = {
+export interface EventoEstadisticas {
   totalEventos: number;
   eventosAprobados: number;
   eventosPendientes: number;
-  proximosEventos: Evento[];
-};
+  eventosProximos: number;
+}
+
+export interface Evento {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  fecha: string;
+  fechaCreacion: string;
+  ubicacion: string;
+  estado: EventoStatus;
+  entradasVendidas: number;
+  entradasTotales: number;
+  imagen_uri: string;
+  organizador_id: string;
+  created_at?: string | null;
+  fecha_fin?: string;
+  fecha_inicio?: string;
+  lugar?: string;
+  status?: string | null;
+}

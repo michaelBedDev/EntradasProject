@@ -2,30 +2,32 @@ import { LinkType } from "@/types/global";
 
 export const userLinks: LinkType[] = [
   { href: "/app", label: "Dashboard", icon: "Home" },
-  { href: "/eventos", label: "Eventos", icon: "Calendar" },
-  { href: "/mis-entradas", label: "Mis Entradas", icon: "Inbox" },
-  { href: "/ajustes", label: "Ajustes", icon: "Settings" },
+  { href: "/eventos", label: "Explorar", icon: "Search" },
+  { href: "/mis-entradas", label: "Mis Entradas", icon: "Ticket" },
 ];
 
 export const organizerLinks: LinkType[] = [
   { href: "/organizador/dashboard", label: "Dashboard", icon: "BarChart3" },
   { href: "/eventos", label: "Explorar", icon: "Search" },
   { href: "/organizador/crear-evento", label: "Crear Evento", icon: "PlusCircle" },
-  { href: "/organizador/mis-eventos", label: "Mis Eventos", icon: "LayoutGrid" },
+  { href: "/organizador/mis-eventos", label: "Mis Eventos", icon: "Calendar" },
 ];
 
 export const adminLinks: LinkType[] = [
-  { href: "/", label: "Inicio", icon: "Home" },
-  { href: "/admin/usuarios", label: "Usuarios", icon: "User" },
-  { href: "/admin/eventos", label: "Eventos", icon: "Calendar" },
-  { href: "/admin/dashboard", label: "Dashboard", icon: "BarChart3" },
+  { href: "/administrador/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
+  { href: "/eventos", label: "Explorar", icon: "Search" },
+  { href: "/administrador/roles", label: "Gestión de Roles", icon: "Shield" },
+  {
+    href: "/administrador/solicitudes",
+    label: "Solicitudes",
+    icon: "ClipboardList",
+  },
 ];
 
 // Importamos los iconos para usar en los enlaces de navegación,
 import {
   Home,
   Calendar,
-  Inbox,
   Settings,
   User,
   Moon,
@@ -37,6 +39,10 @@ import {
   AppWindow,
   Search,
   LucideIcon,
+  Ticket,
+  LayoutDashboard,
+  Shield,
+  ClipboardList,
 } from "lucide-react";
 
 export const icons: Record<string, LucideIcon> = {
@@ -44,7 +50,7 @@ export const icons: Record<string, LucideIcon> = {
   User,
   Settings,
   Calendar,
-  Inbox,
+  Ticket,
   PlusCircle,
   BarChart3,
   LayoutGrid,
@@ -53,4 +59,7 @@ export const icons: Record<string, LucideIcon> = {
   Sun,
   Search,
   Menu,
+  LayoutDashboard,
+  Shield,
+  ClipboardList,
 };

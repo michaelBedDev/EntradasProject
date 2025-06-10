@@ -35,7 +35,7 @@ export default async function MisEventosPage() {
   //   redirect("/eventos");
   // }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   const wallet = session.address;
 
   let eventos: Evento[] = [];

@@ -144,12 +144,60 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
                 <CalendarIcon className="w-3 h-3 mr-1" />
-                {/* {fechaFormateada} */}
+                {format(
+                  new Date(evento.fecha_inicio.replace("+00:00", "Z")),
+                  "EEEE d 'de' MMMM 'de' yyyy",
+                  {
+                    locale: es,
+                  },
+                )}
+
+                {/* Si el evento es de un día, mostramos la hora de inicio y fin */}
+                {new Date(
+                  evento.fecha_inicio.replace("+00:00", "Z"),
+                ).toDateString() ===
+                new Date(evento.fecha_fin.replace("+00:00", "Z")).toDateString() ? (
+                  <>
+                    {" "}
+                    <ClockIcon className="w-3 h-3 mr-1" />
+                    {format(
+                      new Date(evento.fecha_inicio.replace("+00:00", "Z")),
+                      "HH:mm",
+                      {
+                        locale: es,
+                      },
+                    )}
+                    {" - "}
+                    {format(
+                      new Date(evento.fecha_fin.replace("+00:00", "Z")),
+                      "HH:mm",
+                      {
+                        locale: es,
+                      },
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {" - "}
+                    {format(
+                      new Date(evento.fecha_fin.replace("+00:00", "Z")),
+                      "EEEE d 'de' MMMM 'de' yyyy",
+                      {
+                        locale: es,
+                      },
+                    )}{" "}
+                    <ClockIcon className="w-3 h-3 mr-1" />
+                    {format(
+                      new Date(evento.fecha_inicio.replace("+00:00", "Z")),
+                      "HH:mm",
+                      {
+                        locale: es,
+                      },
+                    )}
+                  </>
+                )}
               </Badge>
-              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                <ClockIcon className="w-3 h-3 mr-1" />
-                {/* {horaFormateada} */}
-              </Badge>
+
               <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
                 <MapPinIcon className="w-3 h-3 mr-1" />
                 {evento.lugar}

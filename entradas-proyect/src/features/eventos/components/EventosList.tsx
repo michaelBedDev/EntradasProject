@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { EventoCard } from "./EventoCard";
 import { EventoCardSkeleton } from "./EventoCardSkeleton";
 import { SearchBar } from "../../layout/components/SearchBar";
+import { EventoWOrganizador } from "@/types/global";
 
 export default function EventosList({
   eventos,
