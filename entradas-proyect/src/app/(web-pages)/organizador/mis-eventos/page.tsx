@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { redirect } from "next/navigation";
 import {
   Card,
@@ -22,6 +22,7 @@ import { PlusCircleIcon, Edit, Trash2, Eye } from "lucide-react";
 // import { EventStatus } from "@/types/events.types";
 import { Badge } from "@/components/ui/badge";
 import { EventoStatus } from "@/features/eventos/services/types";
+import { authOptions } from "@/features/eventos/lib/auth";
 
 export default async function MisEventosPage() {
   // Verificar que el usuario esté autenticado
@@ -118,7 +119,7 @@ export default async function MisEventosPage() {
                   <TableRow key={evento.id}>
                     <TableCell className="font-medium">{evento.titulo}</TableCell>
                     <TableCell>
-                      {new Date(evento.fecha).toLocaleDateString("es-ES")}
+                      {/* {new Date(evento.fecha).toLocaleDateString("es-ES")} */}
                     </TableCell>
                     <TableCell>{evento.lugar}</TableCell>
                     <TableCell>

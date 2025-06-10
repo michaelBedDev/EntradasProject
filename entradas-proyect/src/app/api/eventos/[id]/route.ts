@@ -13,11 +13,11 @@ import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = getSupabaseAdminClient();
-    const id = await params.id;
+    const id = (await context.params).id;
 
     // Obtener el evento con sus relaciones
     const { data: evento, error } = await supabase
@@ -85,11 +85,11 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = await getSupabaseClientForAPIs(request);
-    const id = await params.id;
+    const id = (await context.params).id;
     const json = await request.json();
 
     // Verificar que el usuario esté autenticado
@@ -169,11 +169,11 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = await getSupabaseClientForAPIs(request);
-    const id = params.id;
+    const id = (await context.params).id;
 
     // Verificar que el usuario esté autenticado
     const userRole = await getUserRoleFromRequest(request);

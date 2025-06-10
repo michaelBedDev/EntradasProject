@@ -30,6 +30,8 @@ export default defineConfig([
       "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-misused-promises": "off",
+      "react/prop-types": "off",
+      "@typescript-eslint/no-empty-object-type": "off",
     },
   },
 ]);

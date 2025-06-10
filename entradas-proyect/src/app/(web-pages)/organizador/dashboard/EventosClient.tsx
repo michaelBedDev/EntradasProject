@@ -37,8 +37,6 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 // Función para obtener el color del badge según el estado
 const getBadgeVariant = (status: string) => {

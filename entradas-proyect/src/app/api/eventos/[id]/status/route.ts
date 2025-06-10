@@ -13,11 +13,11 @@ import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = await getSupabaseClientForAPIs(request);
-    const id = params.id;
+    const id = (await context.params).id;
     const json = await request.json();
     const { status } = json;
 

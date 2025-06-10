@@ -21,50 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-
-// Datos de ejemplo
-const eventosDestacados = [
-  {
-    id: "1",
-    titulo: "Concierto de Rock",
-    fecha: "2024-03-15",
-    ubicacion: "Sala Rock",
-    precio: "50.00",
-    categoria: "Música",
-    imagen: "/eventos/rock.jpg",
-    popularidad: "alta",
-    entradasDisponibles: 50,
-  },
-  {
-    id: "2",
-    titulo: "Festival de Cine",
-    fecha: "2024-04-20",
-    ubicacion: "Cine Central",
-    precio: "25.00",
-    categoria: "Cine",
-    imagen: "/eventos/cine.jpg",
-    popularidad: "alta",
-    entradasDisponibles: 100,
-  },
-  {
-    id: "3",
-    titulo: "Exposición de Arte",
-    fecha: "2024-03-10",
-    ubicacion: "Galería Moderna",
-    precio: "15.00",
-    categoria: "Arte",
-    imagen: "/eventos/arte.jpg",
-    popularidad: "media",
-    entradasDisponibles: 75,
-  },
-];
 
 const categorias = [
   "Todos",
@@ -160,63 +116,6 @@ export default function UserDashboardPage() {
             <Link href="/eventos">Ver todos</Link>
           </Button>
         </div>
-        <Carousel className="w-full">
-          <CarouselContent>
-            {eventosDestacados.map((evento) => (
-              <CarouselItem key={evento.id} className="md:basis-1/2 lg:basis-1/3">
-                <Card className="h-full">
-                  <div className="aspect-video relative">
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <img
-                      src={evento.imagen}
-                      alt={evento.titulo}
-                      className="w-full h-full object-cover rounded-t-lg"
-                    />
-                    <Badge
-                      variant={
-                        evento.popularidad === "alta" ? "default" : "secondary"
-                      }
-                      className="absolute top-2 right-2">
-                      {evento.popularidad === "alta" ? "Popular" : "Tendencia"}
-                    </Badge>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="line-clamp-1">{evento.titulo}</CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4" />
-                      {new Date(evento.fecha).toLocaleDateString("es-ES", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        {evento.ubicacion}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold">Desde €{evento.precio}</span>
-                        <Badge variant="outline">
-                          {evento.entradasDisponibles} entradas disponibles
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardContent>
-                    <Button className="w-full" asChild>
-                      <Link href={`/eventos/${evento.id}`}>Ver detalles</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
       </section>
 
       {/* Próximos Eventos */}

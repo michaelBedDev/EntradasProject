@@ -63,8 +63,6 @@ export const eventoResponseSchema = eventoSchema.extend({
 export const createEventoSchema = eventoSchema.omit({
   estado: true,
   motivo_rechazo: true,
-  created_at: z.date(),
-  updated_at: z.date().optional(),
 });
 
 // Esquema para la actualización de eventos

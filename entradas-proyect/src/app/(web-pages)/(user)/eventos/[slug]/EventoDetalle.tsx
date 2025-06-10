@@ -43,6 +43,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { EventoWOrganizador } from "@/types/global";
 
 export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }) {
   const [cantidad, setCantidad] = useState<string>("1");
@@ -411,7 +412,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   Comprar entradas
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">
-                  Al hacer clic en "Comprar entradas" aceptas nuestros{" "}
+                  Al hacer clic en &quot;Comprar entradas&quot; aceptas nuestros{" "}
                   <a href="#" className="text-primary hover:underline">
                     términos y condiciones
                   </a>
@@ -450,9 +451,10 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   ¿Cómo recibiré mis entradas?
                 </AccordionTrigger>
                 <AccordionContent className="text-xs text-muted-foreground">
+
                   Las entradas se enviarán a tu correo electrónico inmediatamente
                   después de la compra. También podrás acceder a ellas desde tu
-                  cuenta en la sección "Mis Entradas".
+                  cuenta en la sección &quot;Mis Entradas&quot;.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="faq-2">
@@ -461,7 +463,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                 </AccordionTrigger>
                 <AccordionContent className="text-xs text-muted-foreground">
                   Las cancelaciones son posibles hasta 48 horas antes del evento.
-                  Para cancelar, accede a "Mis Entradas" y selecciona la opción de
+                  Para cancelar, accede a &quot;Mis Entradas&quot; y selecciona la opción de
                   cancelación.
                 </AccordionContent>
               </AccordionItem>

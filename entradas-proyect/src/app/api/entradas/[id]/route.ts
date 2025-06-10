@@ -10,11 +10,11 @@ import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = getSupabaseAdminClient();
-    const id = params.id;
+    const id = (await context.params).id;
 
     // Obtener la entrada con sus relaciones
     const { data: entrada, error } = await supabase
@@ -71,11 +71,11 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const supabase = await getSupabaseClientForAPIs(request);
-    const id = params.id;
+    const id = (await context.params).id;
 
     // Verificar que el usuario esté autenticado
     const userRole = await getUserRoleFromRequest(request);
@@ -114,7 +114,7 @@ export async function DELETE(
     const userWallet = request.headers.get("x-user-wallet");
     const esPropietario = entradaActual.wallet === userWallet;
     const esOrganizador =
-      entradaActual.tipo_entrada.evento.organizador_id ===
+      entradaActual.tipo_entrada?.evento?.organizador_id ===
       request.headers.get("x-user-id");
     const esAdmin = userRole === "admin";
 

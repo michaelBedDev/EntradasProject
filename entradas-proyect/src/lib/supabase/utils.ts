@@ -2,7 +2,6 @@
 import jwt from "jsonwebtoken";
 import { v5 as uuidv5 } from "uuid";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Namespace for UUID-v5 – must exist in your .env.local
 const UUID_NAMESPACE = process.env.NEXT_PUBLIC_WALLET_UUID_NAMESPACE;
@@ -108,6 +107,7 @@ export async function getSupabaseToken(): Promise<{ token?: string; exp?: number
  */
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
+import { authOptions } from "@/features/eventos/lib/auth";
 
 export async function getSupabaseTokenFromRequest(
   request: NextRequest,
