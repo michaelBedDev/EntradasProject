@@ -3,7 +3,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase.types";
 
 export function getSupabaseClient(accessToken?: string): SupabaseClient<Database> {
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const anonKey = process.env.SUPABASE_ANON_KEY!;
 
   const headers: Record<string, string> = {
     apikey: anonKey,
@@ -15,7 +15,7 @@ export function getSupabaseClient(accessToken?: string): SupabaseClient<Database
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
-  return createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, anonKey, {
+  return createClient<Database>(process.env.SUPABASE_URL!, anonKey, {
     global: { headers },
     auth: {
       persistSession: false,

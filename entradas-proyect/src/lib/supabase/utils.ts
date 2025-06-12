@@ -4,7 +4,7 @@ import { v5 as uuidv5 } from "uuid";
 import { getServerSession } from "next-auth";
 
 // Namespace for UUID-v5 – must exist in your .env.local
-const UUID_NAMESPACE = process.env.NEXT_PUBLIC_WALLET_UUID_NAMESPACE;
+const UUID_NAMESPACE = process.env.WALLET_UUID_NAMESPACE;
 if (!UUID_NAMESPACE) {
   throw new Error("WALLET_UUID_NAMESPACE missing in .env");
 }

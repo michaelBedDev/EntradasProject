@@ -21,7 +21,7 @@ export async function getSupabaseServerClient() {
   const cookieStore = await cookies();
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       // sincronización de cookies Supabase ↔ Next.js
@@ -38,7 +38,7 @@ export async function getSupabaseServerClient() {
       // inyectamos siempre apikey y, si existe, el Bearer
       global: {
         headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          apikey: process.env.SUPABASE_ANON_KEY!,
           ...(supabaseObject.token && {
             Authorization: `Bearer ${supabaseObject.token}`,
           }),
@@ -70,8 +70,8 @@ export async function getSupabaseClientForAPIs(request: NextRequest) {
   const cookieStore = await cookies();
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
@@ -82,7 +82,7 @@ export async function getSupabaseClientForAPIs(request: NextRequest) {
       },
       global: {
         headers: {
-          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          apikey: process.env.SUPABASE_ANON_KEY!,
           ...(supabaseObject.token && {
             Authorization: `Bearer ${supabaseObject.token}`,
           }),
