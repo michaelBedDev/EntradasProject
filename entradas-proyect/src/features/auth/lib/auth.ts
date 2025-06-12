@@ -15,9 +15,9 @@ if (!nextAuthSecret) {
   throw new Error("NEXTAUTH_SECRET is not set");
 }
 
-const projectId = process.env.PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 if (!projectId) {
-  throw new Error("PROJECT_ID is not set");
+  throw new Error("NEXT_PUBLIC_PROJECT_ID is not set");
 }
 
 const providers = [
