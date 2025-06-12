@@ -50,15 +50,55 @@ declare global {
   type Usuario = DB["public"]["Tables"]["usuarios"]["Row"];
   type Evento = DB["public"]["Tables"]["eventos"]["Row"];
   type Entrada = DB["public"]["Tables"]["entradas"]["Row"];
+  type TipoEntrada = DB["public"]["Tables"]["tipos_entrada"]["Row"];
+  type Asiento = DB["public"]["Tables"]["asientos"]["Row"];
 }
 
 /* TIPOS ADICIONALES */
-export type EventoWOrganizador = Evento & {
-  organizador?: {
-    nombre: string;
-  };
+export type AsientoPublico = {
+  fila: string | null;
+  numero: string | null;
 };
 
+export type UsuarioOrganizadorPublico = {
+  nombre: string | null;
+  wallet: string;
+};
+
+export type EventoPublico = {
+  id: string;
+  titulo: string;
+  descripcion: string | null;
+  lugar: string;
+  imagen_uri: string | null;
+  fecha_inicio: string;
+  fecha_fin: string;
+  categoria: string;
+  status: string | null; // CONSTRAINT
+  organizador: UsuarioOrganizadorPublico;
+};
+
+export type TipoEntradaPublica = {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  precio: number;
+  zona: string | null;
+  evento: EventoPublico;
+  cantidad_disponible: number;
+};
+
+export type EntradaCompletaPublica = Entrada & {
+  asiento?: AsientoPublico | null;
+  tipo_entrada: TipoEntradaPublica;
+};
+
+/* PARA UN EVENTO CON SUS TIPOS DE ENTRADA */
+export type EventoPublicoWTipos = EventoPublico & {
+  tipos_entrada: TipoEntradaPublica[];
+};
+
+/* OTROS TIPOS */
 export type LinkType = {
   href: string;
   label: string;

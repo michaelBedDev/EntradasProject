@@ -17,7 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { EventoEstadisticas, Evento } from "@/features/eventos/services/types";
+import { EventoEstadisticas } from "@/features/eventos/services/types";
+import { EventoPublicoWTipos } from "@/types/global";
 import { useSession } from "next-auth/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -89,11 +90,25 @@ const tendenciaVentas = [
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
+// Función para convertir el título en slug
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
+};
+
 export default function EventosClient({
   eventos,
   estadisticas,
 }: {
-  eventos: Evento[];
+  eventos: EventoPublicoWTipos[];
   estadisticas: EventoEstadisticas;
 }) {
   const session = useSession();
@@ -160,7 +175,15 @@ export default function EventosClient({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {eventos.reduce((acc, evento) => acc + evento.entradasVendidas, 0)}
+                  {eventos.reduce(
+                    (acc, evento) =>
+                      acc +
+                      evento.tipos_entrada.reduce(
+                        (total, tipo) => total + (tipo.cantidad_disponible || 0),
+                        0,
+                      ),
+                    0,
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">En todos los eventos</p>
               </CardContent>
@@ -255,9 +278,9 @@ export default function EventosClient({
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-lg">{evento.titulo}</CardTitle>
                         <Badge
-                          variant={getBadgeVariant(evento.estado)}
+                          variant={getBadgeVariant(evento.status || "PENDIENTE")}
                           className="capitalize">
-                          {evento.estado}
+                          {evento.status || "PENDIENTE"}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -265,26 +288,46 @@ export default function EventosClient({
                       <div className="grid gap-2">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <CalendarIcon className="h-4 w-4" />
-                          {new Date(evento.fecha).toLocaleDateString("es-ES", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })}
+                          {new Date(evento.fecha_inicio).toLocaleDateString(
+                            "es-ES",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <MapPin className="h-4 w-4" />
-                          {evento.ubicacion}
+                          {evento.lugar}
                         </div>
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span>Entradas vendidas</span>
                             <span>
-                              {evento.entradasVendidas} / {evento.entradasTotales}
+                              {evento.tipos_entrada.reduce(
+                                (total, tipo) =>
+                                  total + (tipo.cantidad_disponible || 0),
+                                0,
+                              )}{" "}
+                              /{" "}
+                              {evento.tipos_entrada.reduce(
+                                (total, tipo) => total + tipo.cantidad_disponible,
+                                0,
+                              )}
                             </span>
                           </div>
                           <Progress
                             value={
-                              (evento.entradasVendidas / evento.entradasTotales) *
+                              (evento.tipos_entrada.reduce(
+                                (total, tipo) =>
+                                  total + (tipo.cantidad_disponible || 0),
+                                0,
+                              ) /
+                                evento.tipos_entrada.reduce(
+                                  (total, tipo) => total + tipo.cantidad_disponible,
+                                  0,
+                                )) *
                               100
                             }
                           />
@@ -292,10 +335,14 @@ export default function EventosClient({
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/organizador/mis-eventos/${evento.id}`}>
-                          Ver detalles
-                        </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const tituloSlug = slugify(evento.titulo);
+                          window.location.href = `/eventos/${tituloSlug}-${evento.id}`;
+                        }}>
+                        Ver detalles
                       </Button>
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/organizador/mis-eventos/${evento.id}/editar`}>

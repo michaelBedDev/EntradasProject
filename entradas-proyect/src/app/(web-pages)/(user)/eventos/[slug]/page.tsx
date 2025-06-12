@@ -1,8 +1,8 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import EventoDetalle from "./EventoDetalle";
-import { EventoDetalleSkeleton } from "./EventoDetalleSkeleton";
+
+import { extractID } from "@/features/eventos/lib/extractUUIDFromRoute";
 
 interface EventoPageProps {
   params: Promise<{ slug: string }>;
@@ -12,12 +12,14 @@ export default async function EventoPage({ params }: EventoPageProps) {
   const { slug } = await params;
 
   try {
-    // Extraer el ID del UUID completo al final del slug
-    // Formato esperado: nombre-evento-UUIDV4 (con guiones incluidos)
-    // Buscamos un patrón que coincida con un UUID de Supabase (formato v4 con guiones)
-    const id = slug.match(
-      /[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i,
-    );
+    //Se extrae el id de la URL recibida
+    const id = extractID(slug);
+
+    if (!id) {
+      return {
+        notFound: true,
+      };
+    }
 
     // Obtener los datos del evento por su ID
     const response = await fetch(
@@ -40,11 +42,7 @@ export default async function EventoPage({ params }: EventoPageProps) {
       return notFound();
     }
 
-    return (
-      <Suspense fallback={<EventoDetalleSkeleton />}>
-        <EventoDetalle evento={evento} />
-      </Suspense>
-    );
+    return <EventoDetalle evento={evento} />;
   } catch (error: unknown) {
     // Si hay un error al obtener el evento, mostrar 404
     console.error(

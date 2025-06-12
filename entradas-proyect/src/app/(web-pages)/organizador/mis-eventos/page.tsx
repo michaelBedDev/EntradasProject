@@ -22,7 +22,8 @@ import { PlusCircleIcon, Edit, Trash2, Eye } from "lucide-react";
 // import { EventStatus } from "@/types/events.types";
 import { Badge } from "@/components/ui/badge";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { authOptions } from "@/features/eventos/lib/auth";
+import { authOptions } from "@/features/auth/lib/auth";
+import { slugify } from "@/utils/slugify";
 
 export default async function MisEventosPage() {
   // Verificar que el usuario esté autenticado
@@ -36,13 +37,14 @@ export default async function MisEventosPage() {
   //   redirect("/eventos");
   // }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
   const wallet = session.address;
 
   let eventos: Evento[] = [];
 
   try {
-    const response = await fetch(`${baseUrl}/eventos/organizador/${wallet}`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/eventos/organizador/${wallet}`,
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -138,7 +140,8 @@ export default async function MisEventosPage() {
                           size="icon"
                           asChild
                           title="Ver evento">
-                          <Link href={`/eventos/${evento.id}`}>
+                          <Link
+                            href={`/eventos/${slugify(evento.titulo)}-${evento.id}`}>
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>

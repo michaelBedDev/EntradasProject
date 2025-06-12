@@ -1,8 +1,8 @@
 import { EventoStatus } from "@/features/eventos/services/types";
 import * as z from "zod";
 
-// Esquema para validar la creación y edición de eventos
-export const eventoSchema = z.object({
+// Esquema base para el formulario
+export const eventoFormSchema = z.object({
   titulo: z
     .string()
     .min(5, { message: "El título debe tener al menos 5 caracteres" })
@@ -11,7 +11,8 @@ export const eventoSchema = z.object({
   descripcion: z
     .string()
     .min(10, { message: "La descripción debe tener al menos 10 caracteres" })
-    .max(1000, { message: "La descripción no puede exceder los 1000 caracteres" }),
+    .max(1000, { message: "La descripción no puede exceder los 1000 caracteres" })
+    .nullable(),
 
   fecha_inicio: z.date().refine(
     (fecha) => {
@@ -22,7 +23,7 @@ export const eventoSchema = z.object({
     { message: "La fecha de inicio debe ser hoy o posterior" },
   ),
 
-  fecha_fin: z.date().optional(),
+  fecha_fin: z.date(),
 
   lugar: z
     .string()
@@ -31,7 +32,18 @@ export const eventoSchema = z.object({
 
   categoria: z.string().min(1, { message: "Debes seleccionar una categoría" }),
 
-  estado: z
+  imagen_uri: z
+    .string()
+    .url({ message: "URL de imagen inválida" })
+    .nullable()
+    .optional(),
+});
+
+// Esquema completo para la base de datos
+export const eventoSchema = eventoFormSchema.extend({
+  id: z.string().uuid(),
+  organizador_id: z.string().uuid(),
+  status: z
     .enum([
       EventoStatus.PENDIENTE,
       EventoStatus.APROBADO,
@@ -39,31 +51,24 @@ export const eventoSchema = z.object({
       EventoStatus.CANCELADO,
     ])
     .default(EventoStatus.PENDIENTE),
-
-  motivo_rechazo: z.string().optional().nullable(),
-
-  organizador_id: z.string().uuid(),
-
-  // Campo opcional para la URL de la imagen
-  imagen_uri: z
-    .string()
-    .url({ message: "URL de imagen inválida" })
-    .optional()
-    .nullable(),
-});
-
-// Esquema para la respuesta de la API
-export const eventoResponseSchema = eventoSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.date(),
-  updated_at: z.date(),
+  created_at: z.date().optional(),
 });
 
 // Esquema para la creación de eventos
-export const createEventoSchema = eventoSchema.omit({
-  estado: true,
-  motivo_rechazo: true,
+export const createEventoSchema = eventoFormSchema.extend({
+  organizador_id: z.string().uuid(),
+  status: z
+    .enum([
+      EventoStatus.PENDIENTE,
+      EventoStatus.APROBADO,
+      EventoStatus.RECHAZADO,
+      EventoStatus.CANCELADO,
+    ])
+    .default(EventoStatus.PENDIENTE),
 });
+
+// Esquema para el formulario de creación
+export const createEventoFormSchema = eventoFormSchema;
 
 // Esquema para la actualización de eventos
 export const updateEventoSchema = createEventoSchema.partial();
@@ -74,8 +79,9 @@ export const estadoEventoSchema = z.object({
 });
 
 // Tipos inferidos del esquema
-export type EventoFormValues = z.infer<typeof eventoSchema>;
-export type EventoResponse = z.infer<typeof eventoResponseSchema>;
+export type EventoFormValues = z.infer<typeof eventoFormSchema>;
+export type EventoResponse = z.infer<typeof eventoSchema>;
 export type CreateEventoInput = z.infer<typeof createEventoSchema>;
+export type CreateEventoFormInput = z.infer<typeof createEventoFormSchema>;
 export type UpdateEventoInput = z.infer<typeof updateEventoSchema>;
 export type EstadoEventoInput = z.infer<typeof estadoEventoSchema>;

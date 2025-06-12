@@ -2,9 +2,9 @@
 
 import NextAuth from "next-auth";
 
-import { authOptions } from "@/features/eventos/lib/auth";
+import { authOptions } from "@/features/auth/lib/auth";
 
-const nextAuthSecret = process.env.NEXT_PUBLIC_NEXTAUTH_SECRET;
+const nextAuthSecret = process.env.NEXTAUTH_SECRET;
 if (!nextAuthSecret) {
   throw new Error("NEXTAUTH_SECRET is not set");
 }

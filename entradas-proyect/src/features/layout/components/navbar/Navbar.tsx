@@ -1,6 +1,6 @@
 "use client";
 
-import { icons } from "./links";
+import { icons } from "./utils/links";
 import { LinkType } from "@/types/global";
 import MobileNavbar from "./MobileNavbar";
 import Linksbar from "./Linksbar";
@@ -13,15 +13,14 @@ export interface NavbarProps {
 }
 
 export default function Navbar({ links, showFullNavbar = false }: NavbarProps) {
-  // const { open: openAuthModal } = useAuthModal();
-
   return (
     <>
-      {/* Barra de navegación superior con logo y botones */}
+      {/* Barra de navegación superior */}
       <MainNavbar showFullNavbar={showFullNavbar} links={links} icons={icons} />
 
       {showFullNavbar && (
         <>
+          <div className="h-18 w-full"></div>
           {/* Barra de Navegación de Links */}
           <Linksbar links={links} icons={icons} />
 

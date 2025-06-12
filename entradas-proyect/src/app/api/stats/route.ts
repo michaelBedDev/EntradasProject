@@ -79,22 +79,23 @@ export async function GET(request: NextRequest) {
           .from("entradas")
           .select(
             `
-    id,
-    estado,
-    tipo_entrada (
-      id,
-      evento_id,
-      eventos!inner (
-        id,
-        titulo
-      )
-    )
-  `,
+            id,
+            estado,
+            tipo_entrada:tipo_entrada_id (
+              id,
+              evento:evento_id (
+                id,
+                titulo,
+                status
+              )
+            )
+          `,
           )
           .eq("estado", "activa")
-          .eq("tipo_entrada.eventos.status", "aprobado");
+          .eq("tipo_entrada.evento.status", "APROBADO");
 
         if (error) {
+          console.error("Error en consulta por-evento:", error);
           return NextResponse.json(
             { error: "Error al obtener las estadísticas por evento" },
             { status: 500 },
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
 
         // Agrupar y contar entradas por evento
         const estadisticas = data.reduce((acc: EstadisticaEvento[], entrada) => {
-          const evento = entrada.tipo_entrada?.eventos;
+          const evento = entrada.tipo_entrada?.evento;
           if (!evento) return acc;
 
           const eventoExistente = acc.find((e) => e.evento_id === evento.id);
@@ -127,22 +128,22 @@ export async function GET(request: NextRequest) {
         const { data, error } = await supabase
           .from("entradas")
           .select(
-            `tipo_entrada (
-      id,
-      eventos (
-        id,
-        organizador:organizador_id (
-                id,
-                nombre,
-                wallet
+            `
+            tipo_entrada:tipo_entrada_id (
+              evento:evento_id (
+                organizador:organizador_id (
+                  id,
+                  nombre,
+                  wallet
+                )
               )
-      )
-    )
+            )
           `,
           )
           .eq("estado", "activa");
 
         if (error) {
+          console.error("Error en consulta por-organizador:", error);
           return NextResponse.json(
             { error: "Error al obtener las estadísticas por organizador" },
             { status: 500 },
@@ -152,7 +153,7 @@ export async function GET(request: NextRequest) {
         // Agrupar y contar entradas por organizador
         const estadisticas = data.reduce(
           (acc: EstadisticaOrganizador[], entrada) => {
-            const organizador = entrada.tipo_entrada?.eventos?.organizador;
+            const organizador = entrada.tipo_entrada?.evento?.organizador;
             if (!organizador) return acc;
 
             const organizadorExistente = acc.find(
@@ -182,6 +183,7 @@ export async function GET(request: NextRequest) {
             { status: 400 },
           );
         }
+
         // Obtener entradas vendidas por tipo para un evento específico
         const { data, error } = await supabase
           .from("entradas")
@@ -189,17 +191,17 @@ export async function GET(request: NextRequest) {
             `
             tipo_entrada:tipo_entrada_id (
               nombre,
-              eventos (
-              id,
-              nombre
+              evento:evento_id (
+                id
               )
             )
           `,
           )
           .eq("estado", "activa")
-          .eq("tipo_entrada.eventos.id", eventoId);
+          .eq("tipo_entrada.evento_id", eventoId);
 
         if (error) {
+          console.error("Error en consulta por-tipo:", error);
           return NextResponse.json(
             { error: "Error al obtener las estadísticas por tipo" },
             { status: 500 },

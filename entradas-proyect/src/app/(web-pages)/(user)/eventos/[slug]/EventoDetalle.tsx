@@ -28,7 +28,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -43,65 +42,97 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
-import { EventoWOrganizador } from "@/types/global";
+import { EventoPublicoWTipos, TipoEntradaPublica } from "@/types/global";
 
-export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }) {
+import { showToastError, showToastSuccess } from "@/utils/toast";
+import { handleShareEvento } from "@/utils/handleShare";
+import { crearEntradas } from "@/features/entradas/actions/entradas";
+
+export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos }) {
   const [cantidad, setCantidad] = useState<string>("1");
   const [entradasSeleccionadas, setEntradasSeleccionadas] = useState<number>(1);
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [tipoEntradaSeleccionada, setTipoEntradaSeleccionada] =
+    useState<TipoEntradaPublica | null>(null);
 
-  // Formateo de fecha y hora
-  // const fecha = new Date(evento.fecha);
-  // const fechaFormateada = format(fecha, "EEEE d 'de' MMMM 'de' yyyy", {
-  //   locale: es,
-  // });
-  // const horaFormateada = format(fecha, "HH:mm", { locale: es }) + "h";
+  const tipos_entrada = evento.tipos_entrada;
 
-  // // Precio formateado con 2 decimales
-  // const precio = evento.precio ? evento.precio.toFixed(2) : "0.00";
+  // Función para formatear precios
+  const formatPrecio = (precio: number) => {
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(precio);
+  };
+
+  // Calcular precios basados en el tipo de entrada seleccionado
+  const precioUnitario = tipoEntradaSeleccionada
+    ? tipoEntradaSeleccionada.precio
+    : 0;
+  const subtotal = precioUnitario * entradasSeleccionadas;
+  const comision = subtotal * 0.05;
+  const precioTotal = subtotal + comision;
+
+  // Función para manejar la compra
+  const handleCompra = async () => {
+    if (!tipoEntradaSeleccionada) {
+      showToastError({
+        title: "Selecciona un tipo de entrada",
+        description: "Por favor, selecciona un tipo de entrada antes de continuar.",
+      });
+      return;
+    }
+
+    try {
+      // Crear un array de entradas según la cantidad seleccionada
+      const entradasParaComprar = Array(entradasSeleccionadas).fill({
+        tipo_entrada_id: tipoEntradaSeleccionada.id,
+        metadata_uri: "https://example.com/metadata1.json",
+      });
+
+      const result = await crearEntradas(entradasParaComprar);
+
+      if (!result.success) {
+        throw new Error(result.error || "Error al procesar la compra");
+      }
+
+      showToastSuccess({
+        title: "¡Compra exitosa!",
+        description: `Se han comprado ${entradasSeleccionadas} entradas de tipo ${tipoEntradaSeleccionada.nombre}.`,
+      });
+
+      // Resetear el formulario después de la compra exitosa
+      setCantidad("1");
+      setEntradasSeleccionadas(1);
+      setTipoEntradaSeleccionada(null);
+    } catch (error) {
+      console.error("Error al realizar la compra:", error);
+      if (error instanceof Error) {
+        console.error("Error details:", {
+          message: error.message,
+          stack: error.stack,
+        });
+      }
+      showToastError({
+        title: "Error al procesar la compra",
+        description:
+          error instanceof Error ? error.message : "Inténtalo de nuevo más tarde.",
+      });
+    }
+  };
 
   // Función para manejo de likes
   const handleLikeClick = () => {
     setIsLiked(!isLiked);
     const mensaje = isLiked ? "Eliminado de favoritos" : "Añadido a favoritos";
-    toast(mensaje, {
+
+    showToastSuccess({
+      title: mensaje,
       description: isLiked
-        ? "Se ha eliminado este evento de tus favoritos."
-        : "Este evento se ha añadido a tu lista de favoritos.",
-      position: "top-center",
-    });
-  };
-
-  // Función para compartir
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: evento.titulo,
-          text: evento.descripcion ?? "",
-          url: window.location.href,
-        });
-        toast("Compartido correctamente", {
-          description: "El enlace al evento se ha compartido correctamente.",
-          position: "top-center",
-        });
-      } catch (error) {
-        console.error("Error al compartir:", error);
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast("Enlace copiado", {
-        description: "Enlace copiado al portapapeles.",
-        position: "top-center",
-      });
-    }
-  };
-
-  // Función para manejar la compra
-  const handleCompra = () => {
-    toast.success("¡Entradas añadidas!", {
-      description: `Has añadido ${entradasSeleccionadas} entrada(s) a tu carrito.`,
-      position: "bottom-right",
+        ? "Este evento ha sido eliminado de tu lista de favoritos."
+        : "Este evento ha sido añadido a tu lista de favoritos.",
     });
   };
 
@@ -109,6 +140,11 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
   const handleCantidadChange = (value: string) => {
     setCantidad(value);
     setEntradasSeleccionadas(Number(value));
+  };
+
+  // Función para manejar el compartir
+  const handleShare = () => {
+    handleShareEvento(evento);
   };
 
   return (
@@ -259,7 +295,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
 
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="item-1">
-                    <AccordionTrigger className="text-base font-medium">
+                    <AccordionTrigger className="text-base font-medium cursor-pointer">
                       Normas del evento
                     </AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
@@ -277,7 +313,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="item-2">
-                    <AccordionTrigger className="text-base font-medium">
+                    <AccordionTrigger className="text-base font-medium cursor-pointer">
                       Accesibilidad
                     </AccordionTrigger>
                     <AccordionContent className="text-muted-foreground">
@@ -325,7 +361,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <UserIcon className="w-5 h-5 mr-2 text-primary" />
-                      {evento.organizador_id || "Organizador"}
+                      {evento.organizador.nombre}
                     </CardTitle>
                     <CardDescription>
                       Información sobre el organizador y eventos anteriores.
@@ -333,7 +369,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   </CardHeader>
                   <CardContent className="space-y-4 text-muted-foreground">
                     <p>
-                      {evento.organizador_id} es un organizador de eventos con
+                      {evento.organizador.nombre} es un organizador de eventos con
                       experiencia en la creación de experiencias únicas para todo
                       tipo de público.
                     </p>
@@ -364,53 +400,83 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
               <CardHeader>
                 <CardTitle>Compra tus entradas</CardTitle>
                 <CardDescription>
-                  Entradas disponibles para el evento
+                  Selecciona el tipo y cantidad de entradas
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  {/* <div>
-                    <p className="font-medium">Precio por entrada</p>
-                    <p className="text-3xl font-bold">{precio}€</p>
-                  </div> */}
-                  <div className="w-24">
-                    <Select value={cantidad} onValueChange={handleCantidadChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Cantidad" />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium">
+                      Tipo de entrada
+                    </label>
+                    <Select
+                      value={tipoEntradaSeleccionada?.id.toString()}
+                      onValueChange={(value) => {
+                        const tipo = tipos_entrada.find(
+                          (t) => t.id.toString() === value,
+                        );
+                        setTipoEntradaSeleccionada(tipo || null);
+                      }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un tipo de entrada" />
                       </SelectTrigger>
                       <SelectContent>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num}
+                        {tipos_entrada.map((tipo) => (
+                          <SelectItem key={tipo.id} value={tipo.id.toString()}>
+                            {tipo.nombre} - {formatPrecio(tipo.precio)}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium">Cantidad</label>
+                    <Select value={cantidad} onValueChange={handleCantidadChange}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[...Array(10)].map((_, i) => (
+                          <SelectItem key={i + 1} value={(i + 1).toString()}>
+                            {i + 1}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {tipoEntradaSeleccionada && (
+                    <div className="pt-4 space-y-2">
+                      <div className="flex justify-between font-medium">
+                        <span>Precio unitario</span>
+                        <span>{formatPrecio(precioUnitario)}</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>Subtotal</span>
+                        <span>{formatPrecio(subtotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground text-sm">
+                        <span>Comisión de servicio (5%)</span>
+                        <span>{formatPrecio(comision)}</span>
+                      </div>
+                      <Separator className="my-2" />
+                      <div className="flex justify-between text-lg font-bold">
+                        <span>Total</span>
+                        <span>{formatPrecio(precioTotal)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {/* <div className="pt-4">
-                  <div className="flex justify-between font-medium mb-1">
-                    <span>Subtotal</span>
-                    <span>
-                      {(Number(precio) * entradasSeleccionadas).toFixed(2)}€
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground text-sm mb-8">
-                    <span>Comisión de servicio</span>
-                    <span>
-                      {(Number(precio) * entradasSeleccionadas * 0.05).toFixed(2)}€
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold mb-6">
-                    <span>Total</span>
-                    <span>
-                      {(Number(precio) * entradasSeleccionadas * 1.05).toFixed(2)}€
-                    </span>
-                  </div>
-                </div> */}
-                <Button className="w-full" size="lg" onClick={handleCompra}>
+
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={handleCompra}
+                  disabled={!tipoEntradaSeleccionada || entradasSeleccionadas < 1}>
                   Comprar entradas
                 </Button>
+
                 <p className="text-center text-xs text-muted-foreground">
                   Al hacer clic en &quot;Comprar entradas&quot; aceptas nuestros{" "}
                   <a href="#" className="text-primary hover:underline">
@@ -423,7 +489,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   variant="outline"
                   size="sm"
                   onClick={handleShare}
-                  className="flex items-center gap-1">
+                  className="flex items-center gap-1 cursor-pointer">
                   <ShareIcon className="h-4 w-4" />
                   Compartir
                 </Button>
@@ -432,7 +498,7 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   size="sm"
                   onClick={handleLikeClick}
                   className={cn(
-                    "flex items-center gap-1",
+                    "flex items-center gap-1 cursor-pointer",
                     isLiked && "text-red-500 hover:text-red-600",
                   )}>
                   <HeartIcon
@@ -451,7 +517,6 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   ¿Cómo recibiré mis entradas?
                 </AccordionTrigger>
                 <AccordionContent className="text-xs text-muted-foreground">
-
                   Las entradas se enviarán a tu correo electrónico inmediatamente
                   después de la compra. También podrás acceder a ellas desde tu
                   cuenta en la sección &quot;Mis Entradas&quot;.
@@ -462,9 +527,10 @@ export default function EventoDetalle({ evento }: { evento: EventoWOrganizador }
                   ¿Puedo cancelar mi compra?
                 </AccordionTrigger>
                 <AccordionContent className="text-xs text-muted-foreground">
-                  Las cancelaciones son posibles hasta 48 horas antes del evento.
-                  Para cancelar, accede a &quot;Mis Entradas&quot; y selecciona la opción de
-                  cancelación.
+                  Las cancelaciones no son posibles una vez realizada la compra. Sin
+                  embargo, puedes vender tus entradas a otros usuarios a través de
+                  nuestra plataforma oficial de reventa entre particulares, donde
+                  garantizamos la autenticidad de todas las entradas transferidas.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

@@ -24,15 +24,17 @@ export async function GET(
       .from("eventos")
       .select(
         `
-        *,
-        usuarios!inner(wallet),
-        tipos_entrada (
-          nombre,
-          precio,
-          cantidad_disponible,
-          cantidad_maxima
-        )
-      `,
+    *,
+    organizador:usuarios!inner(id, nombre, wallet),
+    tipos_entrada (
+      id,
+      cantidad_disponible,
+      descripcion,
+      nombre,
+      precio,
+      zona
+    )
+  `,
       )
       .eq("id", id)
       .single();

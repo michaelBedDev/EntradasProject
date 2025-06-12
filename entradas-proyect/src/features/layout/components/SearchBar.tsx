@@ -11,14 +11,14 @@ export function SearchBar({ query = "" }: { query?: string }) {
         action="/eventos"
         method="get"
         className="flex w-full max-w-lg mx-auto rounded-xl overflow-hidden border shadow-sm focus-within:ring-2 focus-within:ring-primary/50">
-        <div className="flex-1 flex items-center px-4">
-          <SearchIcon className="text-muted-foreground mr-2 h-5 w-5" />
+        <div className="flex-1 flex items-center">
+          <SearchIcon className="text-muted-foreground ml-4 mr-2 h-5 w-5" />
           <input
             type="text"
             name="query"
             defaultValue={query}
             placeholder="Buscar eventos..."
-            className="flex-1 py-3 outline-none bg-transparent"
+            className="flex-grow max-w-[136px] sm:max-w-none outline-none bg-transparent"
           />
         </div>
         <div className="flex items-stretch">

@@ -30,3 +30,7 @@ Inclúe un breve manual de uso ou un vídeo explicativo, segundo consideres axei
 4. [Planificación e Orzamento](doc/templates/a3_orzamento.md)
 5. [Codificación e Probas](doc/templates/4_codificacion_probas.md)
 6. [Mantemento](doc/templates/5_manuais.md)
+
+
+añadir remoto con otro nombre? git remote add github-michael git@github.com:michaelBedDev/EntradasProject.git
+

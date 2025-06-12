@@ -11,9 +11,5 @@ interface ProvidersProps {
 }
 
 export default function Providers({ children, initialState }: ProvidersProps) {
-  return (
-    <AppKitProvider initialState={initialState}>
-      <div className="px-4 lg:px-6">{children}</div>
-    </AppKitProvider>
-  );
+  return <AppKitProvider initialState={initialState}>{children}</AppKitProvider>;
 }

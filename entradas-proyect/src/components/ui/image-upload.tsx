@@ -4,42 +4,58 @@ import { UploadCloud, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface ImageUploadProps {
-  value: string;
-  onChange: (value: string) => void;
-  onRemove: () => void;
+  onChange: (value: string | File | null) => void;
+  value?: string;
+  onRemove?: () => void;
   className?: string;
 }
 
 export function ImageUpload({
-  value,
   onChange,
+  value,
   onRemove,
   className,
 }: ImageUploadProps) {
+  const [preview, setPreview] = useState<string | null>(value || null);
+
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      onChange(null);
+      setPreview(null);
+      return;
+    }
 
-    // Aquí iría la lógica para subir la imagen a un servicio de almacenamiento
-    // Por ahora, solo simulamos la subida creando una URL local
+    // Crear una URL local para la vista previa
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result as string;
-      onChange(result);
+      setPreview(result);
+      onChange(file);
     };
     reader.readAsDataURL(file);
   };
 
+  const handleRemove = () => {
+    setPreview(null);
+    if (onRemove) {
+      onRemove();
+    } else {
+      onChange(null);
+    }
+  };
+
   return (
     <div className={cn("flex items-center gap-4", className)}>
-      <div className="relative h-[200px] w-[200px] rounded-lg overflow-hidden">
-        {value ? (
+      <div className="relative h-[200px] w-full rounded-lg overflow-hidden">
+        {preview ? (
           <>
             <Image
-              src={value}
-              alt="Imagen del evento"
+              src={preview}
+              alt="Vista previa de la imagen"
               fill
               className="object-cover"
             />
@@ -48,7 +64,7 @@ export function ImageUpload({
               variant="destructive"
               size="icon"
               className="absolute top-2 right-2 h-8 w-8"
-              onClick={onRemove}>
+              onClick={handleRemove}>
               <X className="h-4 w-4" />
             </Button>
           </>

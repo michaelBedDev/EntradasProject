@@ -1,4 +1,4 @@
-import { authOptions } from "@/features/eventos/lib/auth";
+import { authOptions } from "@/features/auth/lib/auth";
 import { getServerSession } from "next-auth";
 
 /**

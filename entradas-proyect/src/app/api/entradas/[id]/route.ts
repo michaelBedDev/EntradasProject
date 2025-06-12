@@ -21,19 +21,31 @@ export async function GET(
       .from("entradas")
       .select(
         `
-        *,
-        tipo_entrada:tipo_entrada_id (
-          *,
-          evento:evento_id (
-            *,
-            organizador:organizador_id (
-              id,
-              nombre,
-              wallet
-            )
+      *,
+      asiento:asientos!entrada_id (
+        fila,
+        numero
+      ),
+      tipo_entrada:tipo_entrada_id (
+        nombre,
+        descripcion,
+        precio,
+        zona,
+        evento:evento_id (
+          titulo,
+          descripcion,
+          lugar,
+          imagen_uri,
+          fecha_inicio,
+          fecha_fin,
+          status,
+          organizador:organizador_id (
+            nombre,
+            wallet
           )
         )
-      `,
+      )
+    `,
       )
       .eq("id", id)
       .single();
@@ -108,18 +120,6 @@ export async function DELETE(
 
     if (!entradaActual) {
       return NextResponse.json({ error: "Entrada no encontrada" }, { status: 404 });
-    }
-
-    // Verificar permisos
-    const userWallet = request.headers.get("x-user-wallet");
-    const esPropietario = entradaActual.wallet === userWallet;
-    const esOrganizador =
-      entradaActual.tipo_entrada?.evento?.organizador_id ===
-      request.headers.get("x-user-id");
-    const esAdmin = userRole === "admin";
-
-    if (!esPropietario && !esOrganizador && !esAdmin) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     // Marcar la entrada como cancelada

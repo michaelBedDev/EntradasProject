@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
-import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
-import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
 
 /**
  * GET /api/entradas
@@ -73,57 +71,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(entradas);
   } catch (error) {
     console.error("Error en GET /api/entradas:", error);
-    return NextResponse.json(
-      { error: "Error interno del servidor" },
-      { status: 500 },
-    );
-  }
-}
-
-/**
- * POST /api/entradas
- * Endpoint privado para crear una nueva entrada
- * Requiere autenticación
- *
- * Cuerpo de la petición:
- * - tipo_entrada_id: string
- * - wallet: string
- * - tx_hash?: string
- * - metadata_uri: string
- * - qr_code: string
- * - token: string
- */
-export async function POST(request: NextRequest) {
-  try {
-    const supabase = await getSupabaseClientForAPIs(request);
-    const json = await request.json();
-
-    // Verificar que el usuario esté autenticado
-    const userRole = await getUserRoleFromRequest(request);
-    if (userRole === "usuario") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-
-    // Crear la entrada
-    const { data: entrada, error } = await supabase
-      .from("entradas")
-      .insert({
-        ...json,
-        estado: "activa",
-      })
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json(
-        { error: "Error al crear la entrada" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(entrada);
-  } catch (error) {
-    console.error("Error en POST /api/entradas:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 },

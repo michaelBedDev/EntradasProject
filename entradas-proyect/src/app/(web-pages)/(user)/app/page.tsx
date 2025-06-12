@@ -161,7 +161,11 @@ export default function UserDashboardPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Desde €{evento.precio}</span>
-                    <Button variant="outline" size="sm" asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="cursor-pointer">
                       <Link href={`/eventos/${evento.id}`}>Ver detalles</Link>
                     </Button>
                   </div>

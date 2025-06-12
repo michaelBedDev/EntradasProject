@@ -23,10 +23,17 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
     // Construir la consulta base
-    let query = supabase.from("eventos").select(`
+    let query = supabase
+      .from("eventos")
+      .select(
+        `
       *,
       organizador:usuarios!inner(id, nombre, wallet)
-    `);
+    `,
+      )
+      .order("fecha_inicio", { ascending: true });
+
+    // #TODO implementar paginación y no mostrar los eventos que ya han pasado
 
     // Aplicar filtros según los parámetros
     const status = searchParams.get("status");

@@ -1,12 +1,9 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { LinkType } from "@/types/global";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { LucideIcon } from "lucide-react";
-import AuthRequiredModal from "@/features/auth/components/AuthRequiredModal";
-import { useSession } from "next-auth/react";
-import { useState } from "react";
 
 export default function Linksbar({
   links,
@@ -16,20 +13,9 @@ export default function Linksbar({
   icons?: Record<string, LucideIcon>;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const session = useSession();
-
-  const handleLinkClick = (href: string) => {
-    if (session.status !== "authenticated") {
-      setIsModalOpen(true);
-      return;
-    }
-    router.push(href);
-  };
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 hidden md:block">
+    <nav className="fixed top-16 left-0 right-0 z-40 hidden md:block">
       <div className="container mx-auto px-4 py-2">
         <div className="bg-background/60 dark:bg-background/40 backdrop-blur-md rounded-full shadow-sm border border-border/20 mx-auto max-w-fit">
           <div className="flex items-center justify-center h-10 px-2">
@@ -41,10 +27,6 @@ export default function Linksbar({
                 <div key={link.href} className="relative">
                   <Link
                     href={link.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLinkClick(link.href);
-                    }}
                     className={`
     relative flex items-center px-4 py-1.5 rounded-full transition-all duration-200
     ${
@@ -77,12 +59,6 @@ export default function Linksbar({
           </div>
         </div>
       </div>
-
-      {/* Ventana modal si no hay sesión */}
-      <AuthRequiredModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </div>
+    </nav>
   );
 }

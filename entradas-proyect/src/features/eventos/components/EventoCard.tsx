@@ -1,10 +1,11 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EventoWOrganizador } from "@/types/global";
+import { EventoPublico } from "@/types/global";
+import { extractDayAndMonth } from "@/utils/dateFormat";
+import { handleShareEvento } from "@/utils/handleShare";
 import { slugify } from "@/utils/slugify";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -12,38 +13,12 @@ import {
   ShareIcon,
   UserIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 
-export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
+export function EventoCard({ evento }: { evento: EventoPublico }) {
   {
-    /*Función para compartir los eventos */
+    /* Formateo la fecha*/
   }
-  const handleShare = (evento: Evento) => {
-    const url = `${window.location.origin}/eventos/${evento.id}`;
-
-    if (navigator.share) {
-      navigator
-        .share({
-          title: evento.titulo,
-          text: evento.descripcion || "Mira este evento",
-          url: url,
-        })
-        .catch((error) => {
-          console.error("Error compartiendo:", error);
-        });
-    }
-    toast("Compartido correctamente", {
-      description: "El enlace al evento se ha compartido correctamente.",
-      position: "top-center",
-    });
-  };
-
-  {
-    /* Formateo la fecha */
-  }
-  const fecha = new Date(evento.fecha_inicio);
-  const diaMes = format(fecha, "dd", { locale: es });
-  const mes = format(fecha, "MMM", { locale: es }).toUpperCase();
+  const { mes, diaMes } = extractDayAndMonth(evento.fecha_inicio);
 
   return (
     <div className="rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl relative h-[400px]">
@@ -53,7 +28,7 @@ export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
           <img
             src={evento.imagen_uri}
             alt={evento.titulo}
-            id={`img-${evento.id}`}
+            id={`img-${slugify(evento.titulo)}`}
             className="w-full h-full object-cover transition-all duration-700"
           />
         ) : (
@@ -65,7 +40,7 @@ export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
 
       {/* Overlay con gradiente para el contenido */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent transition-all duration-500 z-10">
-        {/* Fecha destacada estilo moderno - simplificada */}
+        {/* Fecha destacada - simplificada */}
         <div className="absolute top-4 left-4 shadow-lg">
           <div className="rounded-xl overflow-hidden flex flex-col items-center bg-background/95 backdrop-blur-md">
             {/* Cabecera con mes */}
@@ -120,8 +95,8 @@ export function EventoCard({ evento }: { evento: EventoWOrganizador }) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-white hover:bg-white/20 transition-all duration-300"
-              onClick={() => handleShare(evento)}>
+              className="text-white hover:bg-white/20 transition-all duration-300 cursor-pointer"
+              onClick={() => handleShareEvento(evento)}>
               <ShareIcon className="h-4 w-4 mr-1" />
               Compartir
             </Button>

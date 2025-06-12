@@ -107,7 +107,7 @@ export async function getSupabaseToken(): Promise<{ token?: string; exp?: number
  */
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
-import { authOptions } from "@/features/eventos/lib/auth";
+import { authOptions } from "@/features/auth/lib/auth";
 
 export async function getSupabaseTokenFromRequest(
   request: NextRequest,

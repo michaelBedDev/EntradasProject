@@ -7,8 +7,9 @@ import { ThemeProvider } from "./context/providers/ThemeProvider";
 import Providers from "./context/providers/Providers";
 import { cookieToInitialState } from "wagmi";
 import { wagmiAdapter } from "./config";
-import Navbar from "@/features/layout/components/navbar/Navbar";
-import { Footer } from "@/components/ui/footer";
+import { Footer } from "@/features/layout/components/Footer";
+import { Toaster } from "sonner";
+import NavbarWrapper from "@/features/layout/components/navbar/NavbarWrapper";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -29,15 +30,17 @@ export default async function RootLayout({
   const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig, headerCookie);
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground px-4 lg:px-6 flex flex-col`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange>
           <Providers initialState={initialState}>
-            <Navbar links={[]} showFullNavbar={false} />
-            {children}
+            <NavbarWrapper />
+            <Toaster theme="dark" />
+            <main className="flex-1 mb-16">{children}</main>
             <Footer />
           </Providers>
         </ThemeProvider>

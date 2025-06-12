@@ -10,7 +10,7 @@ import {
 } from "@reown/appkit-siwe";
 import { createPublicClient, http } from "viem";
 
-const nextAuthSecret = process.env.NEXT_PUBLIC_NEXTAUTH_SECRET;
+const nextAuthSecret = process.env.NEXTAUTH_SECRET;
 if (!nextAuthSecret) {
   throw new Error("NEXTAUTH_SECRET is not set");
 }
@@ -89,8 +89,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: { id: string } }) {
       if (user && token.sub) {
-        // token.sub === user.id === "chainId:address"
-        const [, address] = token.sub.split(":");
+        //  ESTE ES EL TOKEN SUB: eip155:1:0x3193ae5Ec51212479F143ce06DA5B18Bd6e61782
+
+        const [, , address] = token.sub.split(":");
 
         // Si no existe el JWT de supabase, lo creamos (primera vez)
         token.supabase = createSupabaseJwt(address);
