@@ -49,8 +49,8 @@ async function getEventosOrganizador(
     categoria: evento.categoria || "Sin categoría",
     status: evento.status,
     organizador: {
-      nombre: evento.organizador.nombre,
-      wallet: evento.organizador.wallet,
+      nombre: evento.organizador?.nombre,
+      wallet: evento.organizador?.wallet,
     },
     tipos_entrada: evento.tipos_entrada.map((tipo) => ({
       id: tipo.id,
@@ -70,8 +70,8 @@ async function getEventosOrganizador(
         categoria: evento.categoria || "Sin categoría",
         status: evento.status,
         organizador: {
-          nombre: evento.organizador.nombre,
-          wallet: evento.organizador.wallet,
+          nombre: evento.organizador?.nombre,
+          wallet: evento.organizador?.wallet,
         },
       },
     })),

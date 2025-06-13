@@ -22,7 +22,7 @@ export async function getSupabaseServerClient() {
 
   const supabase = createServerClient<Database>(
     process.env.SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_ANON_KEY!,
     {
       // sincronización de cookies Supabase ↔ Next.js
       cookies: {
