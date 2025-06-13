@@ -51,6 +51,7 @@ export async function GET(
     }
 
     // Si el evento no está aprobado, verificar permisos
+    //#TODO CORREGIR
     if (evento.status !== EventoStatus.APROBADO) {
       const userRole = await getUserRoleFromRequest(request);
       if (userRole === "usuario") {
