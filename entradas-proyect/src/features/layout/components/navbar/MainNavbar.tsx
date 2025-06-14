@@ -21,8 +21,8 @@ export default function MainNavbar({
   icons,
 }: MainNavbarProps) {
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="container mx-auto px-4 h-16">
+    <div className=" w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <div className="container mx-auto px-8 h-16 max-w-6xl">
         <div className="flex h-full items-center justify-between">
           {/* Logo y nombre */}
           <div className="flex items-center space-x-2">

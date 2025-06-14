@@ -150,7 +150,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
   return (
     <>
       {/* Imagen principal de fondo con degradado */}
-      <div className="relative h-[50vh] md:h-[60vh] overflow-hidden">
+      <div className="relative h-[50vh] md:h-[60vh] overflow-hidden px-4">
         <div className="absolute inset-0">
           {evento.imagen_uri ? (
             <Image

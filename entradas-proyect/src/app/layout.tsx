@@ -31,7 +31,7 @@ export default async function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground px-4 lg:px-6 flex flex-col`}>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -40,7 +40,7 @@ export default async function RootLayout({
           <Providers initialState={initialState}>
             <NavbarWrapper />
             <Toaster theme="dark" />
-            <main className="flex-1 mb-16">{children}</main>
+            <main className="flex-1 lg:mb-16 sm:mb-8">{children}</main>
             <Footer />
           </Providers>
         </ThemeProvider>

@@ -71,7 +71,7 @@ export default function UserDashboardPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 space-y-8">
+    <div className="container mx-auto py-10 px-4 space-y-8">
       {/* Hero Section */}
       <div className="relative h-[400px] rounded-lg overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600">
         <div className="absolute inset-0 bg-black/50" />

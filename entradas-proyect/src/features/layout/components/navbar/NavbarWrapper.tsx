@@ -10,6 +10,7 @@ import { adminLinks, organizerLinks, userLinks } from "./utils/links";
 import { useUserRole } from "@/features/auth/hooks/useUserRole";
 import SkeletonMainbar from "./skeletons/SkeletonMainbar";
 import SkeletonLinkbar from "./skeletons/SkeletonLinkbar";
+import SkeletonMobileNavbar from "./skeletons/SkeletonMobileNavbar";
 import { usePathname } from "next/navigation";
 
 /**
@@ -48,7 +49,7 @@ export default function NavbarWrapper() {
       <>
         <SkeletonMainbar />
         <SkeletonLinkbar length={linksCount} />
-        <div className="h-18 w-full" />
+        <SkeletonMobileNavbar />
       </>
     );
   }

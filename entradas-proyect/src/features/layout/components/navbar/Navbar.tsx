@@ -20,7 +20,6 @@ export default function Navbar({ links, showFullNavbar = false }: NavbarProps) {
 
       {showFullNavbar && (
         <>
-          <div className="h-18 w-full"></div>
           {/* Barra de Navegación de Links */}
           <Linksbar links={links} icons={icons} />
 
@@ -30,7 +29,7 @@ export default function Navbar({ links, showFullNavbar = false }: NavbarProps) {
       )}
 
       {/* Espaciador para el contenido considerando ambas barras */}
-      <div className="h-18 w-full" />
+      {/* <div className="h-18 w-full" /> */}
 
       {/* <DebugElement /> */}
     </>
