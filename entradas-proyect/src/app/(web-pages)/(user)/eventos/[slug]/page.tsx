@@ -8,15 +8,17 @@ import { authOptions } from "@/features/auth/lib/auth";
 import { EventoStatus } from "@/features/eventos/services/types";
 import { getUserRole } from "@/features/auth/lib/getUserRole";
 
-interface EventoPageProps {
-  params: { slug: string };
+interface PageProps {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function EventoPage({ params }: EventoPageProps) {
+export default async function EventoPage({ params }: PageProps) {
   try {
+    const resolvedParams = await params;
     //Se extrae el id de la URL recibida
-    const id = extractID(params.slug);
-    console.log("Slug recibido:", params.slug);
+    const id = extractID(resolvedParams.slug);
+    console.log("Slug recibido:", resolvedParams.slug);
     console.log("ID extraído:", id);
 
     if (!id) {
