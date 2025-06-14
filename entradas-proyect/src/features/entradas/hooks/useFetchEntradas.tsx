@@ -3,12 +3,15 @@ import { useState, useEffect } from "react";
 
 export default function useFetchEntradas(wallet: string) {
   const [entradas, setEntradas] = useState<EntradaCompletaPublica[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const fetchEntradas = async () => {
-      setLoading(true);
+      if (!isInitialLoad) {
+        setLoading(true);
+      }
       setError(null);
 
       try {
@@ -20,7 +23,7 @@ export default function useFetchEntradas(wallet: string) {
         }
 
         const json = await response.json();
-        setEntradas(json.data); // ✅ Aquí accedemos al campo "data"
+        setEntradas(json.data);
       } catch (err) {
         console.error("Error fetching entradas:", err);
         console.error(
@@ -28,13 +31,21 @@ export default function useFetchEntradas(wallet: string) {
           err instanceof Error ? err.message : "Unknown error",
         );
         setEntradas([]);
+        setError(
+          err instanceof Error ? err.message : "Error al cargar las entradas",
+        );
       } finally {
         setLoading(false);
+        setIsInitialLoad(false);
       }
     };
 
     if (wallet) fetchEntradas();
   }, [wallet]);
 
-  return { entradas, loading, error };
+  return {
+    entradas,
+    loading: isInitialLoad ? false : loading,
+    error,
+  };
 }

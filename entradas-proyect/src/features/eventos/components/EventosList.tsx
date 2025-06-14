@@ -34,9 +34,9 @@ export default function EventosList({ query }: { query: string }) {
     );
   }
 
-  return (
-    <div className="container mx-auto py-12 px-8 max-w-6xl">
-      {eventos.length === 0 ? (
+  if (!loading && eventos.length === 0) {
+    return (
+      <div className="container mx-auto py-12 px-8 max-w-6xl">
         <div className="text-center py-12">
           <div className="text-muted-foreground mb-4 text-xl">
             {query
@@ -47,13 +47,17 @@ export default function EventosList({ query }: { query: string }) {
             <Link href="/eventos">Ver todos los eventos</Link>
           </Button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {eventos.map((evento) => (
-            <EventoCard evento={evento} key={evento.id} />
-          ))}
-        </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-12 px-8 max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {eventos.map((evento) => (
+          <EventoCard evento={evento} key={evento.id} />
+        ))}
+      </div>
     </div>
   );
 }

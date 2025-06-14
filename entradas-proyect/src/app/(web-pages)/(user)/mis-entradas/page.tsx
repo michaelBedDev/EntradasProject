@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import useFetchEntradas from "@/features/entradas/hooks/useFetchEntradas";
 
-import { useSession } from "next-auth/react";
 import { EntradaCard } from "@/features/entradas/components/EntradaCard";
 import EntradaSkeleton from "@/features/entradas/components/EntradaSkeleton";
 
@@ -33,6 +32,7 @@ export default function MisEntradasPage() {
     );
   }
 
+  // Mostrar error si existe
   if (error) {
     return (
       <div className="container mx-auto px-4 py-12 max-w-7xl">
@@ -44,22 +44,6 @@ export default function MisEntradasPage() {
           </p>
           <Button asChild>
             <a href="/eventos">Volver a eventos</a>
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (entradas.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Ohh</h1>
-          <p className="text-muted-foreground mb-6">
-            Parece que aún no tienes entradas para ningún evento.Compra ya las tuyas!
-          </p>
-          <Button asChild>
-            <a href="/eventos">Explorar eventos</a>
           </Button>
         </div>
       </div>
@@ -78,7 +62,7 @@ export default function MisEntradasPage() {
         </div>
 
         {/* Tabs para filtrar entradas */}
-        <Tabs defaultValue="todas" className="mb-8">
+        <Tabs defaultValue="todas">
           <TabsList className="mb-6">
             <TabsTrigger value="todas">Todas</TabsTrigger>
             <TabsTrigger value="disponibles">Disponibles</TabsTrigger>
@@ -87,38 +71,30 @@ export default function MisEntradasPage() {
           </TabsList>
 
           <TabsContent value="todas">
-            <div>
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {[1, 2, 3, 4].map((i) => (
-                    <EntradaSkeleton key={i} />
-                  ))}
-                </div>
-              ) : entradas.length === 0 ? (
-                <div className="text-center py-16 border border-dashed rounded-xl bg-muted/20">
-                  <Ticket className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No tienes entradas</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Parece que aún no has adquirido entradas para ningún evento
-                  </p>
-                  <Button asChild>
-                    <a href="/eventos">Explorar eventos</a>
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {entradas.map((entrada) => (
-                    <EntradaCard
-                      key={entrada.id}
-                      entrada={entrada}
-                      onShare={() => handleShareEntrada(entrada)}
-                      onDownload={() => handleDownload(entrada)}
-                      onViewQR={() => handleViewQR(entrada)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+            {!loading && entradas.length === 0 ? (
+              <div className="text-center py-16 border border-dashed rounded-xl bg-muted/20">
+                <Ticket className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No tienes entradas</h3>
+                <p className="text-muted-foreground mb-6">
+                  Parece que aún no has adquirido entradas para ningún evento
+                </p>
+                <Button asChild>
+                  <a href="/eventos">Explorar eventos</a>
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {entradas.map((entrada) => (
+                  <EntradaCard
+                    key={entrada.id}
+                    entrada={entrada}
+                    onShare={() => handleShareEntrada(entrada)}
+                    onDownload={() => handleDownload(entrada)}
+                    onViewQR={() => handleViewQR(entrada)}
+                  />
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="disponibles">
@@ -136,7 +112,7 @@ export default function MisEntradasPage() {
                     />
                   ))}
               {!loading &&
-                entradas.filter((e) => e.estado === "disponible").length === 0 && (
+                entradas.filter((e) => e.estado === "ACTIVA").length === 0 && (
                   <div className="text-center py-8 col-span-2">
                     <p>No tienes entradas disponibles actualmente</p>
                   </div>
@@ -159,7 +135,7 @@ export default function MisEntradasPage() {
                     />
                   ))}
               {!loading &&
-                entradas.filter((e) => e.estado === "usado").length === 0 && (
+                entradas.filter((e) => e.estado === "USADA").length === 0 && (
                   <div className="text-center py-8 col-span-2">
                     <p>No tienes entradas usadas</p>
                   </div>
@@ -182,7 +158,7 @@ export default function MisEntradasPage() {
                     />
                   ))}
               {!loading &&
-                entradas.filter((e) => e.estado === "expirado").length === 0 && (
+                entradas.filter((e) => e.estado === "CANCELADA").length === 0 && (
                   <div className="text-center py-8 col-span-2">
                     <p>No tienes entradas expiradas</p>
                   </div>

@@ -12,15 +12,16 @@ type Props = {
 };
 
 export default function RequireOrganizer({ children }: Props) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
-  // if (status === "loading") {
-  //   return (
-  //     <div className="container mx-auto px-4 py-12 max-w-6xl text-center">
-  //       <p>Verificando permisos...</p>
-  //     </div>
-  //   );
-  // }
+  // Estado de carga
+  if (status === "loading") {
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-6xl text-center">
+        <p className="text-muted-foreground">Verificando permisos...</p>
+      </div>
+    );
+  }
 
   if (!session) {
     return (
