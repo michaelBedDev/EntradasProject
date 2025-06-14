@@ -1,6 +1,4 @@
-import { getServerSession } from "next-auth";
-
-import { redirect } from "next/navigation";
+"use client";
 import {
   Card,
   CardContent,
@@ -19,54 +17,16 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PlusCircleIcon, Edit, Trash2, Eye } from "lucide-react";
-// import { EventStatus } from "@/types/events.types";
 import { Badge } from "@/components/ui/badge";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { authOptions } from "@/features/auth/lib/auth";
 import { slugify } from "@/utils/slugify";
+import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
+import { useSessionData } from "@/features/auth/hooks/useSessionData";
+import { useEventosOrganizador } from "@/features/eventos/hooks/useEventosOrganizador";
 
-export default async function MisEventosPage() {
-  // Verificar que el usuario esté autenticado
-  const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect("/eventos");
-  }
-
-  // // Verificar que el usuario sea organizador
-  // if (session.userRole !== "ORGANIZADOR") {
-  //   redirect("/eventos");
-  // }
-
-  const wallet = session.address;
-
-  let eventos: Evento[] = [];
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/eventos/organizador/${wallet}`,
-    );
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return (
-          <div className="container mx-auto py-10 px-4">
-            <p className="text-center text-muted-foreground">
-              Aún no has creado ningún evento
-            </p>
-            <Button asChild>
-              <Link href="/organizador/crear-evento">
-                <PlusCircleIcon className="mr-2 h-4 w-4" /> Crear mi primer evento
-              </Link>
-            </Button>
-          </div>
-        );
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    eventos = await response.json();
-  } catch (error) {
-    console.error("Error fetching eventos:", error);
-  }
+export default function MisEventosPage() {
+  const { wallet } = useSessionData();
+  const { eventos, isLoading, error } = useEventosOrganizador(wallet);
 
   // Función para obtener el color del badge según el estado
   const getBadgeVariant = (
@@ -86,26 +46,42 @@ export default async function MisEventosPage() {
     return statusMap[status] || "outline";
   };
 
-  return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Mis Eventos</h1>
-        <Button asChild>
-          <Link href="/organizador/crear-evento">
-            <PlusCircleIcon className="mr-2 h-4 w-4" /> Crear Nuevo Evento
-          </Link>
-        </Button>
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10 px-4">
+        <p className="text-center text-muted-foreground">Cargando eventos...</p>
       </div>
+    );
+  }
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Listado de Eventos</CardTitle>
-          <CardDescription>
-            Gestiona todos los eventos que has creado
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {eventos.length > 0 ? (
+  if (error) {
+    return (
+      <div className="container mx-auto py-10 px-4">
+        <p className="text-center text-destructive">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <RequireOrganizer>
+      <div className="container mx-auto py-12 px-8 max-w-6xl space-y-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Mis Eventos</h1>
+          <Button asChild>
+            <Link href="/organizador/crear-evento">
+              <PlusCircleIcon className="mr-2 h-4 w-4" /> Crear Nuevo Evento
+            </Link>
+          </Button>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Listado de Eventos</CardTitle>
+            <CardDescription>
+              Gestiona todos los eventos que has creado
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -121,7 +97,11 @@ export default async function MisEventosPage() {
                   <TableRow key={evento.id}>
                     <TableCell className="font-medium">{evento.titulo}</TableCell>
                     <TableCell>
-                      {/* {new Date(evento.fecha).toLocaleDateString("es-ES")} */}
+                      {new Date(evento.fecha_inicio).toLocaleDateString("es-ES", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </TableCell>
                     <TableCell>{evento.lugar}</TableCell>
                     <TableCell>
@@ -168,20 +148,9 @@ export default async function MisEventosPage() {
                 ))}
               </TableBody>
             </Table>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4">
-                Aún no has creado ningún evento
-              </p>
-              <Button asChild>
-                <Link href="/organizador/crear-evento">
-                  <PlusCircleIcon className="mr-2 h-4 w-4" /> Crear mi primer evento
-                </Link>
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+      </div>
+    </RequireOrganizer>
   );
 }

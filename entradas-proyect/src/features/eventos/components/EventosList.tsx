@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 
 import { EventoCard } from "./EventoCard";
 import { EventoCardSkeleton } from "./EventoCardSkeleton";
-import { useFetchEventos } from "../hooks/fetchEventos";
+import { useFetchEventos } from "../hooks/useFetchEventos";
 
 export default function EventosList({ query }: { query: string }) {
   const { eventos, loading, error } = useFetchEventos(query);
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto py-12 px-8 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, index) => (
             <EventoCardSkeleton key={index} />
@@ -24,10 +24,10 @@ export default function EventosList({ query }: { query: string }) {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto py-12 px-8 max-w-6xl">
         <div className="text-center py-12">
           <div className="text-red-500 mb-4 text-xl">
-            Error al cargar los eventos
+            No se han podido cargar los eventos
           </div>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function EventosList({ query }: { query: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 max-w-6xl">
+    <div className="container mx-auto py-12 px-8 max-w-6xl">
       {eventos.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-muted-foreground mb-4 text-xl">

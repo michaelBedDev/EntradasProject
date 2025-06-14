@@ -114,7 +114,7 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="border-t mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground text-center">
             © {currentYear} Entradas Project. Todos los derechos reservados.
           </p>
           <p className="text-sm text-muted-foreground mt-2 md:mt-0 text-center">

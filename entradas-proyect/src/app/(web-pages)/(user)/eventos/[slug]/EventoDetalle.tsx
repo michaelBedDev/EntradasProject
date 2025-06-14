@@ -14,6 +14,7 @@ import {
   HeartIcon,
   InfoIcon,
   AlertCircleIcon,
+  Loader2Icon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [tipoEntradaSeleccionada, setTipoEntradaSeleccionada] =
     useState<TipoEntradaPublica | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const tipos_entrada = evento.tipos_entrada;
 
@@ -85,6 +87,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
       return;
     }
 
+    setIsSubmitting(true);
     try {
       // Crear un array de entradas según la cantidad seleccionada
       const entradasParaComprar = Array(entradasSeleccionadas).fill({
@@ -120,6 +123,8 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
         description:
           error instanceof Error ? error.message : "Inténtalo de nuevo más tarde.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -149,37 +154,38 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
 
   return (
     <>
-      {/* Imagen principal de fondo con degradado */}
-      <div className="relative h-[50vh] md:h-[60vh] overflow-hidden px-4">
-        <div className="absolute inset-0">
-          {evento.imagen_uri ? (
-            <Image
-              src={evento.imagen_uri}
-              alt={evento.titulo}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-r from-primary/10 to-secondary/10 flex items-center justify-center">
-              <TicketIcon className="w-20 h-20 text-muted-foreground opacity-20" />
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/20" />
-        </div>
+      {/* Hero section con imagen de fondo */}
+      <div className="relative w-full h-[70vh] md:aspect-[21/8] pt-16 md:pt-20">
+        {evento.imagen_uri ? (
+          <Image
+            src={evento.imagen_uri}
+            alt={evento.titulo}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-primary/10 to-secondary/10 flex items-center justify-center">
+            <TicketIcon className="w-20 h-20 text-muted-foreground opacity-20" />
+          </div>
+        )}
 
-        <div className="container mx-auto px-4 md:px-8 relative h-full max-w-6xl z-10">
-          <div className="absolute bottom-12 max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+        {/* Overlay con gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 md:via-background/60 to-transparent" />
+
+        {/* Contenido superpuesto */}
+        <div className="absolute inset-0 container mx-auto px-4 md:px-8 max-w-6xl">
+          <div className="absolute bottom-0 left-0 right-0 pb-4 md:pb-8 px-4">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white drop-shadow-lg">
               {evento.titulo}
             </h1>
-            <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+            <div className="flex items-center gap-2 mb-4 text-white/90 drop-shadow-md">
               <UserIcon className="w-4 h-4" />
               <span>Organizado por {evento.organizador?.nombre || "Anónimo"}</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+              <Badge className="bg-white/10 text-white hover:bg-white/20 border-0 backdrop-blur-sm">
                 <CalendarIcon className="w-3 h-3 mr-1" />
                 {format(
                   new Date(evento.fecha_inicio.replace("+00:00", "Z")),
@@ -189,7 +195,6 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                   },
                 )}
 
-                {/* Si el evento es de un día, mostramos la hora de inicio y fin */}
                 {new Date(
                   evento.fecha_inicio.replace("+00:00", "Z"),
                 ).toDateString() ===
@@ -235,7 +240,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                 )}
               </Badge>
 
-              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+              <Badge className="bg-white/10 text-white hover:bg-white/20 border-0 backdrop-blur-sm">
                 <MapPinIcon className="w-3 h-3 mr-1" />
                 {evento.lugar}
               </Badge>
@@ -320,6 +325,36 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                       El recinto cuenta con acceso para personas con movilidad
                       reducida. Si necesitas asistencia especial, por favor contacta
                       con el organizador con al menos 48 horas de antelación.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="item-3">
+                    <AccordionTrigger className="text-base font-medium cursor-pointer">
+                      Preguntas frecuentes
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground space-y-4">
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          ¿Cómo recibiré mis entradas?
+                        </h4>
+                        <p className="text-sm">
+                          Las entradas se enviarán a tu correo electrónico
+                          inmediatamente después de la compra. También podrás acceder
+                          a ellas desde tu cuenta en la sección &quot;Mis
+                          Entradas&quot;.
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="font-medium mb-2">
+                          ¿Puedo cancelar mi compra?
+                        </h4>
+                        <p className="text-sm">
+                          Las cancelaciones no son posibles una vez realizada la
+                          compra. Sin embargo, puedes vender tus entradas a otros
+                          usuarios a través de nuestra plataforma oficial de reventa
+                          entre particulares, donde garantizamos la autenticidad de
+                          todas las entradas transferidas.
+                        </p>
+                      </div>
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -473,8 +508,19 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                   className="w-full"
                   size="lg"
                   onClick={handleCompra}
-                  disabled={!tipoEntradaSeleccionada || entradasSeleccionadas < 1}>
-                  Comprar entradas
+                  disabled={
+                    !tipoEntradaSeleccionada ||
+                    entradasSeleccionadas < 1 ||
+                    isSubmitting
+                  }>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                      Procesando...
+                    </>
+                  ) : (
+                    "Comprar entradas"
+                  )}
                 </Button>
 
                 <p className="text-center text-xs text-muted-foreground">
@@ -509,31 +555,6 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                 </Button>
               </CardFooter>
             </Card>
-
-            {/* Acordeón de preguntas frecuentes */}
-            <Accordion type="single" collapsible className="mt-6">
-              <AccordionItem value="faq-1">
-                <AccordionTrigger className="text-sm">
-                  ¿Cómo recibiré mis entradas?
-                </AccordionTrigger>
-                <AccordionContent className="text-xs text-muted-foreground">
-                  Las entradas se enviarán a tu correo electrónico inmediatamente
-                  después de la compra. También podrás acceder a ellas desde tu
-                  cuenta en la sección &quot;Mis Entradas&quot;.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="faq-2">
-                <AccordionTrigger className="text-sm">
-                  ¿Puedo cancelar mi compra?
-                </AccordionTrigger>
-                <AccordionContent className="text-xs text-muted-foreground">
-                  Las cancelaciones no son posibles una vez realizada la compra. Sin
-                  embargo, puedes vender tus entradas a otros usuarios a través de
-                  nuestra plataforma oficial de reventa entre particulares, donde
-                  garantizamos la autenticidad de todas las entradas transferidas.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ export default async function page({ searchParams }: Props) {
 
   return (
     <>
-      <div className="container mx-auto py-12 px-4 max-w-6xl">
+      <div className="container mx-auto py-12 px-8 max-w-6xl">
         {/* Encabezado con estilo Apple - Aumentado el espacio vertical */}
         <div className="mb-16 text-center mt-8">
           <h1 className="text-5xl font-bold tracking-tight mb-6">

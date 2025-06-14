@@ -182,10 +182,12 @@ export default function CrearEventoPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-3xl">
+    <div className="container mx-auto py-12 px-8 max-w-6xl">
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Crear nuevo evento</CardTitle>
+          <CardTitle className="text-2xl font-bold pb-4">
+            Crear nuevo evento
+          </CardTitle>
           <CardDescription>
             Completa los datos para publicar tu evento
           </CardDescription>

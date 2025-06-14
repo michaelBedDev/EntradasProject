@@ -89,7 +89,7 @@ export default function EditarEventoPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-12 px-8 max-w-6xl">
       <Card>
         <CardHeader>
           <CardTitle>Editar Evento</CardTitle>
