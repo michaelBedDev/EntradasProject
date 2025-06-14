@@ -46,6 +46,12 @@ export default function MisEventosPage() {
     return statusMap[status] || "outline";
   };
 
+  // Función para navegar al detalle del evento
+  const handleViewEvento = (evento: { titulo: string; id: string }) => {
+    const tituloSlug = slugify(evento.titulo);
+    window.location.href = `/eventos/${tituloSlug}-${evento.id}`;
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-10 px-4">
@@ -118,12 +124,9 @@ export default function MisEventosPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          asChild
+                          onClick={() => handleViewEvento(evento)}
                           title="Ver evento">
-                          <Link
-                            href={`/eventos/${slugify(evento.titulo)}-${evento.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Link>
+                          <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"

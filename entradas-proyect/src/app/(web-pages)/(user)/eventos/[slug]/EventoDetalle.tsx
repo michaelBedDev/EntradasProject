@@ -48,6 +48,17 @@ import { EventoPublicoWTipos, TipoEntradaPublica } from "@/types/global";
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import { handleShareEvento } from "@/utils/handleShare";
 import { crearEntradas } from "@/features/entradas/actions/entradas";
+import { EventoStatus } from "@/features/eventos/services/types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos }) {
   const [cantidad, setCantidad] = useState<string>("1");
@@ -79,6 +90,15 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
 
   // Función para manejar la compra
   const handleCompra = async () => {
+    if (evento.status !== EventoStatus.APROBADO) {
+      showToastError({
+        title: "Evento no disponible",
+        description:
+          "Este evento aún no está aprobado y no se pueden comprar entradas.",
+      });
+      return;
+    }
+
     if (!tipoEntradaSeleccionada) {
       showToastError({
         title: "Selecciona un tipo de entrada",
@@ -435,100 +455,141 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
               <CardHeader>
                 <CardTitle>Compra tus entradas</CardTitle>
                 <CardDescription>
-                  Selecciona el tipo y cantidad de entradas
+                  {evento.status !== EventoStatus.APROBADO ? (
+                    <div className="text-destructive font-medium">
+                      Este evento aún no está aprobado
+                    </div>
+                  ) : (
+                    "Selecciona el tipo y cantidad de entradas"
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                      Tipo de entrada
-                    </label>
-                    <Select
-                      value={tipoEntradaSeleccionada?.id.toString()}
-                      onValueChange={(value) => {
-                        const tipo = tipos_entrada.find(
-                          (t) => t.id.toString() === value,
-                        );
-                        setTipoEntradaSeleccionada(tipo || null);
-                      }}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona un tipo de entrada" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {tipos_entrada.map((tipo) => (
-                          <SelectItem key={tipo.id} value={tipo.id.toString()}>
-                            {tipo.nombre} - {formatPrecio(tipo.precio)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                {evento.status !== EventoStatus.APROBADO ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="w-full" size="lg" variant="outline">
+                        <InfoIcon className="w-4 h-4 mr-2" />
+                        Ver estado del evento
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Evento pendiente de aprobación
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Este evento está actualmente en proceso de revisión. Las
+                          entradas no estarán disponibles hasta que el evento sea
+                          aprobado por nuestro equipo.
+                          <br />
+                          <br />
+                          Puedes guardar el evento en tus favoritos para recibir una
+                          notificación cuando esté disponible.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogAction>Cerrar</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium">
+                          Tipo de entrada
+                        </label>
+                        <Select
+                          value={tipoEntradaSeleccionada?.id.toString()}
+                          onValueChange={(value) => {
+                            const tipo = tipos_entrada.find(
+                              (t) => t.id.toString() === value,
+                            );
+                            setTipoEntradaSeleccionada(tipo || null);
+                          }}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un tipo de entrada" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {tipos_entrada.map((tipo) => (
+                              <SelectItem key={tipo.id} value={tipo.id.toString()}>
+                                {tipo.nombre} - {formatPrecio(tipo.precio)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium">Cantidad</label>
-                    <Select value={cantidad} onValueChange={handleCantidadChange}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[...Array(10)].map((_, i) => (
-                          <SelectItem key={i + 1} value={(i + 1).toString()}>
-                            {i + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium">Cantidad</label>
+                        <Select
+                          value={cantidad}
+                          onValueChange={handleCantidadChange}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {[...Array(10)].map((_, i) => (
+                              <SelectItem key={i + 1} value={(i + 1).toString()}>
+                                {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  {tipoEntradaSeleccionada && (
-                    <div className="pt-4 space-y-2">
-                      <div className="flex justify-between font-medium">
-                        <span>Precio unitario</span>
-                        <span>{formatPrecio(precioUnitario)}</span>
-                      </div>
-                      <div className="flex justify-between font-medium">
-                        <span>Subtotal</span>
-                        <span>{formatPrecio(subtotal)}</span>
-                      </div>
-                      <div className="flex justify-between text-muted-foreground text-sm">
-                        <span>Comisión de servicio (5%)</span>
-                        <span>{formatPrecio(comision)}</span>
-                      </div>
-                      <Separator className="my-2" />
-                      <div className="flex justify-between text-lg font-bold">
-                        <span>Total</span>
-                        <span>{formatPrecio(precioTotal)}</span>
-                      </div>
+                      {tipoEntradaSeleccionada && (
+                        <div className="pt-4 space-y-2">
+                          <div className="flex justify-between font-medium">
+                            <span>Precio unitario</span>
+                            <span>{formatPrecio(precioUnitario)}</span>
+                          </div>
+                          <div className="flex justify-between font-medium">
+                            <span>Subtotal</span>
+                            <span>{formatPrecio(subtotal)}</span>
+                          </div>
+                          <div className="flex justify-between text-muted-foreground text-sm">
+                            <span>Comisión de servicio (5%)</span>
+                            <span>{formatPrecio(comision)}</span>
+                          </div>
+                          <Separator className="my-2" />
+                          <div className="flex justify-between text-lg font-bold">
+                            <span>Total</span>
+                            <span>{formatPrecio(precioTotal)}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={handleCompra}
-                  disabled={
-                    !tipoEntradaSeleccionada ||
-                    entradasSeleccionadas < 1 ||
-                    isSubmitting
-                  }>
-                  {isSubmitting ? (
-                    <>
-                      <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                      Procesando...
-                    </>
-                  ) : (
-                    "Comprar entradas"
-                  )}
-                </Button>
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={handleCompra}
+                      disabled={
+                        !tipoEntradaSeleccionada ||
+                        entradasSeleccionadas < 1 ||
+                        isSubmitting ||
+                        evento.status !== EventoStatus.APROBADO
+                      }>
+                      {isSubmitting ? (
+                        <>
+                          <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        "Comprar entradas"
+                      )}
+                    </Button>
 
-                <p className="text-center text-xs text-muted-foreground">
-                  Al hacer clic en &quot;Comprar entradas&quot; aceptas nuestros{" "}
-                  <a href="#" className="text-primary hover:underline">
-                    términos y condiciones
-                  </a>
-                </p>
+                    <p className="text-center text-xs text-muted-foreground">
+                      Al hacer clic en &quot;Comprar entradas&quot; aceptas nuestros{" "}
+                      <a href="#" className="text-primary hover:underline">
+                        términos y condiciones
+                      </a>
+                    </p>
+                  </>
+                )}
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button

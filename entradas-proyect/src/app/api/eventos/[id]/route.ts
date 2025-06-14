@@ -7,9 +7,6 @@ import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
 /**
  * GET /api/eventos/[id]
  * Endpoint público para obtener detalles de un evento específico
- * Si el evento no está aprobado, solo es accesible por:
- * - El organizador del evento
- * - Administradores
  */
 export async function GET(
   request: NextRequest,
@@ -18,6 +15,7 @@ export async function GET(
   try {
     const supabase = getSupabaseAdminClient();
     const id = (await context.params).id;
+    console.log("API: Obteniendo evento con ID:", id);
 
     // Obtener el evento con sus relaciones
     const { data: evento, error } = await supabase
@@ -40,6 +38,7 @@ export async function GET(
       .single();
 
     if (error) {
+      console.error("API: Error al obtener el evento:", error);
       return NextResponse.json(
         { error: "Error al obtener el evento" },
         { status: 500 },
@@ -47,29 +46,19 @@ export async function GET(
     }
 
     if (!evento) {
+      console.log("API: Evento no encontrado");
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    // Si el evento no está aprobado, verificar permisos
-    //#TODO CORREGIR
-    if (evento.status !== EventoStatus.APROBADO) {
-      const userRole = await getUserRoleFromRequest(request);
-      if (userRole === "usuario") {
-        return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-      }
-
-      // Solo permitir acceso al organizador o administradores
-      if (
-        evento.organizador_id !== request.headers.get("x-user-id") &&
-        userRole !== "admin"
-      ) {
-        return NextResponse.json({ error: "No autorizado" }, { status: 403 });
-      }
-    }
+    console.log("API: Evento encontrado:", {
+      id: evento.id,
+      titulo: evento.titulo,
+      status: evento.status,
+    });
 
     return NextResponse.json(evento);
   } catch (error) {
-    console.error("Error en GET /api/eventos/[id]:", error);
+    console.error("API: Error en GET /api/eventos/[id]:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 },

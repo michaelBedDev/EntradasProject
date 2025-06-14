@@ -37,6 +37,7 @@ export async function GET(
       fecha_fin,
       lugar,
       imagen_uri,
+      status,
       organizador:usuarios!inner(wallet)
     `,
       )
