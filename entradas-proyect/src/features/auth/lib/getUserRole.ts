@@ -2,6 +2,7 @@ import { authOptions } from "@/features/auth/lib/auth";
 import { getServerSession } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
+import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 
 /**
  * Obtiene el rol del usuario desde la sesión de NextAuth.
@@ -69,4 +70,72 @@ export async function getUserWalletFromRequest(request: NextRequest) {
     chainId: parseInt(chainId, 10),
     address: address,
   };
+}
+
+/**
+ * Obtiene el ID del usuario desde su wallet usando Supabase.
+ * Si no se encuentra el usuario, retorna null.
+ *
+ * @param wallet - La dirección de la wallet del usuario
+ * @returns {Promise<string | null>} El ID del usuario o null si no se encuentra
+ */
+export async function getUserIdFromWallet(wallet: string): Promise<string | null> {
+  try {
+    const supabase = getSupabaseAdminClient();
+
+    console.log(
+      "getUserIdFromWallet - Buscando usuario con wallet:",
+      wallet.toLowerCase(),
+    );
+
+    const { data: user, error } = await supabase
+      .from("usuarios")
+      .select("id")
+      .eq("wallet", wallet)
+      .single();
+
+    if (error) {
+      console.error("getUserIdFromWallet - Error al obtener el usuario:", error);
+      return null;
+    }
+
+    console.log("getUserIdFromWallet - Usuario encontrado:", user);
+    return user?.id || null;
+  } catch (error) {
+    console.error("getUserIdFromWallet - Error:", error);
+    return null;
+  }
+}
+
+/**
+ * Obtiene el ID del usuario desde la solicitud de NextAuth.
+ * Si no hay sesión o no se encuentra el usuario, retorna null.
+ *
+ * @param request - La solicitud de Next.js
+ * @returns {Promise<string | null>} El ID del usuario o null si no se encuentra
+ */
+export async function getUserIdFromRequest(
+  request: NextRequest,
+): Promise<string | null> {
+  try {
+    const walletData = await getUserWalletFromRequest(request);
+
+    console.log("getUserIdFromRequest - Wallet data:", walletData);
+
+    if (!walletData) {
+      console.log("getUserIdFromRequest - No se pudo obtener la wallet del usuario");
+      return null;
+    }
+
+    const userId = await getUserIdFromWallet(walletData.address);
+    console.log("getUserIdFromRequest - User ID from wallet:", {
+      wallet: walletData.address,
+      userId,
+    });
+
+    return userId;
+  } catch (error) {
+    console.error("getUserIdFromRequest - Error:", error);
+    return null;
+  }
 }

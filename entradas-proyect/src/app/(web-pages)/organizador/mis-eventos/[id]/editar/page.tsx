@@ -1,240 +1,75 @@
-"use client";
+import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/features/auth/lib/auth";
+import { getUserRole } from "@/features/auth/lib/getUserRole";
+import EditarEventoForm from "./EditarEventoForm";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { EventoStatus } from "@/features/eventos/services/types";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { ImageUpload } from "@/components/ui/image-upload";
-import { Separator } from "@/components/ui/separator";
+interface PageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
 
-// Datos de ejemplo
-const evento = {
-  id: "1",
-  titulo: "Concierto de Rock",
-  descripcion: "Gran concierto de rock con bandas locales",
-  fecha: "2024-03-15",
-  hora: "20:00",
-  ubicacion: "Sala Principal",
-  capacidad: 500,
-  estado: EventoStatus.PENDIENTE,
-  imagen: "https://example.com/imagen.jpg",
-};
+export default async function EditarEventoPage({ params }: PageProps) {
+  try {
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
-const formSchema = z.object({
-  titulo: z.string().min(2, {
-    message: "El título debe tener al menos 2 caracteres.",
-  }),
-  descripcion: z.string().min(10, {
-    message: "La descripción debe tener al menos 10 caracteres.",
-  }),
-  fecha: z.string().min(1, {
-    message: "La fecha es requerida.",
-  }),
-  hora: z.string().min(1, {
-    message: "La hora es requerida.",
-  }),
-  ubicacion: z.string().min(2, {
-    message: "La ubicación debe tener al menos 2 caracteres.",
-  }),
-  capacidad: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "La capacidad debe ser un número positivo.",
-  }),
-  imagen: z.string().min(1, {
-    message: "La imagen es requerida.",
-  }),
-});
+    if (!id) {
+      console.log("No se proporcionó un ID válido");
+      return notFound();
+    }
 
-export default function EditarEventoPage() {
-  const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      titulo: evento.titulo,
-      descripcion: evento.descripcion,
-      fecha: evento.fecha,
-      hora: evento.hora,
-      ubicacion: evento.ubicacion,
-      capacidad: evento.capacidad.toString(),
-      imagen: evento.imagen,
-    },
-  });
+    // Obtener los datos del evento por su ID
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/eventos/${id}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Aquí iría la lógica para actualizar el evento
-    console.log(values);
-    toast.success("Evento actualizado correctamente");
-    router.push("/organizador/mis-eventos");
+    console.log("Status de la respuesta:", response.status);
+
+    // Si la respuesta no es correcta, mostrar 404
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.log("Error de la API:", errorData);
+      return notFound();
+    }
+
+    const evento = await response.json();
+    console.log("Evento encontrado:", evento ? "Sí" : "No");
+
+    // Si no se encuentra el evento, mostrar 404
+    if (!evento) {
+      console.log("No se encontró el evento en la respuesta");
+      return notFound();
+    }
+
+    // Verificar permisos
+    const session = await getServerSession(authOptions);
+    const userRole = await getUserRole();
+
+    // Si el usuario no está autenticado, redirigir al login
+    if (!session) {
+      console.log("Usuario no autenticado");
+      return notFound();
+    }
+
+    // Verificar si el usuario es el organizador o un administrador
+    const isOrganizer =
+      session.address?.toLowerCase() === evento.organizador.wallet.toLowerCase();
+    const isAdmin = userRole === "administrador";
+
+    if (!isOrganizer && !isAdmin) {
+      console.log("Usuario no es organizador ni admin");
+      return notFound();
+    }
+
+    // Permitir editar cualquier evento si es el organizador o admin
+    return <EditarEventoForm evento={evento} />;
+  } catch (error) {
+    console.error("Error en EditarEventoPage:", error);
+    return notFound();
   }
-
-  return (
-    <div className="container mx-auto py-12 px-8 max-w-6xl">
-      <Card>
-        <CardHeader>
-          <CardTitle>Editar Evento</CardTitle>
-          <CardDescription>
-            Modifica los detalles de tu evento. Solo puedes editar eventos en estado
-            pendiente.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-8">
-                  <FormField
-                    control={form.control}
-                    name="imagen"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Imagen del Evento</FormLabel>
-                        <FormControl>
-                          <ImageUpload
-                            value={field.value}
-                            onChange={field.onChange}
-                            onRemove={() => field.onChange("")}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Sube una imagen representativa para tu evento.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="space-y-8">
-                  <FormField
-                    control={form.control}
-                    name="titulo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Título del Evento</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Concierto de Rock" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          El título que aparecerá en la página del evento.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="descripcion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Descripción</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe tu evento..."
-                            className="min-h-[100px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Proporciona detalles sobre el evento.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="fecha"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="hora"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hora</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="ubicacion"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ubicación</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Sala Principal" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="capacidad"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Capacidad</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="500" min="1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <CardFooter className="flex justify-end gap-4 px-0">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}>
-                  Cancelar
-                </Button>
-                <Button type="submit">Guardar Cambios</Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
-  );
 }

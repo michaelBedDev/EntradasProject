@@ -1,6 +1,6 @@
 import { useSessionData } from "@/features/auth/hooks/useSessionData";
 import { parseSupabaseToken } from "@/lib/supabase/utils";
-import { RolUsuario } from "@/types/rol-usuario";
+import { RolUsuario } from "@/types/enums";
 
 export default function DebugElement() {
   const { role, wallet, expiration, supabaseToken } = useSessionData();

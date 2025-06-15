@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { RolUsuario } from "@/types/rol-usuario";
+import { RolUsuario } from "@/types/enums";
 import { SupabaseJwt } from "@/types/global";
 
 /**

@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { RolUsuario } from "@/types/rol-usuario";
+import { RolUsuario } from "@/types/enums";
 
 type Props = {
   children: React.ReactNode;

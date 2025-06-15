@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { EventoPublicoWTipos, TipoEntradaPublica } from "@/types/global";
+import { getBadgeVariant } from "@/utils/getBadgeVariant";
 
 import { showToastError, showToastSuccess } from "@/utils/toast";
 import { handleShareEvento } from "@/utils/handleShare";
@@ -172,6 +173,9 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
     handleShareEvento(evento);
   };
 
+  // Asegurarnos de que el status sea del tipo EventoStatus
+  const eventoStatus = evento.status as EventoStatus;
+
   return (
     <>
       {/* Hero section con imagen de fondo */}
@@ -197,12 +201,21 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
         {/* Contenido superpuesto */}
         <div className="absolute inset-0 container mx-auto px-4 md:px-8 max-w-6xl">
           <div className="absolute bottom-0 left-0 right-0 pb-4 md:pb-8 px-4">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-white drop-shadow-lg">
-              {evento.titulo}
-            </h1>
+            <div className="flex items-center gap-4 mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white drop-shadow-lg">
+                {evento.titulo}
+              </h1>
+              {eventoStatus !== EventoStatus.APROBADO && (
+                <Badge
+                  variant={getBadgeVariant(eventoStatus)}
+                  className="text-sm font-medium px-3 py-1">
+                  {eventoStatus}
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center gap-2 mb-4 text-white/90 drop-shadow-md">
               <UserIcon className="w-4 h-4" />
-              <span>Organizado por {evento.organizador?.nombre || "Anónimo"}</span>
+              <span>Organizado por {evento.organizador?.nombre}</span>
             </div>
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-white/10 text-white hover:bg-white/20 border-0 backdrop-blur-sm">
@@ -563,7 +576,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
                     </div>
 
                     <Button
-                      className="w-full"
+                      className="w-full cursor-pointer"
                       size="lg"
                       onClick={handleCompra}
                       disabled={

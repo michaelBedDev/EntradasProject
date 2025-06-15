@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
-import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
+import {
+  getUserRoleFromRequest,
+  getUserIdFromRequest,
+} from "@/features/auth/lib/getUserRole";
 import { tiposEntradaSchema } from "@/features/eventos/schemas/tipoEntrada";
 
 /**
@@ -19,16 +22,19 @@ export async function POST(
 
     // Verificar que el usuario esté autenticado y sea organizador
     const userRole = await getUserRoleFromRequest(request);
-    if (userRole === "usuario") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    const userId = await getUserIdFromRequest(request);
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "No autorizado - ID de usuario no encontrado" },
+        { status: 401 },
+      );
     }
 
-    // Validar el cuerpo de la petición
-    const validationResult = tiposEntradaSchema.safeParse(json);
-    if (!validationResult.success) {
+    if (userRole === "usuario") {
       return NextResponse.json(
-        { error: "Datos inválidos", details: validationResult.error.format() },
-        { status: 400 },
+        { error: "No autorizado - Rol insuficiente" },
+        { status: 401 },
       );
     }
 
@@ -40,6 +46,7 @@ export async function POST(
       .single();
 
     if (errorEvento) {
+      console.error("Error al verificar el evento:", errorEvento);
       return NextResponse.json(
         { error: "Error al verificar el evento" },
         { status: 500 },
@@ -50,15 +57,40 @@ export async function POST(
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    if (evento.organizador_id !== request.headers.get("x-user-id")) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    if (evento.organizador_id !== userId) {
+      return NextResponse.json(
+        { error: "No autorizado - No es el organizador del evento" },
+        { status: 403 },
+      );
     }
 
-    // Crear los tipos de entrada
+    // Primero, eliminar los tipos de entrada existentes
+    const { error: deleteError } = await supabase
+      .from("tipos_entrada")
+      .delete()
+      .eq("evento_id", id);
+
+    if (deleteError) {
+      console.error("Error al eliminar tipos de entrada existentes:", deleteError);
+      return NextResponse.json(
+        { error: "Error al actualizar los tipos de entrada" },
+        { status: 500 },
+      );
+    }
+
+    // Validar y preparar los nuevos tipos de entrada
+    const validationResult = tiposEntradaSchema.safeParse(json);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: "Datos inválidos", details: validationResult.error.format() },
+        { status: 400 },
+      );
+    }
+
+    // Crear los nuevos tipos de entrada
     const tiposEntrada = validationResult.data.map((tipo) => ({
       ...tipo,
       evento_id: id,
-      cantidad_disponible: tipo.cantidad,
     }));
 
     const { data, error } = await supabase
@@ -67,8 +99,9 @@ export async function POST(
       .select();
 
     if (error) {
+      console.error("Error al crear los tipos de entrada:", error);
       return NextResponse.json(
-        { error: "Error al crear los tipos de entrada" },
+        { error: "Error al actualizar los tipos de entrada" },
         { status: 500 },
       );
     }

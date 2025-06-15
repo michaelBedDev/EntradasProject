@@ -1,6 +1,32 @@
 import { EventoStatus } from "@/features/eventos/services/types";
 import * as z from "zod";
 
+// Esquema para los tipos de entrada
+export const tipoEntradaSchema = z.object({
+  nombre: z
+    .string()
+    .min(2, { message: "El nombre debe tener al menos 2 caracteres" })
+    .max(50, { message: "El nombre no puede exceder los 50 caracteres" }),
+  descripcion: z
+    .string()
+    .max(200, { message: "La descripción no puede exceder los 200 caracteres" })
+    .nullable()
+    .optional(),
+  precio: z.number().min(0, { message: "El precio debe ser mayor o igual a 0" }),
+  zona: z
+    .string()
+    .max(50, { message: "La zona no puede exceder los 50 caracteres" })
+    .nullable()
+    .optional(),
+  cantidad_disponible: z
+    .number()
+    .int()
+    .min(1, { message: "La cantidad debe ser mayor a 0" }),
+});
+
+// Esquema para el formulario de tipos de entrada
+export const tipoEntradaFormSchema = tipoEntradaSchema;
+
 // Esquema base para el formulario
 export const eventoFormSchema = z.object({
   titulo: z
@@ -34,9 +60,23 @@ export const eventoFormSchema = z.object({
 
   imagen_uri: z
     .string()
-    .url({ message: "URL de imagen inválida" })
+    .refine(
+      (value) => {
+        // Permitir string vacío o URL válida
+        if (!value) return true;
+        try {
+          new URL(value);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      { message: "URL de imagen inválida" },
+    )
     .nullable()
     .optional(),
+
+  tipos_entrada: z.array(tipoEntradaFormSchema).optional(),
 });
 
 // Esquema completo para la base de datos
@@ -85,3 +125,4 @@ export type CreateEventoInput = z.infer<typeof createEventoSchema>;
 export type CreateEventoFormInput = z.infer<typeof createEventoFormSchema>;
 export type UpdateEventoInput = z.infer<typeof updateEventoSchema>;
 export type EstadoEventoInput = z.infer<typeof estadoEventoSchema>;
+export type TipoEntradaFormInput = z.infer<typeof tipoEntradaFormSchema>;

@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
+import {
+  getUserRoleFromRequest,
+  getUserIdFromRequest,
+} from "@/features/auth/lib/getUserRole";
 
 /**
  * GET /api/eventos/[id]
@@ -84,10 +87,33 @@ export async function PATCH(
     const id = (await context.params).id;
     const json = await request.json();
 
-    // Verificar que el usuario esté autenticado
+    // Obtener el usuario y su rol de la sesión
     const userRole = await getUserRoleFromRequest(request);
+    const userId = await getUserIdFromRequest(request);
+
+    console.log("PATCH /api/eventos/[id] - Auth Debug:", {
+      userRole,
+      userId,
+      headers: Object.fromEntries(request.headers.entries()),
+    });
+
+    if (!userId) {
+      console.log("PATCH /api/eventos/[id] - No se pudo obtener el ID del usuario");
+      return NextResponse.json(
+        { error: "No autorizado - ID de usuario no encontrado" },
+        { status: 401 },
+      );
+    }
+
     if (userRole === "usuario") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      console.log(
+        "PATCH /api/eventos/[id] - Usuario con rol insuficiente:",
+        userRole,
+      );
+      return NextResponse.json(
+        { error: "No autorizado - Rol insuficiente" },
+        { status: 401 },
+      );
     }
 
     // Obtener el evento actual
@@ -98,6 +124,10 @@ export async function PATCH(
       .single();
 
     if (errorEvento) {
+      console.error(
+        "PATCH /api/eventos/[id] - Error al obtener el evento:",
+        errorEvento,
+      );
       return NextResponse.json(
         { error: "Error al obtener el evento" },
         { status: 500 },
@@ -105,21 +135,21 @@ export async function PATCH(
     }
 
     if (!eventoActual) {
+      console.log("PATCH /api/eventos/[id] - Evento no encontrado:", id);
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    // Verificar permisos
-    if (
-      eventoActual.organizador_id !== request.headers.get("x-user-id") &&
-      userRole !== "admin"
-    ) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
-    }
+    console.log("PATCH /api/eventos/[id] - Comparando permisos:", {
+      eventoOrganizadorId: eventoActual.organizador_id,
+      userId,
+      userRole,
+    });
 
-    // Si el evento está aprobado, solo los administradores pueden editarlo
-    if (eventoActual.status === EventoStatus.APROBADO && userRole !== "admin") {
+    // Verificar permisos usando el ID del usuario
+    if (eventoActual.organizador_id !== userId && userRole !== "admin") {
+      console.log("PATCH /api/eventos/[id] - Permisos insuficientes");
       return NextResponse.json(
-        { error: "No se puede editar un evento aprobado" },
+        { error: "No autorizado - No es el organizador ni admin" },
         { status: 403 },
       );
     }
@@ -129,19 +159,21 @@ export async function PATCH(
       .from("eventos")
       .update({
         ...json,
-        status: EventoStatus.PENDIENTE, // Al editar, vuelve a pendiente
+        status: EventoStatus.PENDIENTE, // Al editar, siempre vuelve a pendiente
       })
       .eq("id", id)
       .select()
       .single();
 
     if (error) {
+      console.error("PATCH /api/eventos/[id] - Error al actualizar:", error);
       return NextResponse.json(
         { error: "Error al actualizar el evento" },
         { status: 500 },
       );
     }
 
+    console.log("PATCH /api/eventos/[id] - Evento actualizado correctamente");
     return NextResponse.json(evento);
   } catch (error) {
     console.error("Error en PATCH /api/eventos/[id]:", error);
@@ -167,10 +199,33 @@ export async function DELETE(
     const supabase = await getSupabaseClientForAPIs(request);
     const id = (await context.params).id;
 
-    // Verificar que el usuario esté autenticado
+    // Obtener el usuario y su rol de la sesión
     const userRole = await getUserRoleFromRequest(request);
+    const userId = await getUserIdFromRequest(request);
+
+    console.log("DELETE /api/eventos/[id] - Auth Debug:", {
+      userRole,
+      userId,
+      headers: Object.fromEntries(request.headers.entries()),
+    });
+
+    if (!userId) {
+      console.log("DELETE /api/eventos/[id] - No se pudo obtener el ID del usuario");
+      return NextResponse.json(
+        { error: "No autorizado - ID de usuario no encontrado" },
+        { status: 401 },
+      );
+    }
+
     if (userRole === "usuario") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+      console.log(
+        "DELETE /api/eventos/[id] - Usuario con rol insuficiente:",
+        userRole,
+      );
+      return NextResponse.json(
+        { error: "No autorizado - Rol insuficiente" },
+        { status: 401 },
+      );
     }
 
     // Obtener el evento actual
@@ -181,6 +236,10 @@ export async function DELETE(
       .single();
 
     if (errorEvento) {
+      console.error(
+        "DELETE /api/eventos/[id] - Error al obtener el evento:",
+        errorEvento,
+      );
       return NextResponse.json(
         { error: "Error al obtener el evento" },
         { status: 500 },
@@ -188,27 +247,37 @@ export async function DELETE(
     }
 
     if (!eventoActual) {
+      console.log("DELETE /api/eventos/[id] - Evento no encontrado:", id);
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    // Verificar permisos
-    if (
-      eventoActual.organizador_id !== request.headers.get("x-user-id") &&
-      userRole !== "admin"
-    ) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    console.log("DELETE /api/eventos/[id] - Comparando permisos:", {
+      eventoOrganizadorId: eventoActual.organizador_id,
+      userId,
+      userRole,
+    });
+
+    // Verificar permisos usando el ID del usuario
+    if (eventoActual.organizador_id !== userId && userRole !== "admin") {
+      console.log("DELETE /api/eventos/[id] - Permisos insuficientes");
+      return NextResponse.json(
+        { error: "No autorizado - No es el organizador ni admin" },
+        { status: 403 },
+      );
     }
 
     // Eliminar el evento
     const { error } = await supabase.from("eventos").delete().eq("id", id);
 
     if (error) {
+      console.error("DELETE /api/eventos/[id] - Error al eliminar:", error);
       return NextResponse.json(
         { error: "Error al eliminar el evento" },
         { status: 500 },
       );
     }
 
+    console.log("DELETE /api/eventos/[id] - Evento eliminado correctamente");
     return NextResponse.json({ message: "Evento eliminado correctamente" });
   } catch (error) {
     console.error("Error en DELETE /api/eventos/[id]:", error);

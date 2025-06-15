@@ -1,7 +1,7 @@
 // components/NavbarWrapper.tsx
 "use client";
 
-import { RolUsuario } from "@/types/rol-usuario";
+import { RolUsuario } from "@/types/enums";
 import { LinkType } from "@/types/global";
 import { useMemo } from "react";
 

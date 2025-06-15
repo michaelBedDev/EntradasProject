@@ -15,7 +15,7 @@ import {
   UploadIcon,
   TagIcon,
 } from "lucide-react";
-import { toast } from "sonner";
+import { showToastSuccess, showToastError } from "@/utils/toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,7 +105,10 @@ export default function CrearEventoPage() {
 
   const onSubmit = async (data: CreateEventoFormInput) => {
     if (!session?.address) {
-      toast.error("Debes iniciar sesión para crear un evento");
+      showToastError({
+        title: "Error de autenticación",
+        description: "Debes iniciar sesión para crear un evento",
+      });
       return;
     }
 
@@ -150,22 +153,35 @@ export default function CrearEventoPage() {
             throw new Error("Error al subir la imagen");
           }
           console.log("Imagen subida correctamente");
-          toast.success("Evento creado con imagen correctamente");
+          showToastSuccess({
+            title: "Evento creado",
+            description: "El evento se ha creado con imagen correctamente",
+          });
         } catch (error) {
           console.error("Error al subir la imagen:", error);
-          toast.error("El evento se creó pero hubo un error al subir la imagen");
+          showToastError({
+            title: "Error al subir la imagen",
+            description: "El evento se creó pero hubo un error al subir la imagen",
+          });
           return;
         }
       } else {
-        toast.success("Evento creado correctamente");
+        showToastSuccess({
+          title: "Evento creado",
+          description: "El evento se ha creado correctamente",
+        });
       }
 
       router.push(`/organizador/eventos/${evento.id}`);
     } catch (error) {
       console.error("Error en onSubmit:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Hubo un error al crear el evento",
-      );
+      showToastError({
+        title: "Error al crear",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Hubo un error al crear el evento",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -176,7 +192,10 @@ export default function CrearEventoPage() {
     console.log("Errores de validación:", errors);
     Object.entries(errors).forEach(([field, error]) => {
       if (error?.message) {
-        toast.error(`${field}: ${error.message}`);
+        showToastError({
+          title: `Error en ${field}`,
+          description: error.message,
+        });
       }
     });
   };

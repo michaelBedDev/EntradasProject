@@ -23,27 +23,55 @@ import { slugify } from "@/utils/slugify";
 import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
 import { useSessionData } from "@/features/auth/hooks/useSessionData";
 import { useEventosOrganizador } from "@/features/eventos/hooks/useEventosOrganizador";
+import { getBadgeVariant } from "@/utils/getBadgeVariant";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
+import { showToastSuccess, showToastError } from "@/utils/toast";
+import { deleteEvento } from "@/features/eventos/lib/deleteEvento";
 
 export default function MisEventosPage() {
   const { wallet } = useSessionData();
   const { eventos, isLoading, error } = useEventosOrganizador(wallet);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletedEventId, setDeletedEventId] = useState<string | null>(null);
 
-  // Función para obtener el color del badge según el estado
-  const getBadgeVariant = (
-    status: string | null,
-  ): "default" | "secondary" | "destructive" | "outline" => {
-    if (!status) return "outline";
+  // Función para manejar la eliminación de un evento
+  const handleDeleteEvento = async (eventoId: string) => {
+    try {
+      setIsDeleting(true);
+      setDeletedEventId(eventoId);
 
-    const statusMap: Record<
-      string,
-      "default" | "secondary" | "destructive" | "outline"
-    > = {
-      [EventoStatus.APROBADO]: "default",
-      [EventoStatus.PENDIENTE]: "secondary",
-      [EventoStatus.CANCELADO]: "destructive",
-    };
+      const result = await deleteEvento(eventoId);
 
-    return statusMap[status] || "outline";
+      if (result.success) {
+        showToastSuccess({
+          title: "Evento eliminado",
+          description: "El evento ha sido eliminado correctamente",
+        });
+
+        // Actualizar la lista localmente
+        const updatedEventos = eventos.filter((evento) => evento.id !== eventoId);
+        eventos.splice(0, eventos.length, ...updatedEventos);
+      } else {
+        showToastError({
+          title: "Error al eliminar",
+          description: result.error || "No se pudo eliminar el evento",
+        });
+      }
+    } finally {
+      setIsDeleting(false);
+      setDeletedEventId(null);
+    }
   };
 
   // Función para navegar al detalle del evento
@@ -111,7 +139,10 @@ export default function MisEventosPage() {
                     </TableCell>
                     <TableCell>{evento.lugar}</TableCell>
                     <TableCell>
-                      <Badge variant={getBadgeVariant(evento.status)}>
+                      <Badge
+                        variant={getBadgeVariant(
+                          evento.status || EventoStatus.PENDIENTE,
+                        )}>
                         {evento.status === EventoStatus.APROBADO
                           ? "Aprobado"
                           : evento.status === EventoStatus.PENDIENTE
@@ -125,26 +156,51 @@ export default function MisEventosPage() {
                           variant="outline"
                           size="icon"
                           onClick={() => handleViewEvento(evento)}
-                          title="Ver evento">
+                          title="Ver evento"
+                          className="cursor-pointer">
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"
                           size="icon"
                           asChild
-                          title="Editar evento">
+                          title="Editar evento"
+                          className="cursor-pointer">
                           <Link
                             href={`/organizador/mis-eventos/${evento.id}/editar`}>
                             <Edit className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="text-destructive"
-                          title="Eliminar evento">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              className="text-destructive cursor-pointer"
+                              title="Eliminar evento"
+                              disabled={isDeleting && deletedEventId === evento.id}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Se eliminará
+                                permanentemente el evento &ldquo;{evento.titulo}
+                                &rdquo; y toda su información asociada.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteEvento(evento.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
+                                {isDeleting ? "Eliminando..." : "Eliminar"}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
