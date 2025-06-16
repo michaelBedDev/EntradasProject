@@ -16,7 +16,7 @@ export default function Linksbar({
 
   return (
     <nav className="top-18 w-full z-40 hidden md:block">
-      <div className="container mx-auto px-4 py-2 max-w-6xl">
+      <div className="container mx-auto px-4 py-2 max-w-7xl">
         <div className="bg-background/60 dark:bg-background/40 backdrop-blur-md rounded-full shadow-sm border border-border/20 mx-auto max-w-fit">
           <div className="flex items-center justify-center h-10 px-2">
             {links.map((link: LinkType) => {

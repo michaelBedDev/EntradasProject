@@ -8,15 +8,7 @@ import {
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { getCsrfToken, getSession, signIn, signOut } from "next-auth/react";
 
-import {
-  arbitrum,
-  mainnet,
-  sepolia,
-  optimism,
-  baseSepolia,
-  berachain,
-  AppKitNetwork,
-} from "@reown/appkit/networks";
+import { sepolia, baseSepolia, AppKitNetwork } from "@reown/appkit/networks";
 import { getAddress } from "viem";
 
 // Get projectId from https://cloud.reown.com
@@ -32,14 +24,7 @@ export const metadata = {
 };
 
 // Create wagmiConfig
-export const chains: [AppKitNetwork, ...AppKitNetwork[]] = [
-  mainnet,
-  optimism,
-  arbitrum,
-  sepolia,
-  baseSepolia,
-  berachain,
-];
+export const chains: [AppKitNetwork, ...AppKitNetwork[]] = [sepolia, baseSepolia];
 
 // 4. Create Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({

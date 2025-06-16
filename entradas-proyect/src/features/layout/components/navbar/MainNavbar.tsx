@@ -22,11 +22,11 @@ export default function MainNavbar({
 }: MainNavbarProps) {
   return (
     <div className=" w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="container mx-auto px-8 h-16 max-w-6xl">
+      <div className="container mx-auto px-8 h-16 max-w-8xl">
         <div className="flex h-full items-center justify-between">
           {/* Logo y nombre */}
           <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
+            <Link href="/app" className="flex items-center">
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
                 Entradas Project
               </span>

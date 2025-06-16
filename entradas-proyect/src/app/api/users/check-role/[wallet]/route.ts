@@ -1,4 +1,3 @@
-// API para verificar el rol del usuario
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
 

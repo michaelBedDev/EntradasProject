@@ -1,8 +1,7 @@
-// Devuelve todos los eventos aprobados ordenados por fecha
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
-
 import { EventoStatus } from "@/features/eventos/services/types";
+
 import { getUserRoleFromRequest } from "@/features/auth/lib/getUserRole";
 import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
 
@@ -15,7 +14,7 @@ import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
  * - categoria: filtrar por categoría
  * - fecha_inicio: filtrar por fecha de inicio
  * - fecha_fin: filtrar por fecha de fin
- * - busqueda: buscar por título o descripción
+ * - query: buscar por título o descripción
  */
 export async function GET(request: NextRequest) {
   try {
@@ -31,9 +30,8 @@ export async function GET(request: NextRequest) {
       organizador:usuarios!inner(id, nombre, wallet)
     `,
       )
+      .gte("fecha_inicio", new Date().toISOString()) // No mostrar eventos pasados
       .order("fecha_inicio", { ascending: true });
-
-    // #TODO implementar paginación y no mostrar los eventos que ya han pasado
 
     // Aplicar filtros según los parámetros
     const status = searchParams.get("status");
@@ -51,7 +49,8 @@ export async function GET(request: NextRequest) {
 
     const categoria = searchParams.get("categoria");
     if (categoria) {
-      query = query.eq("categoria", categoria);
+      // Convertir la categoría a mayúsculas para coincidir con la base de datos
+      query = query.eq("categoria", categoria.toUpperCase());
     }
 
     const fechaInicio = searchParams.get("fecha_inicio");
@@ -64,15 +63,19 @@ export async function GET(request: NextRequest) {
       query = query.lte("fecha_fin", fechaFin);
     }
 
-    const busqueda = searchParams.get("busqueda");
-    if (busqueda) {
-      query = query.or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%`);
+    const searchQuery = searchParams.get("query");
+    if (searchQuery) {
+      // Aplicar la búsqueda por título o descripción
+      query = query.or(
+        `titulo.ilike.%${searchQuery}%,descripcion.ilike.%${searchQuery}%`,
+      );
     }
 
     // Ejecutar la consulta
     const { data: eventos, error } = await query;
 
     if (error) {
+      console.error("Error en la consulta:", error);
       return NextResponse.json(
         { error: "Error al obtener los eventos" },
         { status: 500 },

@@ -1,4 +1,3 @@
-// app/page.tsx — LANDING PAGE `/`
 "use client";
 
 import Link from "next/link";
@@ -182,7 +181,7 @@ export default function LandingPage() {
             mounted ? "opacity-80" : "opacity-0"
           }`}></div>
 
-        <div className="container mx-auto px-4 max-w-6xl relative z-10">
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
           <div ref={heroRef} className="text-center mb-12 opacity-0">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-4">
               Descubre y vive eventos increíbles
@@ -227,7 +226,7 @@ export default function LandingPage() {
 
       {/* NUEVA SECCIÓN: Estadísticas */}
       <section ref={statsRef} className="py-16 bg-secondary/10">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl font-bold tracking-tight mb-8 text-center">
             La plataforma líder en eventos
           </h2>
@@ -272,7 +271,7 @@ export default function LandingPage() {
 
       {/* Sección de CTA */}
       <section ref={ctaRef} className="py-20 bg-card">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-8 md:mb-0 md:max-w-lg cta-content">
               <h2 className="text-3xl font-bold tracking-tight mb-4">
@@ -326,7 +325,7 @@ export default function LandingPage() {
 
       {/* NUEVA SECCIÓN: Testimonios */}
       <section ref={testimonialsRef} className="py-20 bg-background">
-        <div className="container mx-auto px-4 max-w-6xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl font-bold tracking-tight mb-2 text-center">
             Lo que dicen nuestros usuarios
           </h2>
@@ -362,7 +361,7 @@ export default function LandingPage() {
 
       {/* NUEVA SECCIÓN: Preguntas frecuentes */}
       <section ref={faqRef} className="py-20 bg-secondary/5">
-        <div className="container mx-auto px-4 max-w-3xl">
+        <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl font-bold tracking-tight mb-2 text-center">
             Preguntas frecuentes
           </h2>

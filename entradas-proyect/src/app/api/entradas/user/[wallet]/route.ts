@@ -9,7 +9,6 @@ export async function GET(
     const supabase = await getSupabaseClientForAPIs(request);
     const wallet = (await context.params).wallet;
 
-    // Obtener las entradas con sus relaciones
     const { data, error } = await supabase
       .from("entradas")
       .select(

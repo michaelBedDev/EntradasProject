@@ -9,7 +9,7 @@ import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
  * Si no hay sesión o el rol no está definido, retorna "usuario".
  * Si el rol es undefined, se asume que es un usuario normal.
  *
- * @returns {Promise<string>} El rol del usuario o "usuario" si no hay sesión.
+ * Devuelve el rol del usuario o "usuario" si no hay sesión.
  */
 export async function getUserRole() {
   const session = await getServerSession(authOptions);
@@ -24,8 +24,6 @@ export async function getUserRole() {
  * Si no hay sesión o el rol no está definido, retorna "usuario".
  * Si el rol es undefined, se asume que es un usuario normal.
  * Éste método se utiliza para obtener el rol del usuario desde las APIs, para el resto de casos se utiliza getUserRole.
- * @param request - La solicitud de Next.js.
- * @returns {Promise<string>} El rol del usuario o "usuario" si no hay sesión.
  */
 export async function getUserRoleFromRequest(request: NextRequest) {
   const token = await getToken({
@@ -42,8 +40,7 @@ export async function getUserRoleFromRequest(request: NextRequest) {
  * Obtiene la wallet del usuario desde la solicitud de NextAuth.
  * Si no hay sesión o el sub no está definido, retorna null.
  * El sub tiene el formato "chainId:address".
- *
- * @param request - La solicitud de Next.js. Devuelve null si no hay sesión.
+ * Devuelve null si no hay sesión.
  */
 export async function getUserWalletFromRequest(request: NextRequest) {
   const token = await getToken({
@@ -74,10 +71,9 @@ export async function getUserWalletFromRequest(request: NextRequest) {
 
 /**
  * Obtiene el ID del usuario desde su wallet usando Supabase.
- * Si no se encuentra el usuario, retorna null.
  *
  * @param wallet - La dirección de la wallet del usuario
- * @returns {Promise<string | null>} El ID del usuario o null si no se encuentra
+ * Devuelve El ID del usuario o null si no se encuentra
  */
 export async function getUserIdFromWallet(wallet: string): Promise<string | null> {
   try {

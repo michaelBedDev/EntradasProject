@@ -199,7 +199,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 md:via-background/60 to-transparent" />
 
         {/* Contenido superpuesto */}
-        <div className="absolute inset-0 container mx-auto px-4 md:px-8 max-w-6xl">
+        <div className="absolute inset-0 container mx-auto px-4 md:px-8 max-w-7xl">
           <div className="absolute bottom-0 left-0 right-0 pb-4 md:pb-8 px-4">
             <div className="flex items-center gap-4 mb-4">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white drop-shadow-lg">
@@ -283,7 +283,7 @@ export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos 
       </div>
 
       {/* Contenido principal */}
-      <div className="container mx-auto px-4 md:px-6 py-12 max-w-6xl">
+      <div className="container mx-auto px-4 md:px-6 py-12 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Columna principal */}
           <div className="lg:col-span-2">

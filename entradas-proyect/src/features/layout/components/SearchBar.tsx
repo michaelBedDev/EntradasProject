@@ -1,9 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { SearchIcon } from "lucide-react";
 
-{
-  /* Barra de búsqueda */
-}
 export function SearchBar({ query = "" }: { query?: string }) {
   return (
     <div className="mb-12">
@@ -22,7 +21,7 @@ export function SearchBar({ query = "" }: { query?: string }) {
           />
         </div>
         <div className="flex items-stretch">
-          <Button type="submit" className="rounded-l-none py-6 px-6 ">
+          <Button type="submit" className="rounded-l-none py-6 px-6 cursor-pointer">
             Buscar
           </Button>
         </div>

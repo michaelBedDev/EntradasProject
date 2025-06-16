@@ -61,7 +61,7 @@ export function useEventosOrganizador(
 
   return {
     eventos,
-    isLoading: isInitialLoad ? false : isLoading,
+    isLoading,
     error,
     refetch: fetchEventos,
   };

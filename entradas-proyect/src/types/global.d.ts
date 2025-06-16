@@ -1,5 +1,3 @@
-// src/types/global.d.ts
-
 import { DefaultJWT } from "next-auth/jwt";
 
 // Declaración del tipo del JWT de NextAuth

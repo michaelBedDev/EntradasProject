@@ -9,7 +9,6 @@ import { SupabaseJwt } from "@/types/global";
  * Hook para obtener los datos de la sesión del usuario.
  * Incluye el rol, la wallet, la fecha de expiración y el token de Supabase.
  *
- * @returns {Object} Objeto con los datos de la sesión.
  */
 export function useSessionData() {
   const [role, setRole] = useState<RolUsuario | null>(null);
@@ -21,9 +20,8 @@ export function useSessionData() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    //Espero a que se resuelva la sesión
     if (!session) return;
-    // Función para verificar el rol del usuario
+
     const checkDataUsuario = async () => {
       if (!session || !session.address) {
         setRole(null);

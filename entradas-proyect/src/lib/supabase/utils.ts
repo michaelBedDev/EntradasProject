@@ -1,4 +1,3 @@
-// lib/supabase/utils.ts\
 import jwt from "jsonwebtoken";
 import { v5 as uuidv5 } from "uuid";
 import { getServerSession } from "next-auth";
@@ -158,7 +157,7 @@ export function parseSupabaseToken(token: string | null) {
     }
 
     const expDate = new Date(decoded.exp * 1000); // convertir a milisegundos
-    const expFormatted = expDate.toLocaleString(); // formato local (opcionalmente, usar UTC)
+    const expFormatted = expDate.toLocaleString(); // convertir a formato local
 
     return {
       payload: decoded,

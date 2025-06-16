@@ -1,241 +1,194 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdminClient } from "@/lib/supabase/adminClient";
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/features/auth/lib/auth";
+import { getSupabaseClientForAPIs } from "@/lib/supabase/serverClient";
+import { NextRequest } from "next/server";
 
-interface EstadisticaTipo {
-  tipo: string;
-  vendidas: number;
-}
+// Tipos para las consultas
+type TipoEntrada = {
+  id: string;
+  precio: number;
+};
 
-interface EstadisticaEvento {
-  evento_id: string;
-  titulo: string;
-  vendidas: number;
-}
+type EntradaVendida = {
+  created_at: string | null;
+  tipo_entrada_id: string;
+};
 
-interface EstadisticaOrganizador {
-  organizador_id: string;
-  nombre: string;
-  vendidas: number;
-}
+type EventoDB = {
+  id: string;
+  status: string | null;
+};
 
-/**
- * GET /api/stats
- * Endpoint público para obtener estadísticas de entradas
- * Parámetros:
- * - evento_id: ID del evento (opcional)
- * - tipo: 'total' | 'por-evento' | 'por-organizador' | 'por-tipo'
- *
- * Ejemplos:
- * - /api/stats?tipo=total
- * - /api/stats?tipo=por-evento
- * - /api/stats?tipo=por-organizador
- * - /api/stats?tipo=por-tipo&evento_id=123
- *
- * No requiere autenticación
- */
+type Evento = {
+  id: string;
+  status: string;
+};
+
 export async function GET(request: NextRequest) {
+  console.log("Iniciando endpoint de estadísticas...");
+
   try {
-    const supabase = getSupabaseAdminClient();
-    const searchParams = request.nextUrl.searchParams;
-    const tipo = searchParams.get("tipo");
-    const eventoId = searchParams.get("evento_id");
+    const session = await getServerSession(authOptions);
+    console.log("Sesión obtenida:", session ? "Sí" : "No");
 
-    if (!tipo) {
+    if (!session?.address) {
+      console.log("No hay sesión o dirección de wallet");
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const supabase = await getSupabaseClientForAPIs(request);
+    console.log("Cliente Supabase inicializado");
+
+    // Obtener el ID del organizador
+    const { data: organizador, error: errorOrganizador } = await supabase
+      .from("usuarios")
+      .select("id")
+      .eq("wallet", session.address)
+      .single();
+
+    if (errorOrganizador || !organizador) {
+      console.error("Error al obtener organizador:", errorOrganizador);
       return NextResponse.json(
-        { error: "Se requiere el parámetro 'tipo'" },
-        { status: 400 },
+        { error: "Error al obtener datos del organizador" },
+        { status: 500 },
       );
     }
 
-    // Si el tipo es 'por-tipo', se requiere el evento_id
-    if (tipo === "por-tipo" && !eventoId) {
+    console.log("Organizador encontrado:", organizador.id);
+
+    // Obtener eventos del organizador
+    const { data: eventosDB, error: errorEventos } = await supabase
+      .from("eventos")
+      .select("id, status")
+      .eq("organizador_id", organizador.id);
+
+    if (errorEventos) {
+      console.error("Error al obtener eventos:", errorEventos);
       return NextResponse.json(
-        { error: "Se requiere el ID del evento para obtener estadísticas por tipo" },
-        { status: 400 },
+        { error: "Error al obtener eventos" },
+        { status: 500 },
       );
     }
 
-    switch (tipo) {
-      case "total": {
-        // Obtener total de entradas vendidas
-        const { count, error } = await supabase
-          .from("entradas")
-          .select("*", { count: "exact", head: true })
-          .eq("estado", "activa");
+    // Convertir eventos a tipo Evento (manejando nulos)
+    const eventos: Evento[] =
+      eventosDB?.map((e: EventoDB) => ({
+        id: e.id,
+        status: e.status || "PENDIENTE",
+      })) || [];
 
-        if (error) {
-          return NextResponse.json(
-            { error: "Error al obtener el total de entradas" },
-            { status: 500 },
-          );
-        }
+    console.log("Eventos encontrados:", eventos.length);
 
-        return NextResponse.json({ total: count });
-      }
+    // Obtener IDs de eventos
+    const eventoIds = eventos.map((e) => e.id);
 
-      case "por-evento": {
-        // Obtener entradas vendidas por evento
-        const { data, error } = await supabase
-          .from("entradas")
-          .select(
-            `
-            id,
-            estado,
-            tipo_entrada:tipo_entrada_id (
-              id,
-              evento:evento_id (
-                id,
-                titulo,
-                status
-              )
-            )
-          `,
-          )
-          .eq("estado", "activa")
-          .eq("tipo_entrada.evento.status", "APROBADO");
+    // Obtener tipos de entrada con precios
+    const { data: tiposEntrada, error: errorTipos } = await supabase
+      .from("tipos_entrada")
+      .select("id, precio")
+      .in("evento_id", eventoIds);
 
-        if (error) {
-          console.error("Error en consulta por-evento:", error);
-          return NextResponse.json(
-            { error: "Error al obtener las estadísticas por evento" },
-            { status: 500 },
-          );
-        }
-
-        // Agrupar y contar entradas por evento
-        const estadisticas = data.reduce((acc: EstadisticaEvento[], entrada) => {
-          const evento = entrada.tipo_entrada?.evento;
-          if (!evento) return acc;
-
-          const eventoExistente = acc.find((e) => e.evento_id === evento.id);
-          if (eventoExistente) {
-            eventoExistente.vendidas++;
-          } else {
-            acc.push({
-              evento_id: evento.id,
-              titulo: evento.titulo,
-              vendidas: 1,
-            });
-          }
-          return acc;
-        }, []);
-
-        return NextResponse.json(estadisticas);
-      }
-
-      case "por-organizador": {
-        // Obtener entradas vendidas por organizador
-        const { data, error } = await supabase
-          .from("entradas")
-          .select(
-            `
-            tipo_entrada:tipo_entrada_id (
-              evento:evento_id (
-                organizador:organizador_id (
-                  id,
-                  nombre,
-                  wallet
-                )
-              )
-            )
-          `,
-          )
-          .eq("estado", "activa");
-
-        if (error) {
-          console.error("Error en consulta por-organizador:", error);
-          return NextResponse.json(
-            { error: "Error al obtener las estadísticas por organizador" },
-            { status: 500 },
-          );
-        }
-
-        // Agrupar y contar entradas por organizador
-        const estadisticas = data.reduce(
-          (acc: EstadisticaOrganizador[], entrada) => {
-            const organizador = entrada.tipo_entrada?.evento?.organizador;
-            if (!organizador) return acc;
-
-            const organizadorExistente = acc.find(
-              (o) => o.organizador_id === organizador.id,
-            );
-            if (organizadorExistente) {
-              organizadorExistente.vendidas++;
-            } else {
-              acc.push({
-                organizador_id: organizador.id,
-                nombre: organizador.nombre || "",
-                vendidas: 1,
-              });
-            }
-            return acc;
-          },
-          [],
-        );
-
-        return NextResponse.json(estadisticas);
-      }
-
-      case "por-tipo": {
-        if (!eventoId) {
-          return NextResponse.json(
-            { error: "eventoId es requerido para estadísticas por tipo" },
-            { status: 400 },
-          );
-        }
-
-        // Obtener entradas vendidas por tipo para un evento específico
-        const { data, error } = await supabase
-          .from("entradas")
-          .select(
-            `
-            tipo_entrada:tipo_entrada_id (
-              nombre,
-              evento:evento_id (
-                id
-              )
-            )
-          `,
-          )
-          .eq("estado", "activa")
-          .eq("tipo_entrada.evento_id", eventoId);
-
-        if (error) {
-          console.error("Error en consulta por-tipo:", error);
-          return NextResponse.json(
-            { error: "Error al obtener las estadísticas por tipo" },
-            { status: 500 },
-          );
-        }
-
-        // Agrupar y contar entradas por tipo
-        const estadisticas = data.reduce((acc: EstadisticaTipo[], entrada) => {
-          const tipo = entrada.tipo_entrada?.nombre;
-          if (!tipo) return acc;
-
-          const tipoExistente = acc.find((t) => t.tipo === tipo);
-          if (tipoExistente) {
-            tipoExistente.vendidas++;
-          } else {
-            acc.push({
-              tipo,
-              vendidas: 1,
-            });
-          }
-          return acc;
-        }, []);
-
-        return NextResponse.json(estadisticas);
-      }
-
-      default:
-        return NextResponse.json(
-          { error: "Tipo de estadística no válido" },
-          { status: 400 },
-        );
+    if (errorTipos) {
+      console.error("Error al obtener tipos de entrada:", errorTipos);
+      return NextResponse.json(
+        { error: "Error al obtener tipos de entrada" },
+        { status: 500 },
+      );
     }
+
+    // Crear mapa de precios por tipo de entrada
+    const preciosPorTipo = new Map(
+      tiposEntrada?.map((t: TipoEntrada) => [t.id, t.precio]) || [],
+    );
+
+    // Obtener todas las entradas vendidas
+    const { data: entradasVendidas, error: errorEntradas } = await supabase
+      .from("entradas")
+      .select("created_at, tipo_entrada_id")
+      .in("tipo_entrada_id", tiposEntrada?.map((t: TipoEntrada) => t.id) || [])
+      .order("created_at", { ascending: true });
+
+    if (errorEntradas) {
+      console.error("Error al obtener entradas:", errorEntradas);
+      return NextResponse.json(
+        { error: "Error al obtener entradas" },
+        { status: 500 },
+      );
+    }
+
+    console.log("Total de entradas encontradas:", entradasVendidas?.length);
+
+    // Calcular estadísticas
+    const totalEventos = eventos.length;
+    const eventosPorEstado = eventos.reduce(
+      (acc: Record<string, number>, evento: Evento) => {
+        acc[evento.status] = (acc[evento.status] || 0) + 1;
+        return acc;
+      },
+      {},
+    );
+
+    // Calcular totales
+    const totalEntradasVendidas = entradasVendidas?.length ?? 0;
+    const ingresosTotales =
+      entradasVendidas?.reduce((total: number, entrada: EntradaVendida) => {
+        if (!entrada.created_at) return total;
+        const precio = preciosPorTipo.get(entrada.tipo_entrada_id) ?? 0;
+        return total + precio;
+      }, 0) ?? 0;
+
+    // Generar array para los últimos 7 días
+    const sieteDiasAtras = new Date();
+    sieteDiasAtras.setDate(sieteDiasAtras.getDate() - 6); // Incluir hoy y 6 días atrás
+
+    const tendenciaVentas = Array.from({ length: 7 }, (_, i) => {
+      const fecha = new Date(sieteDiasAtras);
+      fecha.setDate(fecha.getDate() + i);
+      const fechaStr = fecha.toISOString().split("T")[0];
+
+      // Filtrar entradas del día específico
+      const entradasDelDia =
+        entradasVendidas?.filter((entrada: EntradaVendida) => {
+          if (!entrada.created_at) return false;
+          const fechaEntrada = new Date(entrada.created_at);
+          return fechaEntrada.toISOString().split("T")[0] === fechaStr;
+        }) || [];
+
+      // Calcular ventas e ingresos del día
+      const entradasVendidasDia = entradasDelDia.length;
+      const ingresosDia = entradasDelDia.reduce(
+        (total: number, entrada: EntradaVendida) => {
+          const precio = preciosPorTipo.get(entrada.tipo_entrada_id) ?? 0;
+          return total + precio;
+        },
+        0,
+      );
+
+      return {
+        fecha: fechaStr,
+        entradas_vendidas: entradasVendidasDia,
+        ingresos_totales: ingresosDia,
+      };
+    });
+
+    console.log("Tendencia de ventas generada:", tendenciaVentas);
+
+    // Calcular eventos aprobados y pendientes
+    const eventosAprobados = eventos.filter((e) => e.status === "APROBADO").length;
+    const eventosPendientes = eventos.filter((e) => e.status === "PENDIENTE").length;
+
+    return NextResponse.json({
+      totalEventos,
+      eventosPorEstado,
+      totalEntradasVendidas,
+      ingresosTotales,
+      tendenciaVentas,
+      eventosAprobados,
+      eventosPendientes,
+    });
   } catch (error) {
-    console.error("Error en GET /api/stats:", error);
+    console.error("Error en el endpoint de estadísticas:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 },

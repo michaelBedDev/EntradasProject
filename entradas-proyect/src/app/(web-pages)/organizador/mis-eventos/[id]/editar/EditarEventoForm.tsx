@@ -50,7 +50,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { uploadEventImage } from "@/app/actions/storage/images";
+import { uploadEventImage } from "@/app/actions/db/events";
+import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
 
 type FormValues = CreateEventoFormInput;
 
@@ -97,7 +98,7 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
       fecha_inicio: new Date(evento.fecha_inicio),
       fecha_fin: new Date(evento.fecha_fin),
       lugar: evento.lugar,
-      categoria: "placeholder",
+      categoria: evento.categoria || "placeholder",
       imagen_uri: evento.imagen_uri || "",
       tipos_entrada: tiposEntrada.map((tipo) => ({
         ...tipo,
@@ -164,30 +165,16 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
       console.log("Iniciando actualización de evento...");
       console.log("Datos del formulario:", data);
 
-      let imagenUri = data.imagen_uri;
-
-      // Si hay una nueva imagen seleccionada, subirla primero
-      if (selectedImage) {
-        console.log("Subiendo nueva imagen...");
-        try {
-          const publicUrl = await uploadEventImage(selectedImage, evento.id);
-          if (!publicUrl) {
-            throw new Error("Error al subir la imagen");
-          }
-          imagenUri = publicUrl;
-          console.log("Imagen subida correctamente");
-        } catch (error) {
-          console.error("Error al subir la imagen:", error);
-          showToastError({
-            title: "Error al subir la imagen",
-            description: "No se pudo subir la imagen del evento",
-          });
-          return;
-        }
-      }
+      // Preparar los datos del evento
+      const eventoData = {
+        ...data,
+        categoria: data.categoria.toUpperCase(), // Convertir a mayúsculas
+        fecha_inicio: data.fecha_inicio.toISOString(),
+        fecha_fin: data.fecha_fin.toISOString(),
+      };
 
       // Extraer tipos_entrada del objeto de datos
-      const { tipos_entrada, ...eventoData } = data;
+      const { tipos_entrada, ...eventoDataWithoutTipos } = eventoData;
 
       // Actualizar el evento (sin los tipos de entrada)
       const response = await fetch(
@@ -197,33 +184,58 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...eventoData,
-            imagen_uri: imagenUri,
-          }),
+          body: JSON.stringify(eventoDataWithoutTipos),
         },
       );
 
       if (!response.ok) {
-        throw new Error("Error al actualizar el evento");
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || "Error al actualizar el evento");
+      }
+
+      // Si hay una nueva imagen seleccionada, subirla
+      if (selectedImage) {
+        console.log("Subiendo imagen...");
+        try {
+          const updatedEvento = await uploadEventImage(evento.id, selectedImage);
+          console.log("Imagen subida correctamente:", updatedEvento);
+        } catch (error) {
+          console.error("Error al subir la imagen:", error);
+          showToastError({
+            title: "Error al subir la imagen",
+            description:
+              "El evento se actualizó pero hubo un error al subir la imagen",
+          });
+          return;
+        }
       }
 
       // Actualizar los tipos de entrada
       if (tipos_entrada && tipos_entrada.length > 0) {
         console.log("Actualizando tipos de entrada...");
-        const tiposEntradaResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/eventos/${evento.id}/tipos-entrada`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+        try {
+          const tiposEntradaResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/eventos/${evento.id}/tipos-entrada`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(tipos_entrada),
             },
-            body: JSON.stringify(tipos_entrada),
-          },
-        );
+          );
 
-        if (!tiposEntradaResponse.ok) {
-          throw new Error("Error al actualizar los tipos de entrada");
+          if (!tiposEntradaResponse.ok) {
+            throw new Error("Error al actualizar los tipos de entrada");
+          }
+        } catch (error) {
+          console.error("Error al actualizar tipos de entrada:", error);
+          showToastError({
+            title: "Error al actualizar tipos de entrada",
+            description:
+              "El evento se actualizó pero hubo un error al actualizar los tipos de entrada",
+          });
+          return;
         }
       }
 
@@ -260,146 +272,102 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
   };
 
   return (
-    <div className="container mx-auto py-12 px-8 max-w-6xl">
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar edición de evento aprobado</AlertDialogTitle>
-            <AlertDialogDescription>
-              Al editar este evento, su estado cambiará a pendiente y deberá ser
-              aprobado nuevamente. ¿Estás seguro de que deseas continuar?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (formData) {
-                  submitForm(formData);
-                }
-                setShowConfirmDialog(false);
-              }}>
-              Continuar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold pb-4">Editar evento</CardTitle>
-          <CardDescription>
-            Modifica los detalles de tu evento. Solo puedes editar eventos en estado
-            pendiente o rechazado.
-          </CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit, onError)}
-            className="space-y-6 p-6">
-            <FormField
-              control={form.control}
-              name="titulo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título del evento</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ingresa el título del evento" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="descripcion"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe tu evento"
-                      className="min-h-[100px]"
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="is-range"
-                checked={isRange}
-                onCheckedChange={(checked) => {
-                  setIsRange(checked);
-                  if (!checked) {
-                    // Si se desactiva el rango, establecer la fecha de fin igual a la de inicio
-                    const fechaInicio = form.getValues("fecha_inicio");
-                    form.setValue("fecha_fin", fechaInicio);
+    <RequireOrganizer>
+      <div className="container mx-auto py-12 px-8 max-w-7xl">
+        <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Confirmar edición de evento aprobado
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Al editar este evento, su estado cambiará a pendiente y deberá ser
+                aprobado nuevamente. ¿Estás seguro de que deseas continuar?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (formData) {
+                    submitForm(formData);
                   }
-                }}
-              />
-              <label htmlFor="is-range">Evento de varios días</label>
-            </div>
+                  setShowConfirmDialog(false);
+                }}>
+                Continuar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold pb-4">Editar evento</CardTitle>
+            <CardDescription>
+              Modifica los detalles de tu evento. Solo puedes editar eventos en
+              estado pendiente o rechazado.
+            </CardDescription>
+          </CardHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6 p-6">
               <FormField
                 control={form.control}
-                name="fecha_inicio"
+                name="titulo"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Fecha de inicio</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}>
-                            {field.value ? (
-                              field.value.toLocaleDateString()
-                            ) : (
-                              <span>Selecciona una fecha</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.onChange(date);
-                              if (!isRange) {
-                                // Si no es rango, actualizar también la fecha de fin
-                                form.setValue("fecha_fin", date);
-                              }
-                            }
-                          }}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <FormItem>
+                    <FormLabel>Título del evento</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ingresa el título del evento" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {isRange && (
+              <FormField
+                control={form.control}
+                name="descripcion"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe tu evento"
+                        className="min-h-[100px]"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is-range"
+                  checked={isRange}
+                  onCheckedChange={(checked) => {
+                    setIsRange(checked);
+                    if (!checked) {
+                      // Si se desactiva el rango, establecer la fecha de fin igual a la de inicio
+                      const fechaInicio = form.getValues("fecha_inicio");
+                      form.setValue("fecha_fin", fechaInicio);
+                    }
+                  }}
+                />
+                <label htmlFor="is-range">Evento de varios días</label>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="fecha_fin"
+                  name="fecha_inicio"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Fecha de fin</FormLabel>
+                      <FormLabel>Fecha de inicio</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -421,11 +389,16 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
                           <Calendar
                             mode="single"
                             selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => {
-                              const fechaInicio = form.getValues("fecha_inicio");
-                              return date < fechaInicio || date < new Date();
+                            onSelect={(date) => {
+                              if (date) {
+                                field.onChange(date);
+                                if (!isRange) {
+                                  // Si no es rango, actualizar también la fecha de fin
+                                  form.setValue("fecha_fin", date);
+                                }
+                              }
                             }}
+                            disabled={(date) => date < new Date()}
                             initialFocus
                           />
                         </PopoverContent>
@@ -434,259 +407,303 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
                     </FormItem>
                   )}
                 />
-              )}
-            </div>
 
-            <FormField
-              control={form.control}
-              name="lugar"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lugar</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ingresa el lugar del evento" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="categoria"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoría</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || "placeholder"}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una categoría" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="placeholder" disabled>
-                        Selecciona una categoría
-                      </SelectItem>
-                      {CATEGORIAS_OPTIONS.map((categoria) => (
-                        <SelectItem key={categoria.id} value={categoria.label}>
-                          {categoria.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="imagen_uri"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Imagen del evento</FormLabel>
-                  <div className="space-y-4">
-                    {evento.imagen_uri && (
-                      <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">
-                          Imagen actual del evento:
-                        </p>
-                        <div className="relative w-full md:w-1/3 aspect-video">
-                          <img
-                            src={evento.imagen_uri}
-                            alt="Imagen actual del evento"
-                            className="rounded-lg object-cover w-full h-full"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">
-                        Subir nueva imagen (opcional):
-                      </p>
-                      <FormControl>
-                        <ImageUpload
-                          value=""
-                          onChange={handleImageChange}
-                          onRemove={() => {
-                            // Al eliminar, establecer la imagen actual
-                            field.onChange(evento.imagen_uri);
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Sube una nueva imagen para tu evento. Si no subes una nueva,
-                        se mantendrá la imagen actual. Formatos permitidos: JPG, PNG.
-                      </FormDescription>
-                    </div>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Tipos de entrada</h3>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    append({
-                      nombre: "",
-                      descripcion: "",
-                      precio: 0,
-                      zona: "",
-                      cantidad_disponible: 0,
-                    })
-                  }>
-                  <PlusIcon className="h-4 w-4 mr-2" />
-                  Agregar tipo de entrada
-                </Button>
-              </div>
-
-              {fields.map((field, index) => (
-                <div
-                  key={field.id}
-                  className="p-4 border rounded-lg space-y-4 bg-muted/50">
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Tipo de entrada {index + 1}</h4>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => remove(index)}>
-                      <Trash2Icon className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`tipos_entrada.${index}.nombre`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Ej: VIP, General"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name={`tipos_entrada.${index}.zona`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Zona</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Ej: Platea, Palco"
-                              {...field}
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
+                {isRange && (
                   <FormField
                     control={form.control}
-                    name={`tipos_entrada.${index}.descripcion`}
+                    name="fecha_fin"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Descripción</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Describe los beneficios o características de esta entrada"
-                            {...field}
-                            value={field.value || ""}
-                          />
-                        </FormControl>
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Fecha de fin</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}>
+                                {field.value ? (
+                                  field.value.toLocaleDateString()
+                                ) : (
+                                  <span>Selecciona una fecha</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => {
+                                const fechaInicio = form.getValues("fecha_inicio");
+                                return date < fechaInicio || date < new Date();
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                )}
+              </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name={`tipos_entrada.${index}.precio`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Precio (€)</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
-                              }
-                              value={field.value || ""}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              <FormField
+                control={form.control}
+                name="lugar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Lugar</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ingresa el lugar del evento" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                    <FormField
-                      control={form.control}
-                      name={`tipos_entrada.${index}.cantidad_disponible`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cantidad disponible</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="1"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(parseInt(e.target.value))
-                              }
-                              value={field.value || ""}
+              <FormField
+                control={form.control}
+                name="categoria"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoría</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || "placeholder"}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una categoría" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="placeholder" disabled>
+                          Selecciona una categoría
+                        </SelectItem>
+                        {CATEGORIAS_OPTIONS.map((categoria) => (
+                          <SelectItem key={categoria.id} value={categoria.label}>
+                            {categoria.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="imagen_uri"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Imagen del evento</FormLabel>
+                    <div className="space-y-4">
+                      {evento.imagen_uri && (
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            Imagen actual del evento:
+                          </p>
+                          <div className="relative w-full md:w-1/3 aspect-video">
+                            <img
+                              src={evento.imagen_uri}
+                              alt="Imagen actual del evento"
+                              className="rounded-lg object-cover w-full h-full"
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                          </div>
+                        </div>
                       )}
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">
+                          Subir nueva imagen (opcional):
+                        </p>
+                        <FormControl>
+                          <ImageUpload
+                            value=""
+                            onChange={handleImageChange}
+                            onRemove={() => {
+                              // Al eliminar, establecer la imagen actual
+                              field.onChange(evento.imagen_uri);
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Sube una nueva imagen para tu evento. Si no subes una
+                          nueva, se mantendrá la imagen actual. Formatos permitidos:
+                          JPG, PNG.
+                        </FormDescription>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium">Tipos de entrada</h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      append({
+                        nombre: "",
+                        descripcion: "",
+                        precio: 0,
+                        zona: "",
+                        cantidad_disponible: 0,
+                      })
+                    }>
+                    <PlusIcon className="h-4 w-4 mr-2" />
+                    Agregar tipo de entrada
+                  </Button>
                 </div>
-              ))}
-            </div>
 
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="cursor-pointer"
-                onClick={() => router.back()}>
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="cursor-pointer">
-                {isSubmitting ? "Guardando..." : "Guardar cambios"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </Card>
-    </div>
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="p-4 border rounded-lg space-y-4 bg-muted/50">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Tipo de entrada {index + 1}</h4>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => remove(index)}>
+                        <Trash2Icon className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.nombre`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ej: VIP, General"
+                                {...field}
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.zona`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zona</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ej: Platea, Palco"
+                                {...field}
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name={`tipos_entrada.${index}.descripcion`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Descripción</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Describe los beneficios o características de esta entrada"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.precio`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Precio (€)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseFloat(e.target.value))
+                                }
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.cantidad_disponible`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Cantidad disponible</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="1"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseInt(e.target.value))
+                                }
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="cursor-pointer"
+                  onClick={() => router.back()}>
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="cursor-pointer">
+                  {isSubmitting ? "Guardando..." : "Guardar cambios"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </Card>
+      </div>
+    </RequireOrganizer>
   );
 }

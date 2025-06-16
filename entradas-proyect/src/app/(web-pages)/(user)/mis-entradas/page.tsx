@@ -52,7 +52,7 @@ export default function MisEntradasPage() {
 
   return (
     <RequireAuth noSessionText="Todavía no hay entradas">
-      <div className="container mx-auto py-12 px-8 max-w-6xl">
+      <div className="container mx-auto py-12 px-8 max-w-7xl">
         {/* Encabezado */}
         <div className="mb-12 mt-8">
           <h1 className="text-4xl font-bold tracking-tight mb-4">Mis Entradas</h1>

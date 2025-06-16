@@ -2,19 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm, FieldErrors } from "react-hook-form";
+import { useForm, FieldErrors, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { DateRange } from "react-day-picker";
-import {
-  InfoIcon,
-  MapPinIcon,
-  CalendarIcon,
-  UploadIcon,
-  TagIcon,
-} from "lucide-react";
+
+import { UploadIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { showToastSuccess, showToastError } from "@/utils/toast";
 
 import { Button } from "@/components/ui/button";
@@ -22,14 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -56,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
 
 // Definir las categorías disponibles
 const categorias = [
@@ -72,7 +58,6 @@ export default function CrearEventoPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [date, setDate] = useState<DateRange | undefined>();
   const [isRange, setIsRange] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -85,8 +70,22 @@ export default function CrearEventoPage() {
       fecha_fin: new Date(),
       lugar: "",
       categoria: "",
+      tipos_entrada: [
+        {
+          nombre: "",
+          descripcion: "",
+          precio: 0,
+          zona: "",
+          cantidad_disponible: 0,
+        },
+      ],
     },
     mode: "onChange",
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "tipos_entrada",
   });
 
   const handleImageChange = (value: string | File | null) => {
@@ -123,20 +122,21 @@ export default function CrearEventoPage() {
         : new Date();
       const fechaFin = data.fecha_fin ? new Date(data.fecha_fin) : fechaInicio;
 
-      const eventoData: CreateEventoInput = {
-        titulo: data.titulo,
-        descripcion: data.descripcion,
+      // Extraer tipos_entrada del objeto de datos
+      const { tipos_entrada, ...eventoData } = data;
+
+      const eventoToCreate: CreateEventoInput = {
+        ...eventoData,
         fecha_inicio: fechaInicio,
         fecha_fin: fechaFin,
-        lugar: data.lugar,
-        categoria: data.categoria,
         organizador_id: session.address,
         status: EventoStatus.PENDIENTE,
+        categoria: eventoData.categoria.toUpperCase(),
       };
 
-      console.log("Datos a insertar:", eventoData);
+      console.log("Datos a insertar:", eventoToCreate);
 
-      const evento = await createEvent(eventoData);
+      const evento = await createEvent(eventoToCreate);
 
       if (!evento) {
         throw new Error("No se recibió respuesta al crear el evento");
@@ -149,14 +149,7 @@ export default function CrearEventoPage() {
         console.log("Subiendo imagen...");
         try {
           const updatedEvento = await uploadEventImage(evento.id, selectedImage);
-          if (!updatedEvento) {
-            throw new Error("Error al subir la imagen");
-          }
-          console.log("Imagen subida correctamente");
-          showToastSuccess({
-            title: "Evento creado",
-            description: "El evento se ha creado con imagen correctamente",
-          });
+          console.log("Imagen subida correctamente:", updatedEvento);
         } catch (error) {
           console.error("Error al subir la imagen:", error);
           showToastError({
@@ -165,14 +158,43 @@ export default function CrearEventoPage() {
           });
           return;
         }
-      } else {
-        showToastSuccess({
-          title: "Evento creado",
-          description: "El evento se ha creado correctamente",
-        });
       }
 
-      router.push(`/organizador/eventos/${evento.id}`);
+      // Crear los tipos de entrada
+      if (tipos_entrada && tipos_entrada.length > 0) {
+        console.log("Creando tipos de entrada...");
+        try {
+          const tiposEntradaResponse = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/eventos/${evento.id}/tipos-entrada`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(tipos_entrada),
+            },
+          );
+
+          if (!tiposEntradaResponse.ok) {
+            throw new Error("Error al crear los tipos de entrada");
+          }
+        } catch (error) {
+          console.error("Error al crear tipos de entrada:", error);
+          showToastError({
+            title: "Error al crear tipos de entrada",
+            description:
+              "El evento se creó pero hubo un error al crear los tipos de entrada",
+          });
+          return;
+        }
+      }
+
+      showToastSuccess({
+        title: "Evento creado",
+        description: "El evento se ha creado correctamente",
+      });
+
+      router.push("/organizador/mis-eventos");
     } catch (error) {
       console.error("Error en onSubmit:", error);
       showToastError({
@@ -201,28 +223,21 @@ export default function CrearEventoPage() {
   };
 
   return (
-    <div className="container mx-auto py-12 px-8 max-w-6xl">
-      <Card>
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold pb-4">
-            Crear nuevo evento
-          </CardTitle>
-          <CardDescription>
-            Completa los datos para publicar tu evento
-          </CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log("Formulario enviado");
-              console.log("Valores del formulario:", form.getValues());
-              console.log("Errores del formulario:", form.formState.errors);
-              form.handleSubmit(onSubmit, onError)(e);
-            }}
-            className="space-y-6">
-            <CardContent className="space-y-4">
-              {/* Título */}
+    <RequireOrganizer>
+      <div className="container mx-auto py-12 px-8 max-w-7xl">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold pb-4">
+              Crear nuevo evento
+            </CardTitle>
+            <CardDescription>
+              Completa los datos para publicar tu evento
+            </CardDescription>
+          </CardHeader>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6 p-6">
               <FormField
                 control={form.control}
                 name="titulo"
@@ -230,24 +245,13 @@ export default function CrearEventoPage() {
                   <FormItem>
                     <FormLabel>Título del evento</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <InfoIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Ej. Concierto de rock"
-                          className="pl-10"
-                          {...field}
-                        />
-                      </div>
+                      <Input placeholder="Ingresa el título del evento" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Nombre atractivo y descriptivo para tu evento
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Descripción */}
               <FormField
                 control={form.control}
                 name="descripcion"
@@ -256,138 +260,124 @@ export default function CrearEventoPage() {
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Describe los detalles del evento..."
-                        rows={5}
+                        placeholder="Describe tu evento"
+                        className="min-h-[100px]"
                         {...field}
                         value={field.value || ""}
                       />
                     </FormControl>
-                    <FormDescription>
-                      Incluye información relevante sobre el evento
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Fecha */}
-              <FormField
-                control={form.control}
-                name="fecha_inicio"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <div className="flex items-center justify-between">
-                      <FormLabel>
-                        {isRange ? "Rango de fechas del evento" : "Fecha del evento"}
-                      </FormLabel>
-                      <div className="flex items-center space-x-2">
-                        <FormLabel
-                          htmlFor="range-mode"
-                          className="text-sm text-muted-foreground">
-                          Fecha única
-                        </FormLabel>
-                        <Switch
-                          id="range-mode"
-                          checked={isRange}
-                          onCheckedChange={setIsRange}
-                        />
-                        <FormLabel
-                          htmlFor="range-mode"
-                          className="text-sm text-muted-foreground">
-                          Rango de fechas
-                        </FormLabel>
-                      </div>
-                    </div>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}>
-                            {field.value ? (
-                              isRange ? (
-                                date?.from ? (
-                                  date.to ? (
-                                    <>
-                                      {format(date.from, "LLL dd, y", {
-                                        locale: es,
-                                      })}{" "}
-                                      -{" "}
-                                      {format(date.to, "LLL dd, y", { locale: es })}
-                                    </>
-                                  ) : (
-                                    format(date.from, "LLL dd, y", { locale: es })
-                                  )
-                                ) : (
-                                  <span>Selecciona un rango de fechas</span>
-                                )
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is-range"
+                  checked={isRange}
+                  onCheckedChange={(checked) => {
+                    setIsRange(checked);
+                    if (!checked) {
+                      // Si se desactiva el rango, establecer la fecha de fin igual a la de inicio
+                      const fechaInicio = form.getValues("fecha_inicio");
+                      form.setValue("fecha_fin", fechaInicio);
+                    }
+                  }}
+                />
+                <label htmlFor="is-range">Evento de varios días</label>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="fecha_inicio"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Fecha de inicio</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground",
+                              )}>
+                              {field.value ? (
+                                field.value.toLocaleDateString()
                               ) : (
-                                format(new Date(field.value), "LLL dd, y", {
-                                  locale: es,
-                                })
-                              )
-                            ) : (
-                              <span>Selecciona una fecha</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        {isRange ? (
-                          <Calendar
-                            mode="range"
-                            defaultMonth={date?.from || new Date()}
-                            selected={date}
-                            onSelect={(newDate: DateRange | undefined) => {
-                              if (newDate?.from) {
-                                setDate(newDate);
-                                field.onChange(newDate.from);
-                                form.setValue(
-                                  "fecha_fin",
-                                  newDate.to || newDate.from,
-                                );
-                              }
-                            }}
-                            numberOfMonths={2}
-                            locale={es}
-                            required
-                          />
-                        ) : (
+                                <span>Selecciona una fecha</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
-                            defaultMonth={
-                              field.value ? new Date(field.value) : new Date()
-                            }
-                            selected={
-                              field.value ? new Date(field.value) : undefined
-                            }
-                            onSelect={(newDate: Date | undefined) => {
-                              if (newDate) {
-                                field.onChange(newDate);
-                                form.setValue("fecha_fin", newDate);
+                            selected={field.value}
+                            onSelect={(date) => {
+                              if (date) {
+                                field.onChange(date);
+                                if (!isRange) {
+                                  // Si no es rango, actualizar también la fecha de fin
+                                  form.setValue("fecha_fin", date);
+                                }
                               }
                             }}
-                            numberOfMonths={2}
-                            locale={es}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
                           />
-                        )}
-                      </PopoverContent>
-                    </Popover>
-                    <FormDescription>
-                      {isRange
-                        ? "Selecciona el rango de fechas en que se realizará el evento"
-                        : "Selecciona la fecha en que se realizará el evento"}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* Lugar */}
+                {isRange && (
+                  <FormField
+                    control={form.control}
+                    name="fecha_fin"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Fecha de fin</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}>
+                                {field.value ? (
+                                  field.value.toLocaleDateString()
+                                ) : (
+                                  <span>Selecciona una fecha</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              disabled={(date) => {
+                                const fechaInicio = form.getValues("fecha_inicio");
+                                return date < fechaInicio || date < new Date();
+                              }}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+              </div>
+
               <FormField
                 control={form.control}
                 name="lugar"
@@ -395,24 +385,13 @@ export default function CrearEventoPage() {
                   <FormItem>
                     <FormLabel>Lugar</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <MapPinIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Ej. Teatro Municipal"
-                          className="pl-10"
-                          {...field}
-                        />
-                      </div>
+                      <Input placeholder="Ingresa el lugar del evento" {...field} />
                     </FormControl>
-                    <FormDescription>
-                      Indica dónde se llevará a cabo el evento
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Categoría */}
               <FormField
                 control={form.control}
                 name="categoria"
@@ -421,19 +400,16 @@ export default function CrearEventoPage() {
                     <FormLabel>Categoría</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}>
+                      value={field.value || "placeholder"}>
                       <FormControl>
                         <SelectTrigger>
-                          <div className="relative">
-                            <TagIcon className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <SelectValue
-                              placeholder="Selecciona una categoría"
-                              className="pl-10"
-                            />
-                          </div>
+                          <SelectValue placeholder="Selecciona una categoría" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="placeholder" disabled>
+                          Selecciona una categoría
+                        </SelectItem>
                         {categorias.map((categoria) => (
                           <SelectItem key={categoria.id} value={categoria.id}>
                             {categoria.label}
@@ -441,57 +417,206 @@ export default function CrearEventoPage() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
-                      Selecciona la categoría que mejor describe tu evento
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Imagen */}
-              <FormItem>
-                <FormLabel>Imagen del evento</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    onChange={handleImageChange}
-                    className="w-full aspect-video"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Sube una imagen atractiva para tu evento (opcional)
-                </FormDescription>
-              </FormItem>
-            </CardContent>
-
-            <CardFooter className="flex justify-between">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => router.back()}
-                disabled={isSubmitting}>
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                onClick={() => {
-                  console.log("Botón de submit clickeado");
-                  console.log("Estado del formulario:", form.formState);
-                }}>
-                {isSubmitting ? (
-                  <>
-                    <UploadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    Creando...
-                  </>
-                ) : (
-                  "Crear evento"
+              <FormField
+                control={form.control}
+                name="imagen_uri"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Imagen del evento</FormLabel>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <FormControl>
+                          <ImageUpload
+                            value=""
+                            onChange={handleImageChange}
+                            onRemove={() => {
+                              field.onChange("");
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Sube una imagen para tu evento (opcional). Formatos
+                          permitidos: JPG, PNG.
+                        </FormDescription>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-    </div>
+              />
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium">Tipos de entrada</h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      append({
+                        nombre: "",
+                        descripcion: "",
+                        precio: 0,
+                        zona: "",
+                        cantidad_disponible: 0,
+                      })
+                    }>
+                    <PlusIcon className="h-4 w-4 mr-2" />
+                    Agregar tipo de entrada
+                  </Button>
+                </div>
+
+                {fields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="p-4 border rounded-lg space-y-4 bg-muted/50">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-medium">Tipo de entrada {index + 1}</h4>
+                      {fields.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => remove(index)}>
+                          <Trash2Icon className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.nombre`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ej: VIP, General"
+                                {...field}
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.zona`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Zona</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ej: Platea, Palco"
+                                {...field}
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name={`tipos_entrada.${index}.descripcion`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Descripción</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Describe los beneficios o características de esta entrada"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.precio`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Precio (€)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseFloat(e.target.value))
+                                }
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`tipos_entrada.${index}.cantidad_disponible`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Cantidad disponible</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="1"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(parseInt(e.target.value))
+                                }
+                                value={field.value || ""}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.back()}
+                  disabled={isSubmitting}>
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <UploadIcon className="mr-2 h-4 w-4 animate-spin" />
+                      Creando...
+                    </>
+                  ) : (
+                    "Crear evento"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </Card>
+      </div>
+    </RequireOrganizer>
   );
 }

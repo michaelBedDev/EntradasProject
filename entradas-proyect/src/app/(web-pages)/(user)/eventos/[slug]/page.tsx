@@ -18,11 +18,8 @@ export default async function EventoPage({ params }: PageProps) {
     const resolvedParams = await params;
     //Se extrae el id de la URL recibida
     const id = extractID(resolvedParams.slug);
-    console.log("Slug recibido:", resolvedParams.slug);
-    console.log("ID extraído:", id);
 
     if (!id) {
-      console.log("No se pudo extraer el ID del slug");
       return notFound();
     }
 

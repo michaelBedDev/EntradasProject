@@ -37,7 +37,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { showToastSuccess, showToastError } from "@/utils/toast";
-import { deleteEvento } from "@/features/eventos/lib/deleteEvento";
+import { deleteEvento } from "@/features/eventos/actions/deleteEvento";
+import { MisEventosSkeleton } from "@/features/organizer/components/MisEventosSkeleton";
 
 export default function MisEventosPage() {
   const { wallet } = useSessionData();
@@ -80,25 +81,21 @@ export default function MisEventosPage() {
     window.location.href = `/eventos/${tituloSlug}-${evento.id}`;
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <p className="text-center text-muted-foreground">Cargando eventos...</p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
-      <div className="container mx-auto py-10 px-4">
-        <p className="text-center text-destructive">{error}</p>
-      </div>
+      <RequireOrganizer>
+        <div className="container mx-auto py-12 px-8 max-w-7xl">
+          <div className="text-center py-12">
+            <div className="text-red-500 mb-4 text-xl">{error}</div>
+          </div>
+        </div>
+      </RequireOrganizer>
     );
   }
 
   return (
     <RequireOrganizer>
-      <div className="container mx-auto py-12 px-8 max-w-6xl space-y-8">
+      <div className="container mx-auto py-12 px-8 max-w-7xl space-y-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Mis Eventos</h1>
           <Button asChild>
@@ -108,107 +105,121 @@ export default function MisEventosPage() {
           </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Listado de Eventos</CardTitle>
-            <CardDescription>
-              Gestiona todos los eventos que has creado
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Lugar</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {eventos.map((evento) => (
-                  <TableRow key={evento.id}>
-                    <TableCell className="font-medium">{evento.titulo}</TableCell>
-                    <TableCell>
-                      {new Date(evento.fecha_inicio).toLocaleDateString("es-ES", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell>{evento.lugar}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={getBadgeVariant(
-                          evento.status || EventoStatus.PENDIENTE,
-                        )}>
-                        {evento.status === EventoStatus.APROBADO
-                          ? "Aprobado"
-                          : evento.status === EventoStatus.PENDIENTE
-                          ? "Pendiente"
-                          : "Cancelado"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleViewEvento(evento)}
-                          title="Ver evento"
-                          className="cursor-pointer">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          asChild
-                          title="Editar evento"
-                          className="cursor-pointer">
-                          <Link
-                            href={`/organizador/mis-eventos/${evento.id}/editar`}>
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="text-destructive cursor-pointer"
-                              title="Eliminar evento"
-                              disabled={isDeleting && deletedEventId === evento.id}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Se eliminará
-                                permanentemente el evento &ldquo;{evento.titulo}
-                                &rdquo; y toda su información asociada.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteEvento(evento.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
-                                {isDeleting ? "Eliminando..." : "Eliminar"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
+        {isLoading ? (
+          <MisEventosSkeleton />
+        ) : eventos.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-8 text-muted-foreground">
+              No tienes eventos creados
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle>Listado de Eventos</CardTitle>
+              <CardDescription>
+                Gestiona todos los eventos que has creado
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Título</TableHead>
+                    <TableHead>Fecha</TableHead>
+                    <TableHead>Lugar</TableHead>
+                    <TableHead>Categoría</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {eventos.map((evento) => (
+                    <TableRow key={evento.id}>
+                      <TableCell className="font-medium">{evento.titulo}</TableCell>
+                      <TableCell>
+                        {new Date(evento.fecha_inicio).toLocaleDateString("es-ES", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell>{evento.lugar}</TableCell>
+                      <TableCell>{evento.categoria}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={getBadgeVariant(
+                            evento.status || EventoStatus.PENDIENTE,
+                          )}>
+                          {evento.status === EventoStatus.APROBADO
+                            ? "Aprobado"
+                            : evento.status === EventoStatus.PENDIENTE
+                            ? "Pendiente"
+                            : "Cancelado"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleViewEvento(evento)}
+                            title="Ver evento"
+                            className="cursor-pointer">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            asChild
+                            title="Editar evento"
+                            className="cursor-pointer">
+                            <Link
+                              href={`/organizador/mis-eventos/${evento.id}/editar`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="text-destructive cursor-pointer"
+                                title="Eliminar evento"
+                                disabled={
+                                  isDeleting && deletedEventId === evento.id
+                                }>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. Se eliminará
+                                  permanentemente el evento &ldquo;{evento.titulo}
+                                  &rdquo; y toda su información asociada.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteEvento(evento.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 cursor-pointer">
+                                  {isDeleting ? "Eliminando..." : "Eliminar"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </RequireOrganizer>
   );

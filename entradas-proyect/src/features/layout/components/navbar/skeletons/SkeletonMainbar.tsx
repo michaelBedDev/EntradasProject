@@ -1,7 +1,7 @@
 export default function SkeletonMainbar() {
   return (
     <div className="w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <div className="container mx-auto px-8 h-16 max-w-6xl">
+      <div className="container mx-auto px-8 h-16 max-w-7xl">
         <div className="flex h-full items-center justify-between">
           {/* Logo skeleton */}
           <div className="flex items-center space-x-2">

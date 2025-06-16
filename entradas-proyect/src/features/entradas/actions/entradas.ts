@@ -1,4 +1,3 @@
-// app/actions/entradas.ts
 "use server";
 
 import { authOptions } from "@/features/auth/lib/auth";

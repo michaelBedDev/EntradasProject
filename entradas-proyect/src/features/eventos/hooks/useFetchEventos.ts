@@ -1,36 +1,44 @@
-// hooks/useFetchEventos.ts
 "use client";
 import { EventoPublico } from "@/types/global";
 import { useEffect, useState } from "react";
 
-export function useFetchEventos(query: string) {
+interface UseFetchEventosProps {
+  query?: string;
+  categoria?: string;
+}
+
+export function useFetchEventos({
+  query = "",
+  categoria,
+}: UseFetchEventosProps = {}) {
   const [eventos, setEventos] = useState<EventoPublico[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchEventos = async () => {
-      setLoading(true);
-      setError(null);
-
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/eventos${
-          query ? `?busqueda=${encodeURIComponent(query)}` : ""
+        setLoading(true);
+        setError(null);
+
+        const params = new URLSearchParams();
+        if (query) params.append("query", query);
+        if (categoria) params.append("categoria", categoria);
+
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/eventos${
+          params.toString() ? `?${params.toString()}` : ""
         }`;
 
-        const response = await fetch(apiUrl, {
-          method: "GET",
-        });
-
+        const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`Error fetching eventos: ${response.status}`);
+          throw new Error("Error al obtener los eventos");
         }
 
         const data = await response.json();
         setEventos(data);
-      } catch (error) {
-        console.error("Error fetching eventos:", error);
-        console.error("Error details:", error);
+      } catch (err) {
+        console.error("Error fetching eventos:", err);
+        setError(err instanceof Error ? err : new Error("Error desconocido"));
         setEventos([]);
       } finally {
         setLoading(false);
@@ -38,7 +46,7 @@ export function useFetchEventos(query: string) {
     };
 
     fetchEventos();
-  }, [query]);
+  }, [query, categoria]);
 
   return { eventos, loading, error };
 }
