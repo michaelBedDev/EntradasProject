@@ -128,62 +128,70 @@ La base de datos está compuesta por cinco tablas principales: **USUARIO**, **EV
   - Tiene una relación **1:1 con ENTRADA**, es decir, cada asiento está vinculado a una única entrada.
   - Solo se crean registros en esta tabla si el evento tiene asientos numerados.
 
+### Diseño visual de la base de datos
+
+![Estructura final da base de datos](doc/img/Estructura%20final%20DB.png)
+
 ### Script de ejemplo de creación de la BD
 
 ```sql
--- Tabla de usuarios (organizadores y administradores)
-create table usuarios (
-  id uuid primary key default gen_random_uuid(),
-  wallet text not null,
-  email text unique,
-  nombre text,
-  rol text check (rol in ('organizador', 'administrador')) not null,
-);
 
--- Tabla de eventos
-create table eventos (
-  id uuid primary key default gen_random_uuid(),
-  titulo text not null,
+CREATE TABLE public.asientos (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  fila text,
+  numero text,
+  ocupado boolean DEFAULT false,
+  entrada_id uuid UNIQUE,
+  CONSTRAINT asientos_pkey PRIMARY KEY (id),
+  CONSTRAINT asientos_entrada_id_fkey FOREIGN KEY (entrada_id) REFERENCES public.entradas(id)
+);
+CREATE TABLE public.entradas (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  token text NOT NULL UNIQUE,
+  wallet text NOT NULL,
+  metadata_uri text NOT NULL,
+  qr_code text NOT NULL,
+  qr_image_uri text,
+  estado text DEFAULT 'activa'::text CHECK (estado = ANY (ARRAY['ACTIVA'::text, 'USADA'::text, 'CANCELADA'::text])),
+  tx_hash text,
+  tipo_entrada_id uuid NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT entradas_pkey PRIMARY KEY (id),
+  CONSTRAINT entradas_tipo_entrada_id_fkey FOREIGN KEY (tipo_entrada_id) REFERENCES public.tipos_entrada(id)
+);
+CREATE TABLE public.eventos (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  titulo text NOT NULL,
   descripcion text,
-  fecha timestamp not null,
-  lugar text not null,
+  lugar text NOT NULL,
   imagen_uri text,
-  organizador_id uuid references usuarios(id) on delete set null,
-  created_at timestamp default now()
+  organizador_id uuid NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  status text DEFAULT 'pendiente'::text CHECK (status = ANY (ARRAY['PENDIENTE'::text, 'APROBADO'::text, 'RECHAZADO'::text, 'CANCELADO'::text])),
+  fecha_inicio timestamp with time zone NOT NULL,
+  fecha_fin timestamp with time zone NOT NULL,
+  categoria character varying,
+  CONSTRAINT eventos_pkey PRIMARY KEY (id),
+  CONSTRAINT eventos_organizador_id_fkey FOREIGN KEY (organizador_id) REFERENCES public.usuarios(id)
 );
-
--- Tabla de tipos de entrada
-create table tipo_entrada (
-  id uuid primary key default gen_random_uuid(),
-  evento_id uuid references eventos(id) on delete cascade,
-  nombre text not null,
+CREATE TABLE public.tipos_entrada (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  evento_id uuid NOT NULL,
+  nombre text NOT NULL,
   descripcion text,
-  precio numeric(10,2) not null,
-  cantidad integer not null check (cantidad > 0),
+  precio numeric NOT NULL,
+  cantidad_disponible integer NOT NULL CHECK (cantidad_disponible > 0),
   zona text,
+  CONSTRAINT tipos_entrada_pkey PRIMARY KEY (id),
+  CONSTRAINT tipo_entrada_evento_id_fkey FOREIGN KEY (evento_id) REFERENCES public.eventos(id)
 );
-
--- Tabla de entradas
-create table entradas (
-  id uuid primary key default gen_random_uuid(),
-  token text not null unique,
-  wallet text not null, -- wallet del propietario actual
-  metadata_uri text not null, -- IPFS URI
-  qr_code text not null, -- valor en texto para generar QR
-  qr_image_uri text, -- imagen del QR (IPFS)
-  estado text check (estado in ('activa', 'usada', 'cancelada')) default 'activa',
-  tx_hash text, -- hash de la transacción de la blockchain
-  tipo_entrada_id uuid references tipo_entrada(id) on delete cascade,
-  created_at timestamp default now()
-);
-
--- Tabla de asientos
-create table asientos (
-  id uuid primary key default gen_random_uuid(),
-  fila text, -- por si alguno de los dos valores guardan letras
-  numero text, -- por si alguno de los dos valores guardan letras
-  ocupado boolean default false,
-  entrada_id uuid unique references entradas(id) on delete cascade
+CREATE TABLE public.usuarios (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  wallet text NOT NULL,
+  email text UNIQUE,
+  nombre text,
+  rol text NOT NULL CHECK (rol = ANY (ARRAY['organizador'::text, 'administrador'::text])),
+  CONSTRAINT usuarios_pkey PRIMARY KEY (id)
 );
 
 ```
@@ -197,3 +205,7 @@ La información clave registrada on-chain se sincroniza con la base de datos off
 Para el almacenamiento de los metadatos de las entradas, se utilizará el sistema de archivos distribuido **IPFS**. Esto permite que los metadatos estén accesibles directamente desde la blockchain, sin depender de la base de datos. De esta forma, cada entrada es **completa en sí misma**, conteniendo toda la información relevante (evento, tipo, asiento, fecha, etc.) referenciada mediante una URI.
 
 Para el almacenamiento de los metadatos, se utilizará el almacenamiento IPFS para que puedan ser accesibles por la blockchain sin necesidad de una base de datos, y que la entrada sea completa en sí misma. (completa)
+
+## Anexo: imágenes de casos de uso
+
+![Imagen casos de uso](doc/img/diagrams/diagramas_casos_de_uso_miguel_caamano.drawio.png)

@@ -196,7 +196,9 @@ export default function UserDashboardPage() {
                     alt={evento.titulo}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  <Badge className="absolute top-6 right-6 z-10">
+                  <Badge
+                    variant="outline"
+                    className="absolute top-6 right-6 z-10 bg-background/80 backdrop-blur-sm">
                     {evento.categoria || "Sin categoría"}
                   </Badge>
                 </div>

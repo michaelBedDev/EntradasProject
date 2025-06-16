@@ -6,10 +6,7 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "order:components": "node order-comps.mjs",
-    "gen:app-barrel": "node gen-app-barrel.mjs",
-    "organize": "node order-comps.mjs && node gen-app-barrel.mjs"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

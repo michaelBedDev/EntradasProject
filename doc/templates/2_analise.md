@@ -2,7 +2,9 @@
 
 ## Descrición xeral
 
-La aplicación propuesta consiste en un portal web para la venta de entradas a eventos, haciendo uso de la tecnología blockchain. A través de esta plataforma, los organizadores podrán publicar eventos y emitir entradas como tokens únicos (NFTs), mientras que los usuarios podrán consultar eventos, comprar entradas, transferir entradas o venderlas/comprarlas en un mercado secundario de forma segura y transparente. La aplicación garantiza la autenticidad de las entradas y evita la falsificación o duplicación gracias al uso de contratos inteligentes sobre la blockchain, además de una transacción segura entre particulares.
+La aplicación propuesta consiste en un portal web para la venta de entradas a eventos, haciendo uso de la tecnología blockchain. A través de esta plataforma, los organizadores podrán publicar eventos y emitir entradas que, en una versión futura, se convertirán en tokens únicos (NFTs). Por su parte, los usuarios podrán consultar eventos, comprar entradas, transferirlas y, más adelante, también venderlas o comprarlas en un mercado secundario de forma segura y transparente. La idea es garantizar la autenticidad de las entradas y evitar su falsificación o duplicación mediante el uso de contratos inteligentes en la blockchain, además de asegurar transacciones seguras entre particulares.
+
+Actualmente, aunque no ha dado tiempo a implementar toda la funcionalidad blockchain, la aplicación ya establece una primera conexión con la red de pruebas (testnet), que se utiliza para autenticar a los usuarios a través de su wallet o billetera digital. Esto sienta las bases para una integración completa en futuras versiones.
 
 El sistema está diseñado para ser escalable, permitiendo funcionalidades básicas en una primera versión y ampliaciones posteriores.
 
@@ -18,7 +20,7 @@ A continuación se detallan las funcionalidades principales de la aplicación, o
 
 #### 1. Conexión de wallet (autenticación)
 
-- **Actores:** Usuario (organizador o comprador)
+- **Actores:** Usuario (organizador, administrador o comprador)
 - **Entrada:** Solicitud de conexión de wallet (por ejemplo, Metamask)
 - **Proceso:** Verificación de conexión mediante firma criptográfica
 - **Salida:** Usuario autenticado con dirección de wallet visible en la interfaz
@@ -26,8 +28,8 @@ A continuación se detallan las funcionalidades principales de la aplicación, o
 #### 2. Publicación de eventos y generación de entradas
 
 - **Actores:** Organizador (en un futuro, bajo previa autorización del administrador)
-- **Entrada:** Nombre del evento, descripción, fecha, número de entradas, precio (se añadirán más metadatos posteriormente)
-- **Proceso:** El organizador crea un evento y genera entradas como tokens NFT utilizando un contrato inteligente. La publicación del evento debe ser aprobada por un administrador para evitar cualquier uso fraudulento.
+- **Entrada:** Nombre del evento, descripción, fecha, número de entradas, lugar, precio
+- **Proceso:** El organizador crea un evento a través del cual los usuarios podrán comprar sus entradas. Del mismo modo que la tokenización de entradas, se desplegará un contrato en blockchain por cada evento en actualizaciones futuras. La publicación del evento debe ser aprobada por un administrador para evitar cualquier uso fraudulento.
 - **Salida:** Evento publicado en la interfaz y entradas tokenizadas en la blockchain
 
 > Nota: En un futuro, el evento no será publicado en la blockchain hasta que un administrador lo verifique y lo publique mediante una transacción autorizada. Esto proporciona mayor seguridad, evita publicaciones fraudulentas y garantiza que todos los eventos en la blockchain han sido revisados y aprobados. Véase funcionalidades ampliables.
@@ -36,14 +38,14 @@ A continuación se detallan las funcionalidades principales de la aplicación, o
 
 - **Actores:** Usuario registrado
 - **Entrada:** Selección de evento y número de entradas, confirmación de transacción
-- **Proceso:** Envío de la transacción a la blockchain, transferencia del NFT al comprador
+- **Proceso:** Envío de la transacción a la base de datos. En un futuro, transacción blockchain y transferencia del NFT al comprador
 - **Salida:** Entrada recibida en la wallet del usuario
 
 #### 4. Consulta de mis entradas
 
 - **Actores:** Usuario registrado
 - **Entrada:** Solicitud para ver las entradas asociadas a su wallet
-- **Proceso:** Consulta de los NFTs asociados a la wallet conectada
+- **Proceso:** Consulta de las entradas asociadas a la wallet conectada
 - **Salida:** Listado de entradas compradas, con metadatos visibles
 
 #### 5. Listado público de eventos
@@ -57,7 +59,7 @@ A continuación se detallan las funcionalidades principales de la aplicación, o
 
 - **Actores:** Usuario (anónimo o registrado)
 - **Entrada:** Términos de búsqueda (nombre del evento, fecha, categoría, etc.)
-- **Proceso:** Filtrado de los eventos disponibles en la blockchain o en una base de datos secundaria
+- **Proceso:** Filtrado de los eventos disponibles en la base de datos y en blockchain.
 - **Salida:** Resultados de búsqueda con detalles de cada evento
 
 #### 7. Reenvío de entradas entre usuarios (transferencia directa)
