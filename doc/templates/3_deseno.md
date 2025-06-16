@@ -130,7 +130,7 @@ La base de datos está compuesta por cinco tablas principales: **USUARIO**, **EV
 
 ### Diseño visual de la base de datos
 
-![Estructura final da base de datos](doc/img/Estructura%20final%20DB.png)
+![Estructura final da base de datos](doc/img/Estructura_final_DB.png)
 
 ### Script de ejemplo de creación de la BD
 
