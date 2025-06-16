@@ -76,3 +76,23 @@ Mejoras en la navegación y en los tiempos de carga de la aplicación
 ### Descrición
 
 Si bien es cierto que Next.js ofrecía el SSR, en muchas ocasiones se tuvo que manejar una lógica con custom Hooks de react para la obtención de datos en el lado del cliente, y manejar la obtención de datos con estados como Loading o error. Lo cual a priori no supone una dificultad añadida a la de el aprendizaje de estas tecnologías y cómo implementan el fetching de datos, sin embargo la verdadera dificultad surge con la obtención de datos de la sesión de NextAuth para la verificación del rol del usuario, con su determinado tiempo de carga. La suma de la gestión de los dos estados de peticiones de información, sumado a la inexperiencia en un principio es lo que supuso un desafío en el manejo y la visualización de datos en el lado del cliente.
+
+### Funcionalidades del prototipo Final
+
+Enumerando las funcionalidades mínimas previstas, se implementaron todas salvo una:
+
+- Autenticación de usuario a través de la wallet
+- Publicación de eventos por parte de los organizadores
+- Compra de entradas por parte de los usuarios
+- Consulta de mis entradas
+- Listado de eventos disponibles
+- Búsqueda de eventos
+
+No se implementó el reenvío de entradas entre usuarios, ya que no se han implementado las funcionalidades blockchain aún.
+
+No obstante, se incluyeron algunas funcionalidades adicionales:
+
+- Listado de organizadores de eventos
+- Revisión y aprobación de eventos previos a su publicación
+- Edición y eliminación de eventos por parte de los organizadores
+- Filtro de eventos por categoría
