@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-import { EventoCard } from "./EventoCard";
-import { EventoCardSkeleton } from "./EventoCardSkeleton";
+import { EventoCard } from "@/components/shared/cards/EventoCard";
+import { EventoCardSkeleton } from "@/components/shared/skeletons/EventoCardSkeleton";
 import { useFetchEventos } from "../hooks/useFetchEventos";
 
 interface EventosListProps {

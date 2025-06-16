@@ -6,14 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import useFetchEntradas from "@/features/entradas/hooks/useFetchEntradas";
 
-import { EntradaCard } from "@/features/entradas/components/EntradaCard";
-import EntradaSkeleton from "@/features/entradas/components/EntradaSkeleton";
+import { EntradaCard } from "@/components/shared/cards/EntradaCard";
+import EntradaSkeleton from "@/components/shared/skeletons/EntradaSkeleton";
 
-import { handleDownload } from "@/utils/handleDownload";
-import { handleViewQR } from "@/utils/handleViewQR";
-import { handleShareEntrada } from "@/utils/handleShare";
-import RequireAuth from "@/features/auth/components/RequireAuth";
 import { useSessionData } from "@/features/auth/hooks/useSessionData";
+import RequireAuth from "@/features/auth/components/guards/RequireAuth";
+import { handleDownload, handleShareEntrada, handleViewQR } from "@/lib/utils/index";
 
 export default function MisEntradasPage() {
   const { wallet } = useSessionData();

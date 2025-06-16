@@ -13,7 +13,7 @@ import {
 import { LinkType } from "@/types/global";
 import { LucideIcon } from "lucide-react";
 import ThemeSelector from "../ThemeSelector";
-import ConnectWalletButton from "../../ConnectWalletButton";
+import ConnectWalletButton from "@/features/auth/components/buttons/ConnectWalletButton";
 import { LayoutDashboard } from "lucide-react";
 
 interface HamburguerButtonProps {

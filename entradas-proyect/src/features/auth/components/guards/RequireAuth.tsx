@@ -1,8 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { LoadingSession } from "./session/LoadingSession";
-import { NoSession } from "./session/NoSession";
+import { LoadingSession } from "../session/LoadingSession";
+import { NoSession } from "../session/NoSession";
 
 type RequireAuthProps = {
   children: React.ReactNode;

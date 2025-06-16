@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 
 import { UploadIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { showToastSuccess, showToastError } from "@/utils/toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,8 @@ import {
   type CreateEventoFormInput,
   type CreateEventoInput,
 } from "@/lib/schemas/evento.schema";
-import { createEvent, uploadEventImage } from "@/app/actions/db/events";
+import { createEvent } from "@/app/actions/db/eventos";
+import { uploadEventImage } from "@/app/actions/storage/eventImages";
 import { EventoStatus } from "@/features/eventos/services/types";
 import {
   Select,
@@ -41,7 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
+import RequireOrganizer from "@/features/auth/components/guards/RequireOrganizer";
+import { showToastError, showToastSuccess } from "@/lib/utils/toast";
 
 // Definir las categorías disponibles
 const categorias = [
@@ -113,8 +114,6 @@ export default function CrearEventoPage() {
 
     try {
       setIsSubmitting(true);
-      console.log("Iniciando creación de evento...");
-      console.log("Datos del formulario:", data);
 
       // Asegurarnos de que las fechas sean válidas
       const fechaInicio = data.fecha_inicio
@@ -134,19 +133,14 @@ export default function CrearEventoPage() {
         categoria: eventoData.categoria.toUpperCase(),
       };
 
-      console.log("Datos a insertar:", eventoToCreate);
-
       const evento = await createEvent(eventoToCreate);
 
       if (!evento) {
         throw new Error("No se recibió respuesta al crear el evento");
       }
 
-      console.log("Evento creado:", evento);
-
       // Si hay una imagen seleccionada, subirla
       if (selectedImage) {
-        console.log("Subiendo imagen...");
         try {
           const updatedEvento = await uploadEventImage(evento.id, selectedImage);
           console.log("Imagen subida correctamente:", updatedEvento);
@@ -162,7 +156,6 @@ export default function CrearEventoPage() {
 
       // Crear los tipos de entrada
       if (tipos_entrada && tipos_entrada.length > 0) {
-        console.log("Creando tipos de entrada...");
         try {
           const tiposEntradaResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/eventos/${evento.id}/tipos-entrada`,
@@ -211,7 +204,6 @@ export default function CrearEventoPage() {
 
   // Función para manejar errores de validación
   const onError = (errors: FieldErrors<CreateEventoFormInput>) => {
-    console.log("Errores de validación:", errors);
     Object.entries(errors).forEach(([field, error]) => {
       if (error?.message) {
         showToastError({

@@ -1,6 +1,6 @@
 import { use } from "react";
 import EventosList from "@/features/eventos/components/EventosList";
-import { SearchBar } from "@/features/layout/components/SearchBar";
+import { SearchBar } from "@/components/shared/search/SearchBar";
 
 interface Props {
   searchParams: Promise<{

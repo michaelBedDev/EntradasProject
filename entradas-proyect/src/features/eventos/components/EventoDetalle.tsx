@@ -44,10 +44,7 @@ import {
 } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { EventoPublicoWTipos, TipoEntradaPublica } from "@/types/global";
-import { getBadgeVariant } from "@/utils/getBadgeVariant";
 
-import { showToastError, showToastSuccess } from "@/utils/toast";
-import { handleShareEvento } from "@/utils/handleShare";
 import { crearEntradas } from "@/features/entradas/actions/entradas";
 import { EventoStatus } from "@/features/eventos/services/types";
 import {
@@ -60,6 +57,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  getBadgeVariant,
+  handleShareEvento,
+  showToastError,
+  showToastSuccess,
+} from "@/lib/utils/index";
 
 export default function EventoDetalle({ evento }: { evento: EventoPublicoWTipos }) {
   const [cantidad, setCantidad] = useState<string>("1");

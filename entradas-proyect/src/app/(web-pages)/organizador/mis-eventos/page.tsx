@@ -19,11 +19,10 @@ import Link from "next/link";
 import { PlusCircleIcon, Edit, Trash2, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { slugify } from "@/utils/slugify";
-import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
+import RequireOrganizer from "@/features/auth/components/guards/RequireOrganizer";
 import { useSessionData } from "@/features/auth/hooks/useSessionData";
 import { useEventosOrganizador } from "@/features/eventos/hooks/useEventosOrganizador";
-import { getBadgeVariant } from "@/utils/getBadgeVariant";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,9 +35,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-import { showToastSuccess, showToastError } from "@/utils/toast";
+
 import { deleteEvento } from "@/features/eventos/actions/deleteEvento";
 import { MisEventosSkeleton } from "@/features/organizer/components/MisEventosSkeleton";
+import { getBadgeVariant } from "@/lib/utils/getBadgeVariant";
+import { showToastError, showToastSuccess } from "@/lib/utils/toast";
+import { slugify } from "@/lib/utils/slugify";
 
 export default function MisEventosPage() {
   const { wallet } = useSessionData();

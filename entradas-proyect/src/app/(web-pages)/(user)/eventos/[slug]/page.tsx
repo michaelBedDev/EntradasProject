@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 
-import EventoDetalle from "./EventoDetalle";
-
 import { extractID } from "@/features/eventos/lib/extractUUIDFromRoute";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/auth/lib/auth";
 import { EventoStatus } from "@/features/eventos/services/types";
 import { getUserRole } from "@/features/auth/lib/getUserRole";
+import EventoDetalle from "@/features/eventos/components/EventoDetalle";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -32,21 +31,15 @@ export default async function EventoPage({ params }: PageProps) {
       },
     );
 
-    console.log("Status de la respuesta:", response.status);
-
     // Si la respuesta no es correcta, mostrar 404
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.log("Error de la API:", errorData);
       return notFound();
     }
 
     const evento = await response.json();
-    console.log("Evento encontrado:", evento ? "Sí" : "No");
 
     // Si no se encuentra el evento, mostrar 404
     if (!evento) {
-      console.log("No se encontró el evento en la respuesta");
       return notFound();
     }
 
@@ -57,7 +50,6 @@ export default async function EventoPage({ params }: PageProps) {
 
       // Si el usuario no está autenticado o es un usuario normal, no puede ver el evento
       if (!session || userRole === "usuario") {
-        console.log("Usuario no autorizado para ver evento no aprobado");
         return notFound();
       }
 
@@ -67,7 +59,6 @@ export default async function EventoPage({ params }: PageProps) {
       const isAdmin = userRole === "admin";
 
       if (!isOrganizer && !isAdmin) {
-        console.log("Usuario no es organizador ni admin");
         return notFound();
       }
     }

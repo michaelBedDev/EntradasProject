@@ -26,12 +26,11 @@ export function useSolicitudesEventos(): UseSolicitudesEventosReturn {
     }
 
     try {
-      console.log("Iniciando fetch de solicitudes...");
       setIsLoading(true);
       setError(null);
 
       const data = await getSolicitudesEventos();
-      console.log("Datos recibidos en el hook:", data);
+
       setSolicitudes(data);
     } catch (err) {
       console.error("Error en el hook:", err);

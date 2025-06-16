@@ -79,11 +79,6 @@ export async function getUserIdFromWallet(wallet: string): Promise<string | null
   try {
     const supabase = getSupabaseAdminClient();
 
-    console.log(
-      "getUserIdFromWallet - Buscando usuario con wallet:",
-      wallet.toLowerCase(),
-    );
-
     const { data: user, error } = await supabase
       .from("usuarios")
       .select("id")
@@ -95,7 +90,6 @@ export async function getUserIdFromWallet(wallet: string): Promise<string | null
       return null;
     }
 
-    console.log("getUserIdFromWallet - Usuario encontrado:", user);
     return user?.id || null;
   } catch (error) {
     console.error("getUserIdFromWallet - Error:", error);
@@ -116,18 +110,11 @@ export async function getUserIdFromRequest(
   try {
     const walletData = await getUserWalletFromRequest(request);
 
-    console.log("getUserIdFromRequest - Wallet data:", walletData);
-
     if (!walletData) {
-      console.log("getUserIdFromRequest - No se pudo obtener la wallet del usuario");
       return null;
     }
 
     const userId = await getUserIdFromWallet(walletData.address);
-    console.log("getUserIdFromRequest - User ID from wallet:", {
-      wallet: walletData.address,
-      userId,
-    });
 
     return userId;
   } catch (error) {

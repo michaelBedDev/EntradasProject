@@ -9,8 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getStatusStyle } from "@/features/entradas/lib/getStatusBadge";
+import { formatToFullDate } from "@/lib/utils/index";
 import { EntradaCompletaPublica } from "@/types/global";
-import { formatToFullDate } from "@/utils/dateFormat";
+
 import {
   Calendar,
   Clock,

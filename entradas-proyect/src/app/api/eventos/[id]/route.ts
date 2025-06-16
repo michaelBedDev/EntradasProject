@@ -18,7 +18,6 @@ export async function GET(
   try {
     const supabase = getSupabaseAdminClient();
     const id = (await context.params).id;
-    console.log("API: Obteniendo evento con ID:", id);
 
     // Obtener el evento con sus relaciones
     const { data: evento, error } = await supabase
@@ -49,15 +48,8 @@ export async function GET(
     }
 
     if (!evento) {
-      console.log("API: Evento no encontrado");
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
-
-    console.log("API: Evento encontrado:", {
-      id: evento.id,
-      titulo: evento.titulo,
-      status: evento.status,
-    });
 
     return NextResponse.json(evento);
   } catch (error) {
@@ -91,14 +83,7 @@ export async function PATCH(
     const userRole = await getUserRoleFromRequest(request);
     const userId = await getUserIdFromRequest(request);
 
-    console.log("PATCH /api/eventos/[id] - Auth Debug:", {
-      userRole,
-      userId,
-      headers: Object.fromEntries(request.headers.entries()),
-    });
-
     if (!userId) {
-      console.log("PATCH /api/eventos/[id] - No se pudo obtener el ID del usuario");
       return NextResponse.json(
         { error: "No autorizado - ID de usuario no encontrado" },
         { status: 401 },
@@ -106,10 +91,6 @@ export async function PATCH(
     }
 
     if (userRole === "usuario") {
-      console.log(
-        "PATCH /api/eventos/[id] - Usuario con rol insuficiente:",
-        userRole,
-      );
       return NextResponse.json(
         { error: "No autorizado - Rol insuficiente" },
         { status: 401 },
@@ -135,19 +116,11 @@ export async function PATCH(
     }
 
     if (!eventoActual) {
-      console.log("PATCH /api/eventos/[id] - Evento no encontrado:", id);
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    console.log("PATCH /api/eventos/[id] - Comparando permisos:", {
-      eventoOrganizadorId: eventoActual.organizador_id,
-      userId,
-      userRole,
-    });
-
     // Verificar permisos usando el ID del usuario
     if (eventoActual.organizador_id !== userId && userRole !== "admin") {
-      console.log("PATCH /api/eventos/[id] - Permisos insuficientes");
       return NextResponse.json(
         { error: "No autorizado - No es el organizador ni admin" },
         { status: 403 },
@@ -173,7 +146,6 @@ export async function PATCH(
       );
     }
 
-    console.log("PATCH /api/eventos/[id] - Evento actualizado correctamente");
     return NextResponse.json(evento);
   } catch (error) {
     console.error("Error en PATCH /api/eventos/[id]:", error);
@@ -203,14 +175,7 @@ export async function DELETE(
     const userRole = await getUserRoleFromRequest(request);
     const userId = await getUserIdFromRequest(request);
 
-    console.log("DELETE /api/eventos/[id] - Auth Debug:", {
-      userRole,
-      userId,
-      headers: Object.fromEntries(request.headers.entries()),
-    });
-
     if (!userId) {
-      console.log("DELETE /api/eventos/[id] - No se pudo obtener el ID del usuario");
       return NextResponse.json(
         { error: "No autorizado - ID de usuario no encontrado" },
         { status: 401 },
@@ -218,10 +183,6 @@ export async function DELETE(
     }
 
     if (userRole === "usuario") {
-      console.log(
-        "DELETE /api/eventos/[id] - Usuario con rol insuficiente:",
-        userRole,
-      );
       return NextResponse.json(
         { error: "No autorizado - Rol insuficiente" },
         { status: 401 },
@@ -247,19 +208,11 @@ export async function DELETE(
     }
 
     if (!eventoActual) {
-      console.log("DELETE /api/eventos/[id] - Evento no encontrado:", id);
       return NextResponse.json({ error: "Evento no encontrado" }, { status: 404 });
     }
 
-    console.log("DELETE /api/eventos/[id] - Comparando permisos:", {
-      eventoOrganizadorId: eventoActual.organizador_id,
-      userId,
-      userRole,
-    });
-
     // Verificar permisos usando el ID del usuario
     if (eventoActual.organizador_id !== userId && userRole !== "admin") {
-      console.log("DELETE /api/eventos/[id] - Permisos insuficientes");
       return NextResponse.json(
         { error: "No autorizado - No es el organizador ni admin" },
         { status: 403 },

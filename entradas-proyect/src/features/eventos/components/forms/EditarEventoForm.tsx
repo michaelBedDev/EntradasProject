@@ -6,7 +6,7 @@ import { useForm, FieldErrors, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
 import { PlusIcon, Trash2Icon } from "lucide-react";
-import { showToastSuccess, showToastError } from "@/utils/toast";
+import { showToastError, showToastSuccess } from "@/lib/utils/toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,8 +50,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EventoStatus } from "@/features/eventos/services/types";
-import { uploadEventImage } from "@/app/actions/db/events";
-import RequireOrganizer from "@/features/auth/components/RequireOrganizer";
+import { uploadEventImage } from "@/app/actions/storage/eventImages";
+import RequireOrganizer from "@/features/auth/components/guards/RequireOrganizer";
 
 type FormValues = CreateEventoFormInput;
 
@@ -162,8 +162,6 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
   const submitForm = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
-      console.log("Iniciando actualización de evento...");
-      console.log("Datos del formulario:", data);
 
       // Preparar los datos del evento
       const eventoData = {
@@ -195,7 +193,6 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
 
       // Si hay una nueva imagen seleccionada, subirla
       if (selectedImage) {
-        console.log("Subiendo imagen...");
         try {
           const updatedEvento = await uploadEventImage(evento.id, selectedImage);
           console.log("Imagen subida correctamente:", updatedEvento);
@@ -212,7 +209,6 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
 
       // Actualizar los tipos de entrada
       if (tipos_entrada && tipos_entrada.length > 0) {
-        console.log("Actualizando tipos de entrada...");
         try {
           const tiposEntradaResponse = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/eventos/${evento.id}/tipos-entrada`,
@@ -260,7 +256,6 @@ export default function EditarEventoForm({ evento }: EditarEventoFormProps) {
 
   // Función para manejar errores de validación
   const onError = (errors: FieldErrors<FormValues>) => {
-    console.log("Errores de validación:", errors);
     Object.entries(errors).forEach(([field, error]) => {
       if (error?.message) {
         showToastError({

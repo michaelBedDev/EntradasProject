@@ -26,19 +26,14 @@ type Evento = {
 };
 
 export async function GET(request: NextRequest) {
-  console.log("Iniciando endpoint de estadísticas...");
-
   try {
     const session = await getServerSession(authOptions);
-    console.log("Sesión obtenida:", session ? "Sí" : "No");
 
     if (!session?.address) {
-      console.log("No hay sesión o dirección de wallet");
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const supabase = await getSupabaseClientForAPIs(request);
-    console.log("Cliente Supabase inicializado");
 
     // Obtener el ID del organizador
     const { data: organizador, error: errorOrganizador } = await supabase
@@ -54,8 +49,6 @@ export async function GET(request: NextRequest) {
         { status: 500 },
       );
     }
-
-    console.log("Organizador encontrado:", organizador.id);
 
     // Obtener eventos del organizador
     const { data: eventosDB, error: errorEventos } = await supabase
@@ -77,8 +70,6 @@ export async function GET(request: NextRequest) {
         id: e.id,
         status: e.status || "PENDIENTE",
       })) || [];
-
-    console.log("Eventos encontrados:", eventos.length);
 
     // Obtener IDs de eventos
     const eventoIds = eventos.map((e) => e.id);
@@ -116,8 +107,6 @@ export async function GET(request: NextRequest) {
         { status: 500 },
       );
     }
-
-    console.log("Total de entradas encontradas:", entradasVendidas?.length);
 
     // Calcular estadísticas
     const totalEventos = eventos.length;
@@ -171,8 +160,6 @@ export async function GET(request: NextRequest) {
         ingresos_totales: ingresosDia,
       };
     });
-
-    console.log("Tendencia de ventas generada:", tendenciaVentas);
 
     // Calcular eventos aprobados y pendientes
     const eventosAprobados = eventos.filter((e) => e.status === "APROBADO").length;

@@ -1,16 +1,17 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { LoadingSession } from "./session/LoadingSession";
-import { NoSession } from "./session/NoSession";
+
 import { RolUsuario } from "@/types/enums";
-import { WrongRoleAccess } from "./role/WrongRoleAccess";
+import { LoadingSession } from "../session/LoadingSession";
+import { NoSession } from "../session/NoSession";
+import { WrongRoleAccess } from "../role/WrongRoleAccess";
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default function RequireAdmin({ children }: Props) {
+export default function RequireOrganizer({ children }: Props) {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
@@ -21,8 +22,8 @@ export default function RequireAdmin({ children }: Props) {
     return <NoSession noSessionText="Acceso Restringido" />;
   }
 
-  if (session.userRole !== RolUsuario.ADMINISTRADOR) {
-    return <WrongRoleAccess requiredRoleName={RolUsuario.ADMINISTRADOR} />;
+  if (session.userRole !== RolUsuario.ORGANIZADOR) {
+    return <WrongRoleAccess requiredRoleName={RolUsuario.ORGANIZADOR} />;
   }
 
   return <>{children}</>;

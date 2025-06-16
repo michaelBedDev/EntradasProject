@@ -1,10 +1,8 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { extractDayAndMonth, handleShareEvento, slugify } from "@/lib/utils/index";
 import { EventoPublico } from "@/types/global";
-import { extractDayAndMonth } from "@/utils/dateFormat";
-import { handleShareEvento } from "@/utils/handleShare";
-import { slugify } from "@/utils/slugify";
 
 import {
   ArrowRightIcon,

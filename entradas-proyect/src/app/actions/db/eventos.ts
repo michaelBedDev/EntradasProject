@@ -7,6 +7,8 @@ import { EventoPublicoWTipos } from "@/types/global";
 import { EventoEstadisticas } from "@/features/eventos/services/types";
 import { EventoStatus } from "@/features/eventos/services/types";
 import { RolUsuario } from "@/types/enums";
+import { CreateEventoInput } from "@/lib/schemas/evento.schema";
+import { getOrganizadorFromSession } from "../storage/eventImages";
 
 export async function getEventosOrganizador(): Promise<{
   eventos: EventoPublicoWTipos[];
@@ -118,4 +120,44 @@ export async function getEventosOrganizador(): Promise<{
     eventos: eventosTransformados,
     estadisticas,
   };
+}
+
+export async function createEvent(data: CreateEventoInput) {
+  const { organizador, supabase } = await getOrganizadorFromSession();
+
+  try {
+    // Convertir las fechas a strings ISO y asegurar que fecha_fin existe
+    const eventoData = {
+      titulo: data.titulo,
+      descripcion: data.descripcion,
+      fecha_inicio:
+        data.fecha_inicio instanceof Date
+          ? data.fecha_inicio.toISOString()
+          : data.fecha_inicio,
+      fecha_fin:
+        data.fecha_fin instanceof Date
+          ? data.fecha_fin.toISOString()
+          : data.fecha_inicio.toISOString(),
+      lugar: data.lugar,
+      categoria: data.categoria,
+      status: "PENDIENTE" as const,
+      organizador_id: organizador.id,
+      imagen_uri: null,
+    };
+
+    const { data: evento, error } = await supabase
+      .from("eventos")
+      .insert(eventoData)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error("Error al crear el evento: " + error.message);
+    }
+
+    return evento;
+  } catch (error) {
+    console.error("Error al crear evento:", error);
+    throw error;
+  }
 }

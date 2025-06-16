@@ -21,7 +21,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { SearchBar } from "../features/layout/components/SearchBar";
+import { SearchBar } from "@/components/shared/search/SearchBar";
 
 export default function LandingPage() {
   // Para animaciones y aparición progresiva

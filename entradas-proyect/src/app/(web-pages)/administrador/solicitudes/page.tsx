@@ -18,13 +18,14 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle } from "lucide-react";
-import RequireAdmin from "@/features/auth/components/RequireAdmin";
+
 import { useSolicitudesEventos } from "@/features/eventos/hooks/useSolicitudesEventos";
 import { Skeleton } from "@/components/ui/skeleton";
 import { actualizarEstadoEvento } from "@/app/actions/db/solicitudes_eventos";
 import { EventoStatus } from "@/features/eventos/services/types";
 import { useState } from "react";
-import { showToastSuccess, showToastError } from "@/utils/toast";
+import { showToastError, showToastSuccess } from "@/lib/utils/index";
+import RequireAdmin from "@/features/auth/components/guards/RequireAdmin";
 
 export default function SolicitudesPage() {
   const { solicitudes, isLoading, error, refetch } = useSolicitudesEventos();

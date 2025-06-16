@@ -19,11 +19,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Users } from "lucide-react";
 import { useState } from "react";
-import RequireAdmin from "@/features/auth/components/RequireAdmin";
+import RequireAdmin from "@/features/auth/components/guards/RequireAdmin";
 import { useUsuariosPorRol } from "@/features/auth/hooks/useUsuariosPorRol";
 import { RolUsuario } from "@/types/enums";
 import { Skeleton } from "@/components/ui/skeleton";
-import { showToastSuccess, showToastError } from "@/utils/toast";
+import { showToastError, showToastSuccess } from "@/lib/utils/toast";
 
 export default function RolesPage() {
   const [activeTab, setActiveTab] = useState<RolUsuario>(RolUsuario.ADMINISTRADOR);

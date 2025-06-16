@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import ConnectWalletButton from "../ConnectWalletButton";
+import ConnectWalletButton from "@/features/auth/components/buttons/ConnectWalletButton";
 import ThemeSelector from "./ThemeSelector";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard } from "lucide-react";

@@ -16,7 +16,6 @@ export async function getSolicitudesEventos(): Promise<EventoPublico[]> {
 
   const supabase = await getSupabaseServerClient();
 
-  console.log("Buscando eventos pendientes...");
   const { data: eventos, error } = await supabase
     .from("eventos")
     .select(
@@ -43,10 +42,7 @@ export async function getSolicitudesEventos(): Promise<EventoPublico[]> {
     throw new Error("Error al obtener las solicitudes");
   }
 
-  console.log("Eventos encontrados:", eventos);
-
   const eventosTransformados = eventos.map((evento) => {
-    console.log("Transformando evento:", evento);
     const eventoTransformado = {
       id: evento.id,
       titulo: evento.titulo,
@@ -62,11 +58,10 @@ export async function getSolicitudesEventos(): Promise<EventoPublico[]> {
         wallet: evento.organizador?.wallet || "",
       },
     };
-    console.log("Evento transformado:", eventoTransformado);
+
     return eventoTransformado;
   });
 
-  console.log("Eventos transformados finales:", eventosTransformados);
   return eventosTransformados;
 }
 
